@@ -8,31 +8,31 @@
 <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700&family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@500;600&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
-  /* --- ELEGANT DARK THEME (PREMİUM TASARIM) --- */
+  /* --- MODERN SLATE & TEAL THEME (Mavi/Yeşil/Gri Tonları) --- */
   :root{
-    --bg: #09090b;          /* Çok Koyu Gece Siyahı */
-    --surface: #18181b;     /* Zarif Antrasit (Kartlar) */
-    --surface-2: #27272a;   /* Açık Antrasit (İkincil zeminler) */
-    --line: #3f3f46;        /* İnce Gri Çizgiler */
-    --text: #fafafa;        /* Parlak Beyaz Metin */
-    --text-dim: #a1a1aa;    /* Kısık Gümüş Metin */
+    --bg: #e2e8f0;          /* Zarif Gümüş Gri Arka Plan */
+    --surface: #ffffff;     /* Tertemiz Beyaz Kartlar */
+    --surface-2: #f1f5f9;   /* Açık Gri (İkincil zeminler) */
+    --line: #cbd5e1;        /* Yumuşak Gri Çizgiler */
+    --text: #0f172a;        /* Çok Koyu Lacivert/Gri Metin (Siyah yerine) */
+    --text-dim: #64748b;    /* Okunaklı Gri Metin */
     
-    --accent: #d4af37;      /* Lüks Metalik Altın */
-    --accent-dim: #fef08a;  /* Açık Altın/Sarı vurgular */
-    --btn-text: #09090b;    /* Altın butonların üzerindeki siyah metin */
+    --accent: #0d9488;      /* Okyanus Mavisi / Zümrüt Yeşili Karışımı (Teal) */
+    --accent-dim: #ccfbf1;  /* Açık Su Yeşili (Arka plan vurguları için) */
+    --btn-text: #ffffff;    /* Renkli butonların üzerindeki beyaz metin */
     
     --warn: #ef4444;        /* Hata/Silme Kırmızı */
-    --status-zero: #3f3f46; /* Analiz: Boş */
-    --status-low: #f87171;  /* Analiz: Düşük */
-    --status-ok: #34d399;   /* Analiz: İyi (Zümrüt Yeşili) */
-    --status-high: #fbbf24; /* Analiz: Yoğun (Altın/Kehribar) */
+    --status-zero: #cbd5e1; /* Analiz: Boş (Gri) */
+    --status-low: #f87171;  /* Analiz: Düşük (Somon) */
+    --status-ok: #10b981;   /* Analiz: İyi (Zümrüt Yeşili) */
+    --status-high: #0284c7; /* Analiz: Yoğun (Derin Mavi) */
   }
   
   *{box-sizing:border-box; -webkit-tap-highlight-color:transparent;}
   body{ margin:0; background:var(--bg); color:var(--text); font-family:'Inter', sans-serif; padding-bottom:40px; }
 
   /* --- AUTH EKRANI --- */
-  #auth-screen { max-width: 400px; margin: 60px auto; background: var(--surface); border-radius: 20px; border: 1px solid var(--line); box-shadow: 0 10px 30px rgba(0,0,0,0.5); overflow:hidden; }
+  #auth-screen { max-width: 400px; margin: 60px auto; background: var(--surface); border-radius: 20px; border: 1px solid var(--line); box-shadow: 0 10px 30px rgba(0,0,0,0.06); overflow:hidden; }
   .auth-header { background:var(--surface-2); padding: 24px; text-align:center; border-bottom:1px solid var(--line); }
   .auth-title { font-family: 'Barlow Condensed', sans-serif; font-size: 26px; font-weight:700; text-transform: uppercase; color: var(--accent); margin-bottom: 6px; letter-spacing:1px;}
   .auth-sub { font-size: 13px; color: var(--text-dim); }
@@ -40,8 +40,8 @@
   .auth-tab { flex:1; text-align:center; padding:14px; font-weight:600; font-size:14px; cursor:pointer; color:var(--text-dim); transition:0.3s; background:var(--surface-2); }
   .auth-tab.active { color:var(--accent); border-bottom:3px solid var(--accent); background:var(--surface); }
   .auth-body { padding: 28px 24px; }
-  .auth-input { width: 100%; padding: 14px; margin-bottom: 14px; border: 1px solid var(--line); border-radius: 12px; font-family: 'Inter'; font-size: 14px; background:var(--bg); color:var(--text); transition:0.3s;}
-  .auth-input:focus { outline:none; border-color:var(--accent); box-shadow: 0 0 0 2px rgba(212, 175, 55, 0.2); }
+  .auth-input { width: 100%; padding: 14px; margin-bottom: 14px; border: 1px solid var(--line); border-radius: 12px; font-family: 'Inter'; font-size: 14px; background:var(--surface); color:var(--text); transition:0.3s;}
+  .auth-input:focus { outline:none; border-color:var(--accent); box-shadow: 0 0 0 3px rgba(13, 148, 136, 0.15); }
   .auth-btn-primary { width: 100%; padding: 14px; background: var(--accent); color: var(--btn-text); border: none; border-radius: 12px; font-weight: 700; cursor: pointer; font-size:15px; transition:0.2s; text-transform:uppercase; letter-spacing:0.5px;}
   .auth-btn-primary:active { transform:scale(0.98); }
   #auth-msg { text-align: center; font-size: 13px; margin-top: 14px; font-weight: 500; }
@@ -49,12 +49,12 @@
   .msg-success { color: var(--status-ok); }
 
   /* --- ANA UYGULAMA --- */
-  header{ position:sticky; top:0; z-index:10; background:rgba(9, 9, 11, 0.95); backdrop-filter:blur(10px); padding:20px 16px 0 16px; border-bottom:1px solid var(--line); display: flex; flex-direction: column; }
+  header{ position:sticky; top:0; z-index:10; background:rgba(226, 232, 240, 0.95); backdrop-filter:blur(10px); padding:20px 16px 0 16px; border-bottom:1px solid var(--line); display: flex; flex-direction: column; }
   .header-top { display: flex; justify-content: space-between; align-items: center; }
   h1{ font-family:'Barlow Condensed', sans-serif; font-weight:700; font-size:26px; letter-spacing:1px; margin:0 0 2px 0; text-transform:uppercase; color:var(--text); }
-  .logout-btn { background: transparent; border: 1px solid var(--line); color: var(--text-dim); padding: 6px 12px; border-radius: 8px; font-size: 12px; cursor: pointer; font-family: 'Inter'; transition:0.2s; }
-  .logout-btn:hover { border-color:var(--text); color:var(--text); }
-  .sub{ color:var(--accent); font-size:13px; font-weight:500; margin-bottom:16px;}
+  .logout-btn { background: var(--surface); border: 1px solid var(--line); color: var(--text-dim); padding: 6px 12px; border-radius: 8px; font-size: 12px; font-weight:600; cursor: pointer; font-family: 'Inter'; transition:0.2s; }
+  .logout-btn:hover { border-color:var(--text-dim); color:var(--text); }
+  .sub{ color:var(--accent); font-size:13px; font-weight:600; margin-bottom:16px;}
   .tabs{ display:flex; gap:4px; margin-bottom:0; overflow-x:auto; scrollbar-width:none; }
   .tabs::-webkit-scrollbar{ display:none; }
   .tab{ flex:0 0 auto; text-align:center; padding:12px 14px 14px 14px; font-family:'Barlow Condensed', sans-serif; font-weight:600; font-size:15px; color:var(--text-dim); border-bottom:3px solid transparent; cursor:pointer; letter-spacing:0.5px; text-transform:uppercase; white-space:nowrap; transition:0.2s; }
@@ -66,32 +66,33 @@
   /* ALT SEKMELER (GÜNLER İÇİN) */
   .sub-tabs-container { display:flex; gap:10px; margin: 4px 0 20px 0; overflow-x:auto; scrollbar-width:none; padding-bottom:8px; border-bottom:1px solid var(--line); }
   .sub-tabs-container::-webkit-scrollbar{ display:none; }
-  .sub-tab { flex:0 0 auto; padding: 8px 18px; background:var(--surface); border:1px solid var(--line); border-radius:24px; font-size:13px; font-weight:600; color:var(--text-dim); cursor:pointer; white-space:nowrap; transition:0.2s;}
-  .sub-tab.active { background:var(--accent); color:var(--btn-text); border-color:var(--accent); }
+  .sub-tab { flex:0 0 auto; padding: 8px 18px; background:var(--surface); border:1px solid var(--line); border-radius:24px; font-size:13px; font-weight:600; color:var(--text-dim); cursor:pointer; white-space:nowrap; transition:0.2s; box-shadow:0 1px 2px rgba(0,0,0,0.02);}
+  .sub-tab.active { background:var(--accent); color:var(--btn-text); border-color:var(--accent); box-shadow:0 2px 6px rgba(13, 148, 136, 0.25);}
 
   .program-header { display:flex; justify-content:space-between; align-items:flex-end; margin:6px 2px 16px 2px; }
-  .program-title{ font-family:'Barlow Condensed', sans-serif; font-size:26px; font-weight:700; color:var(--accent); text-transform:uppercase; letter-spacing:0.5px;}
+  .program-title{ font-family:'Barlow Condensed', sans-serif; font-size:26px; font-weight:700; color:var(--text); text-transform:uppercase; letter-spacing:0.5px;}
   .program-controls { display:flex; gap:8px; }
-  .program-controls button { background:transparent; border:1px solid var(--line); border-radius:8px; padding:6px 12px; font-size:11px; cursor:pointer; font-weight:600; color:var(--text-dim); transition:0.2s; text-transform:uppercase;}
+  .program-controls button { background:var(--surface); border:1px solid var(--line); border-radius:8px; padding:6px 12px; font-size:11px; cursor:pointer; font-weight:600; color:var(--text-dim); transition:0.2s; text-transform:uppercase;}
   .program-controls .btn-share { color:var(--btn-text); border-color:var(--accent); background:var(--accent); }
   .program-controls .btn-share:active { transform:scale(0.95); }
+  .program-controls .btn-del:hover { background:var(--warn); color:#fff; border-color:var(--warn);}
 
   .block-label{ font-family:'IBM Plex Mono', monospace; font-size:11px; letter-spacing:1px; color:var(--text-dim); text-transform:uppercase; margin:20px 2px 8px 2px; padding-bottom:4px; border-bottom:1px dashed var(--line); }
   .block-label.first{ margin-top:4px; }
-  .card{ background:var(--surface); border:1px solid var(--line); border-radius:16px; padding:16px; margin-bottom:12px; box-shadow:0 4px 12px rgba(0,0,0,0.2); }
+  .card{ background:var(--surface); border:1px solid var(--line); border-radius:16px; padding:16px; margin-bottom:12px; box-shadow:0 4px 12px rgba(0,0,0,0.04); transition:transform 0.2s; }
   .card.superset{ border-left:4px solid var(--accent); }
   .row-top{ display:flex; justify-content:space-between; align-items:flex-start; gap:10px; }
   .ex-name{ font-size:16px; font-weight:600; line-height:1.3; color:var(--text); }
   .meta{ display:flex; gap:16px; margin-top:8px; }
   .meta-item{ font-family:'IBM Plex Mono', monospace; font-size:12px; color:var(--text-dim); }
-  .meta-item b{ color:var(--accent); font-weight:600; }
-  .link-btn{ font-size:11px; color:var(--text); text-decoration:none; border:1px solid var(--line); border-radius:20px; padding:5px 12px; white-space:nowrap; font-family:'Inter'; font-weight:600; background:var(--surface-2); cursor:pointer; transition:0.2s; }
-  .link-btn:hover { border-color:var(--accent); color:var(--accent); }
+  .meta-item b{ color:var(--accent); font-weight:700; }
+  .link-btn{ font-size:11px; color:var(--text-dim); text-decoration:none; border:1px solid var(--line); border-radius:20px; padding:5px 12px; white-space:nowrap; font-family:'Inter'; font-weight:600; background:var(--surface-2); cursor:pointer; transition:0.2s; }
+  .link-btn:hover { border-color:var(--accent); color:var(--accent); background:var(--accent-dim); }
   
-  .stepper{ display:flex; align-items:center; justify-content:space-between; margin-top:16px; background:var(--bg); border:1px solid var(--line); border-radius:12px; padding:4px; }
-  .stepper button{ width:48px; height:44px; border:none; border-radius:8px; background:var(--surface-2); color:var(--text); font-size:22px; font-weight:600; cursor:pointer; user-select:none; transition:0.1s;}
-  .stepper button:active{ background:var(--accent); color:var(--btn-text); }
-  .stepper button.minus:active{ background:var(--warn); color:#fff; }
+  .stepper{ display:flex; align-items:center; justify-content:space-between; margin-top:16px; background:var(--surface-2); border:1px solid var(--line); border-radius:12px; padding:4px; }
+  .stepper button{ width:48px; height:44px; border:none; border-radius:8px; background:var(--surface); border:1px solid var(--line); color:var(--text); font-size:22px; font-weight:600; cursor:pointer; user-select:none; transition:0.1s; box-shadow:0 1px 2px rgba(0,0,0,0.02);}
+  .stepper button:active{ background:var(--accent); color:var(--btn-text); border-color:var(--accent);}
+  .stepper button.minus:active{ background:var(--warn); color:#fff; border-color:var(--warn);}
   
   .weight-display{ flex:1; text-align:center; display:flex; justify-content:center; align-items:center; }
   .wnum-input { font-family:'IBM Plex Mono', monospace; font-size:22px; font-weight:600; width:64px; text-align:center; border:none; background:transparent; color:var(--accent); padding:0; margin:0; outline:none; -moz-appearance:textfield; letter-spacing:0.5px; }
@@ -102,28 +103,30 @@
   .sets-row{ display:flex; align-items:center; gap:8px; margin-top:12px; }
   .set-btn{ flex:1; display:flex; align-items:center; justify-content:center; gap:8px; height:46px; border-radius:12px; border:1px solid var(--line); background:var(--surface-2); color:var(--text); font-family:'Inter'; font-weight:600; font-size:14px; cursor:pointer; user-select:none; transition:0.2s;}
   .set-btn .dots{ display:flex; gap:6px; }
-  .set-dot{ width:10px; height:10px; border-radius:50%; background:var(--bg); border:1px solid var(--line); transition:background 0.2s ease; }
-  .set-dot.filled{ background:var(--accent); border-color:var(--accent); box-shadow:0 0 6px rgba(212,175,55,0.4);}
-  .set-btn.complete{ border-color:var(--accent); background:rgba(212,175,55,0.1); color:var(--accent); }
-  .set-reset{ width:46px; height:46px; border-radius:12px; border:1px solid var(--line); background:var(--bg); color:var(--text-dim); font-size:16px; cursor:pointer; }
+  .set-dot{ width:10px; height:10px; border-radius:50%; background:var(--surface); border:1px solid var(--line); transition:background 0.2s ease, box-shadow 0.2s ease; }
+  .set-dot.filled{ background:var(--accent); border-color:var(--accent); box-shadow:0 0 6px rgba(13, 148, 136, 0.3);}
+  .set-btn.complete{ border-color:var(--accent); background:var(--accent-dim); color:var(--accent); }
+  .set-reset{ width:46px; height:46px; border-radius:12px; border:1px solid var(--line); background:var(--surface-2); color:var(--text-dim); font-size:16px; font-weight:bold; cursor:pointer; transition:0.2s;}
+  .set-reset:hover { color:var(--text); background:var(--line);}
   
-  .timer-row{ display:flex; align-items:center; gap:8px; margin-top:10px; background:var(--bg); border:1px solid var(--line); border-radius:12px; padding:6px 8px; }
+  .timer-row{ display:flex; align-items:center; gap:8px; margin-top:10px; background:var(--surface-2); border:1px solid var(--line); border-radius:12px; padding:6px 8px; }
   .timer-display{ font-family:'IBM Plex Mono', monospace; font-size:20px; font-weight:600; width:70px; text-align:center; letter-spacing:0.5px; color:var(--text);}
-  .timer-display.running{ color:var(--accent); text-shadow:0 0 8px rgba(212,175,55,0.3);}
+  .timer-display.running{ color:var(--accent); text-shadow:0 0 8px rgba(13, 148, 136, 0.25);}
   .timer-display.done{ color:var(--warn); }
-  .timer-btn{ flex:1; height:40px; border:none; border-radius:8px; background:var(--surface-2); color:var(--text); font-family:'Inter'; font-weight:600; font-size:13px; cursor:pointer; transition:0.2s;}
-  .timer-btn.start{ background:var(--accent); color:var(--btn-text); }
-  .timer-btn.pause{ background:var(--surface); border:1px solid var(--line); color:var(--text);}
-  .timer-btn.reset{ width:40px; flex:none; color:var(--text-dim); background:transparent;}
+  .timer-btn{ flex:1; height:40px; border:none; border-radius:8px; background:var(--surface); border:1px solid var(--line); color:var(--text); font-family:'Inter'; font-weight:600; font-size:13px; cursor:pointer; transition:0.2s;}
+  .timer-btn.start{ background:var(--accent); color:var(--btn-text); border-color:var(--accent);}
+  .timer-btn.pause{ background:var(--surface-2); border-color:var(--line); color:var(--text);}
+  .timer-btn.reset{ width:40px; flex:none; color:var(--text-dim); background:transparent; border:none;}
+  .timer-btn.reset:hover { color:var(--text);}
   
-  .save-btn{ display:block; width:100%; margin-top:24px; padding:16px; background:var(--accent); color:var(--btn-text); border:none; border-radius:16px; font-family:'Barlow Condensed', sans-serif; font-weight:700; font-size:18px; letter-spacing:1px; text-transform:uppercase; cursor:pointer; transition:0.2s; box-shadow:0 4px 12px rgba(212,175,55,0.2);}
+  .save-btn{ display:block; width:100%; margin-top:24px; padding:16px; background:var(--accent); color:var(--btn-text); border:none; border-radius:16px; font-family:'Barlow Condensed', sans-serif; font-weight:700; font-size:18px; letter-spacing:1px; text-transform:uppercase; cursor:pointer; transition:0.2s; box-shadow:0 4px 12px rgba(13, 148, 136, 0.2);}
   .save-btn:active { transform:scale(0.98); }
   .save-toast{ text-align:center; color:var(--accent); font-size:13px; font-weight:600; margin-top:10px; height:18px; }
 
   /* GEÇMİŞ KARTLARI */
   .hist-empty{ text-align:center; color:var(--text-dim); font-size:14px; margin-top:40px; padding:0 20px; }
-  .hist-card{ background:var(--surface); border:1px solid var(--line); border-radius:16px; padding:16px; margin-bottom:16px; box-shadow:0 4px 12px rgba(0,0,0,0.2); }
-  .hist-head{ display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:12px; border-bottom:1px solid var(--line); padding-bottom:10px;}
+  .hist-card{ background:var(--surface); border:1px solid var(--line); border-radius:16px; padding:16px; margin-bottom:16px; box-shadow:0 4px 12px rgba(0,0,0,0.04); }
+  .hist-head{ display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:12px; border-bottom:1px solid var(--surface-2); padding-bottom:10px;}
   .hist-day{ font-family:'Barlow Condensed', sans-serif; font-weight:700; font-size:18px; color:var(--accent); text-transform:uppercase; letter-spacing:0.5px;}
   .hist-datetime{ font-size:11.5px; color:var(--text-dim); font-family:'IBM Plex Mono', monospace; margin-top:4px; }
   .hist-del{ border:1px solid var(--line); background:var(--surface-2); color:var(--warn); border-radius:8px; font-size:12px; font-weight:600; cursor:pointer; padding:6px 10px; transition:0.2s;}
@@ -134,70 +137,72 @@
   .hist-ex-stats{ font-family:'IBM Plex Mono', monospace; color:var(--accent); font-weight:600; font-size:13px; white-space:nowrap; margin-left:10px; }
   
   /* TOPLULUK KARTLARI */
-  .comm-card { background:var(--surface); border:1px solid var(--line); border-radius:16px; padding:16px; margin-bottom:16px; box-shadow:0 4px 12px rgba(0,0,0,0.2); }
+  .comm-card { background:var(--surface); border:1px solid var(--line); border-radius:16px; padding:16px; margin-bottom:16px; box-shadow:0 4px 12px rgba(0,0,0,0.04); }
   .comm-header-row { display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;}
   .comm-author { font-size:13px; color:var(--text-dim); font-weight:500;}
   .comm-author b { color:var(--accent); font-weight:700;}
-  .comm-date { font-size:11px; font-family:'IBM Plex Mono', monospace; color:var(--text-dim); background:var(--surface-2); padding:4px 8px; border-radius:12px;}
+  .comm-date { font-size:11px; font-family:'IBM Plex Mono', monospace; color:var(--text-dim); background:var(--surface-2); padding:4px 8px; border-radius:12px; border:1px solid var(--line);}
   .comm-title { font-family:'Barlow Condensed', sans-serif; font-weight:700; font-size:22px; text-transform:uppercase; margin-bottom:12px; color:var(--text); letter-spacing:0.5px;}
   .comm-actions { display:flex; gap:10px; margin-top:16px; }
   .comm-btn { flex:1; padding:12px; border-radius:10px; font-weight:600; font-size:13px; cursor:pointer; font-family:'Inter'; text-align:center; transition:0.2s; text-transform:uppercase; letter-spacing:0.5px;}
-  .comm-btn.view { background:var(--bg); color:var(--text); border:1px solid var(--line); }
-  .comm-btn.add { background:var(--accent); color:var(--btn-text); border:none; }
-  .comm-btn.delete { background:var(--warn); color:#fff; border:none; flex:0.4;}
+  .comm-btn.view { background:var(--surface-2); color:var(--text); border:1px solid var(--line); }
+  .comm-btn.view:hover { background:var(--line); }
+  .comm-btn.add { background:var(--accent); color:var(--btn-text); border:none; box-shadow:0 2px 8px rgba(13, 148, 136, 0.2); }
+  .comm-btn.delete { background:var(--surface); color:var(--warn); border:1px solid var(--warn); flex:0.4;}
+  .comm-btn.delete:hover { background:var(--warn); color:#fff; }
 
   /* --- OLUŞTURMA & EDİTÖR --- */
-  .count-row{ display:flex; align-items:center; justify-content:space-between; background:var(--surface); border:1px solid var(--line); border-radius:16px; padding:16px; margin-bottom:20px; box-shadow:0 4px 12px rgba(0,0,0,0.2); }
+  .count-row{ display:flex; align-items:center; justify-content:space-between; background:var(--surface); border:1px solid var(--line); border-radius:16px; padding:16px; margin-bottom:20px; box-shadow:0 4px 12px rgba(0,0,0,0.04); }
   .count-label{ font-size:14px; font-weight:600; color:var(--accent);}
-  .count-stepper{ display:flex; align-items:center; gap:4px; background:var(--bg); border:1px solid var(--line); border-radius:12px; padding:4px; }
-  .count-stepper button{ width:40px; height:40px; border:none; border-radius:8px; background:var(--surface-2); color:var(--text); font-size:20px; font-weight:700; cursor:pointer; transition:0.2s;}
-  .count-stepper button:active{ background:var(--accent); color:var(--btn-text); }
-  .count-num{ font-family:'IBM Plex Mono', monospace; font-weight:700; font-size:16px; width:32px; text-align:center; }
+  .count-stepper{ display:flex; align-items:center; gap:4px; background:var(--surface-2); border:1px solid var(--line); border-radius:12px; padding:4px; }
+  .count-stepper button{ width:40px; height:40px; border:none; border-radius:8px; background:var(--surface); border:1px solid var(--line); color:var(--text); font-size:20px; font-weight:700; cursor:pointer; transition:0.2s;}
+  .count-stepper button:active{ background:var(--accent); color:var(--btn-text); border-color:var(--accent);}
+  .count-num{ font-family:'IBM Plex Mono', monospace; font-weight:700; font-size:16px; width:32px; text-align:center; color:var(--text); }
   
   .day-name-input{ font-family:'Barlow Condensed', sans-serif; font-weight:700; font-size:22px; color:var(--accent); border:none; background:transparent; width:100%; text-transform:uppercase; letter-spacing:0.5px; padding:6px 0; border-bottom:2px solid var(--line); margin-bottom:16px; transition:0.2s;}
   .day-name-input:focus{ outline:none; border-bottom:2px solid var(--accent); }
   
-  .added-ex-row{ border:1px solid var(--line); border-radius:14px; padding:14px; margin-bottom:12px; background:var(--bg); display:flex; flex-direction:column; gap:10px; }
+  .added-ex-row{ border:1px solid var(--line); border-radius:14px; padding:14px; margin-bottom:12px; background:var(--surface); display:flex; flex-direction:column; gap:10px; box-shadow:0 2px 6px rgba(0,0,0,0.02);}
   .added-ex-top{ display:flex; justify-content:space-between; align-items:flex-start; gap:8px; }
   .added-ex-name{ font-size:15px; font-weight:700; line-height:1.3; color:var(--text);}
   .added-ex-muscle{ font-size:11px; color:var(--text-dim); font-family:'IBM Plex Mono',monospace; text-transform:uppercase; margin-top:4px;}
-  .added-ex-controls{ display:flex; align-items:center; gap:12px; flex-wrap:wrap; background:var(--surface); border:1px solid var(--line); padding:10px; border-radius:10px;}
+  .added-ex-controls{ display:flex; align-items:center; gap:12px; flex-wrap:wrap; background:var(--surface-2); border:1px solid var(--line); padding:10px; border-radius:10px;}
   .muscle-sets-mini{ font-size:11.5px; color:var(--text-dim); display:flex; align-items:center; gap:6px; font-weight:600;}
-  .mini-input{ font-family:'IBM Plex Mono', monospace; font-size:14px; font-weight:600; border:1px solid var(--line); border-radius:8px; padding:8px 6px; width:52px; text-align:center; background:var(--bg); color:var(--text); outline:none;}
+  .mini-input{ font-family:'IBM Plex Mono', monospace; font-size:14px; font-weight:600; border:1px solid var(--line); border-radius:8px; padding:8px 6px; width:52px; text-align:center; background:var(--surface); color:var(--text); outline:none;}
   .mini-input:focus { border-color:var(--accent); }
   .reps-input{ width:66px; }
   .ex-remove{ border:1px solid var(--warn); background:transparent; color:var(--warn); border-radius:8px; font-size:12px; font-weight:600; cursor:pointer; padding:6px 12px; transition:0.2s;}
   .ex-remove:hover { background:var(--warn); color:#fff; }
   .add-ex-btn{ display:block; width:100%; margin-top:16px; padding:16px; background:transparent; border:2px dashed var(--line); border-radius:14px; color:var(--text-dim); font-weight:700; font-size:14px; cursor:pointer; transition:0.2s; text-transform:uppercase; letter-spacing:0.5px;}
-  .add-ex-btn:hover { border-color:var(--accent); color:var(--accent); }
+  .add-ex-btn:hover { border-color:var(--accent); color:var(--accent); background:var(--surface);}
 
-  .picker{ margin-top:12px; border:1px solid var(--line); border-radius:14px; overflow:hidden; background:var(--bg); box-shadow:0 4px 12px rgba(0,0,0,0.3);}
-  .picker-group-head{ padding:14px 16px; font-weight:700; font-size:14px; cursor:pointer; display:flex; justify-content:space-between; align-items:center; background:var(--surface); border-top:1px solid var(--line); transition:0.2s;}
-  .picker-group-head:hover { background:var(--surface-2); }
+  .picker{ margin-top:12px; border:1px solid var(--line); border-radius:14px; overflow:hidden; background:var(--surface); box-shadow:0 6px 16px rgba(0,0,0,0.06);}
+  .picker-group-head{ padding:14px 16px; font-weight:700; font-size:14px; cursor:pointer; display:flex; justify-content:space-between; align-items:center; background:var(--surface-2); border-top:1px solid var(--line); transition:0.2s;}
+  .picker-group-head:hover { background:var(--line); }
   .picker-group-head:first-child{ border-top:none; }
-  .picker-group-count{ font-size:11.5px; color:var(--accent); font-family:'IBM Plex Mono', monospace; font-weight:600; background:rgba(212,175,55,0.1); padding:2px 8px; border-radius:10px;}
+  .picker-group-count{ font-size:11.5px; color:var(--accent); font-family:'IBM Plex Mono', monospace; font-weight:600; background:var(--accent-dim); padding:2px 8px; border-radius:10px;}
   .picker-ex-list{ display:none; }
   .picker-ex-list.open{ display:block; }
-  .picker-ex-item{ padding:14px 16px; font-size:13.5px; font-weight:500; border-top:1px dashed var(--line); display:flex; justify-content:space-between; align-items:center; cursor:pointer; background:var(--bg); transition:0.2s;}
+  .picker-ex-item{ padding:14px 16px; font-size:13.5px; font-weight:500; border-top:1px dashed var(--line); display:flex; justify-content:space-between; align-items:center; cursor:pointer; background:var(--surface); transition:0.2s;}
   .picker-ex-item:hover{ background:var(--surface-2); }
   .picker-ex-reps{ color:var(--text-dim); font-family:'IBM Plex Mono', monospace; font-size:11.5px; white-space:nowrap; margin-left:8px; }
-  .picker-ex-preview{ display:inline-block; font-size:11px; color:var(--text); border:1px solid var(--line); border-radius:8px; padding:6px 10px; margin-left:8px; cursor:pointer; background:var(--surface); font-family: 'Inter', sans-serif; font-weight: 600; transition:0.2s;}
-  .picker-ex-preview:hover { border-color:var(--accent); color:var(--accent); }
-  .picker-close{ display:block; width:100%; text-align:center; padding:16px; font-size:13px; font-weight:700; color:var(--text); background:var(--surface-2); border:none; cursor:pointer; text-transform:uppercase; letter-spacing:0.5px;}
+  .picker-ex-preview{ display:inline-block; font-size:11px; color:var(--text); border:1px solid var(--line); border-radius:8px; padding:4px 8px; margin-left:8px; cursor:pointer; background:var(--surface-2); font-family: 'Inter', sans-serif; font-weight: 600; transition:0.2s;}
+  .picker-ex-preview:hover { border-color:var(--accent); color:var(--accent); background:var(--surface);}
+  .picker-close{ display:block; width:100%; text-align:center; padding:16px; font-size:13px; font-weight:700; color:var(--text); background:var(--surface-2); border:none; border-top:1px solid var(--line); cursor:pointer; text-transform:uppercase; letter-spacing:0.5px;}
 
   .save-name-row{ display:flex; gap:10px; margin-top:28px; padding-top:24px; border-top:2px solid var(--line);}
-  .save-name-input{ flex:1; padding:16px; border:1px solid var(--line); border-radius:14px; font-family:'Inter'; font-size:15px; font-weight:500; background:var(--bg); color:var(--text); outline:none;}
-  .save-name-input:focus { border-color:var(--accent); }
-  .save-name-btn{ background:var(--accent); color:var(--btn-text); border:none; border-radius:14px; padding:0 24px; font-weight:700; font-family:'Barlow Condensed', sans-serif; font-size:18px; letter-spacing:0.5px; text-transform:uppercase; cursor:pointer; white-space:nowrap; transition:0.2s; box-shadow:0 4px 12px rgba(212,175,55,0.2);}
+  .save-name-input{ flex:1; padding:16px; border:1px solid var(--line); border-radius:14px; font-family:'Inter'; font-size:15px; font-weight:500; background:var(--surface); color:var(--text); outline:none;}
+  .save-name-input:focus { border-color:var(--accent); box-shadow:0 0 0 3px rgba(13, 148, 136, 0.15);}
+  .save-name-btn{ background:var(--accent); color:var(--btn-text); border:none; border-radius:14px; padding:0 24px; font-weight:700; font-family:'Barlow Condensed', sans-serif; font-size:18px; letter-spacing:0.5px; text-transform:uppercase; cursor:pointer; white-space:nowrap; transition:0.2s; box-shadow:0 4px 12px rgba(13, 148, 136, 0.2);}
   .save-name-btn:active { transform:scale(0.96); }
 
   /* GÖRSEL ANALİZ */
   .analysis-section{ margin-top:28px; margin-bottom:24px;}
-  .analysis-title{ font-family:'Barlow Condensed', sans-serif; font-size:22px; font-weight:700; color:var(--accent); text-transform:uppercase; margin-bottom:16px; letter-spacing:0.5px;}
+  .analysis-title{ font-family:'Barlow Condensed', sans-serif; font-size:22px; font-weight:700; color:var(--text); text-transform:uppercase; margin-bottom:16px; letter-spacing:0.5px;}
   .svg-container { display: flex; flex-wrap: wrap; justify-content: center; gap: 16px; margin-bottom: 16px;}
-  .svg-box { flex: 1 1 300px; max-width: 360px; background: var(--surface); border: 1px solid var(--line); border-radius: 16px; padding: 20px 12px; box-shadow:0 4px 12px rgba(0,0,0,0.2); }
-  .anatomy-label-title { text-align: center; font-family: 'Barlow Condensed', sans-serif; font-size: 18px; font-weight: 700; color: var(--text); margin-bottom: 16px; letter-spacing: 1px;}
-  .human-shape { stroke: var(--surface); stroke-width: 2.5; transition: fill 0.3s ease; }
+  .svg-box { flex: 1 1 300px; max-width: 360px; background: var(--surface); border: 1px solid var(--line); border-radius: 16px; padding: 20px 12px; box-shadow:0 4px 12px rgba(0,0,0,0.04); }
+  .anatomy-label-title { text-align: center; font-family: 'Barlow Condensed', sans-serif; font-size: 18px; font-weight: 700; color: var(--accent); margin-bottom: 16px; letter-spacing: 1px;}
+  .human-shape { stroke: #ffffff; stroke-width: 2.5; transition: fill 0.3s ease; }
   .svg-text { font-family: 'Inter', sans-serif; font-size: 11px; font-weight: 700; }
   .svg-subtext { font-size: 10px; font-weight: 500; }
   .svg-line { stroke-width: 1.5; stroke-dasharray: 3 3; stroke: var(--line); }
@@ -263,7 +268,6 @@ const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_
 let currentUser = null;
 let currentUsername = "";
 
-// Bulut belleği (Varsayılan program yok)
 let cloudData = { weights: {}, custom_program: null, saved_programs: [], session_state: {} };
 
 const authScreen = document.getElementById('auth-screen');
@@ -304,10 +308,9 @@ async function signUp() {
   if (error) { 
     showMsg('Kayıt Hatası: ' + error.message, true); 
   } else {
-    showMsg('Kayıt başarılı! Hesabınıza giriş yapılıyor...');
+    showMsg('Kayıt başarılı! Otomatik giriş yapılıyor...');
     if(data.user) {
       await supabaseClient.from('profiles').upsert([{ id: data.user.id, username: username, email: email }]);
-      // Zorla (Force) Login işlemi
       await supabaseClient.auth.signInWithPassword({ email: email, password: password });
     }
   }
@@ -336,7 +339,6 @@ supabaseClient.auth.onAuthStateChange(async (event, session) => {
     if (hasInitialized) return;
     hasInitialized = true;
 
-    // Güvenli profil ismi çekimi
     const { data: profileArray } = await supabaseClient.from('profiles').select('username').eq('id', currentUser.id);
     if(profileArray && profileArray.length > 0) currentUsername = profileArray[0].username;
 
@@ -358,18 +360,16 @@ supabaseClient.auth.onAuthStateChange(async (event, session) => {
     appScreen.style.display = 'block';
     
     const displayUser = currentUsername || currentUser.email.split('@')[0];
-    document.getElementById('user-greeting').innerHTML = `Hoş geldin, <b style="color:var(--text); font-family:'IBM Plex Mono'; font-size:14px;">@${displayUser}</b>`;
+    document.getElementById('user-greeting').innerHTML = `Hoş geldin, <b style="color:var(--accent); font-family:'IBM Plex Mono'; font-size:14px;">@${displayUser}</b>`;
     
-    // GİRİŞ YAPILDIĞINDA EKRAN YÖNLENDİRMESİ
     let savedTab = parseInt(sessionStorage.getItem('currentTab'));
     if (isNaN(savedTab)) {
         if (!cloudData.saved_programs || cloudData.saved_programs.length === 0) {
-            currentDay = 1; // 0:Geçmiş, 1:Oluştur (Kayıtlı programı yoksa direkt oluşturucu açılır)
+            currentDay = 1; 
         } else {
-            currentDay = 0; // Kayıtlı programı varsa en baştakine gider
+            currentDay = 0; 
         }
     } else {
-        // Eğer silinen bir sekmeyi hatırlıyorsa onu düzelt
         currentDay = Math.min(savedTab, getTabLabels().length - 1);
     }
     
@@ -392,9 +392,7 @@ let viewingCommunityProgram = null;
 
 function initApp() { renderTabs(); renderView(); }
 
-function getProgramList(){
-  return cloudData.saved_programs || [];
-}
+function getProgramList(){ return cloudData.saved_programs || []; }
 
 function getCustomProgram(){
   if(cloudData.custom_program && cloudData.custom_program.days) return cloudData.custom_program;
@@ -515,7 +513,7 @@ async function renderHistory(){
   });
 }
 
-// --- KULLANICI PROGRAMI GÖRÜNÜMÜ (ALT SEKMELİ) ---
+// --- KULLANICI PROGRAMI GÖRÜNÜMÜ ---
 function renderProgramView(program){
   const main = document.getElementById('main');
 
@@ -532,7 +530,6 @@ function renderProgramView(program){
 
   headerDiv.querySelector('#share-prog-btn').onclick = async function() {
       this.textContent = "Gönderiliyor...";
-      // Kullanıcı adını program verisinin içine damgalıyoruz (Eğer yoksa email ön ekinini al)
       const progDataToShare = JSON.parse(JSON.stringify(program));
       progDataToShare.author_username = currentUsername || currentUser.email.split('@')[0];
       
@@ -545,7 +542,7 @@ function renderProgramView(program){
       if(!confirm(`"${program.name}" programını tamamen silmek istediğinize emin misiniz?`)) return;
       cloudData.saved_programs = cloudData.saved_programs.filter(p => p.id !== program.id);
       await saveCloudData();
-      currentDay = getProgramList().length + 1; // Oluştur sekmesine yönlendir
+      currentDay = getProgramList().length + 1;
       currentSubDay = 0;
       renderTabs(); renderView();
   };
@@ -566,7 +563,7 @@ function renderProgramView(program){
   }
 }
 
-// --- GÜN İÇERİĞİNİ (HAREKETLERİ) EKRANA BASAN FONKSİYON ---
+// --- GÜN İÇERİĞİNİ BASAN FONKSİYON ---
 function renderDaySection(day, main, isReadOnly){
   if(day.note){
     const noteEl = document.createElement('div'); noteEl.className = 'day-note'; noteEl.textContent = day.note;
@@ -707,7 +704,7 @@ function renderDaySection(day, main, isReadOnly){
   main.appendChild(saveBtn); main.appendChild(toast);
 }
 
-// --- TOPLULUK (LİSTE VE İNCELEME) ---
+// --- TOPLULUK BÖLÜMÜ ---
 async function renderCommunity(){
   const main = document.getElementById('main'); 
   
@@ -717,7 +714,7 @@ async function renderCommunity(){
       const authorName = prog.author_username || row.profiles?.username || 'anonim';
       
       main.innerHTML = `
-          <button class="logout-btn" style="margin-bottom:12px; display:inline-flex; align-items:center; gap:4px;" onclick="viewingCommunityProgram=null; currentSubDay=0; renderView();">← Topluluğa Dön</button>
+          <button class="logout-btn" style="margin-bottom:12px; display:inline-flex; align-items:center; gap:4px; font-size:13px;" onclick="viewingCommunityProgram=null; currentSubDay=0; renderView();">← Topluluğa Dön</button>
           <div class="program-title" style="margin-bottom:4px;">${row.title}</div>
           <div class="comm-author" style="margin-bottom:14px; font-size:14px;">Paylaşan: <b>@${authorName}</b></div>
           <button class="save-btn" style="margin-top:0; margin-bottom:16px;" onclick="cloneCommunityProgram('${row.id}')">Kendi Listeme Kopyala</button>
@@ -757,10 +754,8 @@ async function renderCommunity(){
     const card = document.createElement('div'); card.className = 'comm-card';
     const dt = new Date(row.created_at);
     const dateStr = dt.toLocaleDateString('tr-TR');
-    
     const authorName = row.program_data.author_username || row.profiles?.username || 'anonim';
     
-    // Eğer bu programı GİRİŞ YAPAN KİŞİ (currentUser) paylaşmışsa Sil butonu ekle
     let deleteBtnHtml = '';
     if (row.user_id === currentUser.id) {
         deleteBtnHtml = `<button class="comm-btn delete" onclick="deleteCommunityProgram('${row.id}')">Ağdan Sil</button>`;
@@ -768,7 +763,7 @@ async function renderCommunity(){
     
     card.innerHTML = `
       <div class="comm-header-row">
-          <div class="comm-author">Paylaşan: <b>@${authorName}</b></div>
+          <div class="comm-author">Paylaşan: <b style="color:var(--accent);">@${authorName}</b></div>
           <div class="comm-date">${dateStr}</div>
       </div>
       <div class="comm-title">${row.title}</div>
@@ -783,16 +778,11 @@ async function renderCommunity(){
   });
 }
 
-// Topluluktan kendi programını SİLME fonksiyonu
 async function deleteCommunityProgram(programId) {
     if(!confirm("Paylaştığınız bu programı topluluk ağından tamamen silmek istediğinize emin misiniz? (Kendi cihazınızdaki silinmez)")) return;
-    
     const { error } = await supabaseClient.from('programs').delete().eq('id', programId);
-    if(error) {
-        alert("Silinirken hata oluştu: " + error.message);
-    } else {
-        renderCommunity(); // Sildikten sonra listeyi yenile
-    }
+    if(error) alert("Silinirken hata oluştu: " + error.message);
+    else renderCommunity();
 }
 
 async function cloneCommunityProgram(programId) {
@@ -800,7 +790,7 @@ async function cloneCommunityProgram(programId) {
     if(!row) return;
 
     const clonedProg = JSON.parse(JSON.stringify(row.program_data));
-    delete clonedProg.author_username; // Kişisel olduğu için isme gerek yok
+    delete clonedProg.author_username; 
     clonedProg.id = cpUid();
     clonedProg.days.forEach(d => { d.id = cpUid(); });
     
@@ -836,7 +826,7 @@ Object.values(EXERCISE_DB).forEach(list => { list.forEach(e => { if(!e.rest){ e.
 
 let builderOpenPicker = JSON.parse(sessionStorage.getItem('openPicker') || '{}');
 
-// --- OLUŞTURUCU (ALT SEKMELİ YAPI) ---
+// --- OLUŞTURUCU ---
 async function renderBuilder(){
   const main = document.getElementById('main');
   main.innerHTML = `<div class="day-note" style="margin-bottom:20px;">Özel programınızı oluşturun. Aşağıdan gün sayısını seçip hareketleri ekleyebilirsiniz.</div>`;
@@ -892,7 +882,7 @@ async function renderBuilder(){
         card.appendChild(row);
       });
 
-      const addBtn = document.createElement('button'); addBtn.className = 'add-ex-btn'; addBtn.textContent = builderOpenPicker[day.id] ? '− Hareket Seçiciyi Kapat' : '+ Egzersiz Ekle';
+      const addBtn = document.createElement('button'); addBtn.className = 'add-ex-btn'; addBtn.textContent = builderOpenPicker[day.id] ? '− Hareket Seçiciyi Kapat' : '+ Bu Güne Hareket Ekle';
       addBtn.onclick = () => {
         builderOpenPicker[day.id] = !builderOpenPicker[day.id];
         sessionStorage.setItem('openPicker', JSON.stringify(builderOpenPicker));

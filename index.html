@@ -9,103 +9,47 @@
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
   :root{
-    --bg:#f5f8fc;
-    --surface:#ffffff;
-    --surface-2:#eaf1fc;
-    --line:#dbe6f5;
-    --text:#101828;
-    --text-dim:#64748b;
-    --accent:#2563eb;
-    --accent-dim:#93c5fd;
-    --warn:#e6543f;
-    --status-low: #c2371f; 
-    --status-ok: #1a7a3d;  
-    --status-high: #9a6b00; 
+    --bg:#f5f8fc; --surface:#ffffff; --surface-2:#eaf1fc; --line:#dbe6f5;
+    --text:#101828; --text-dim:#64748b; --accent:#2563eb; --accent-dim:#93c5fd;
+    --warn:#e6543f; --status-low: #c2371f; --status-ok: #1a7a3d; --status-high: #9a6b00; 
   }
   *{box-sizing:border-box; -webkit-tap-highlight-color:transparent;}
-  body{
-    margin:0; background:var(--bg); color:var(--text);
-    font-family:'Inter', sans-serif;
-    padding-bottom:40px;
-  }
+  body{ margin:0; background:var(--bg); color:var(--text); font-family:'Inter', sans-serif; padding-bottom:40px; }
   
   /* --- AUTH EKRANI STİLLERİ --- */
-  #auth-screen {
-    max-width: 400px; margin: 60px auto; padding: 24px;
-    background: var(--surface); border-radius: 16px;
-    border: 1px solid var(--line); box-shadow: 0 4px 12px rgba(0,0,0,0.05);
-  }
+  #auth-screen { max-width: 400px; margin: 60px auto; padding: 24px; background: var(--surface); border-radius: 16px; border: 1px solid var(--line); box-shadow: 0 4px 12px rgba(0,0,0,0.05); }
   .auth-title { font-family: 'Barlow Condensed', sans-serif; font-size: 24px; text-transform: uppercase; margin-bottom: 8px; color: var(--accent); text-align: center; }
   .auth-sub { font-size: 13px; color: var(--text-dim); text-align: center; margin-bottom: 24px; }
-  .auth-input {
-    width: 100%; padding: 12px; margin-bottom: 12px;
-    border: 1px solid var(--line); border-radius: 10px; font-family: 'Inter'; font-size: 14px;
-  }
-  .auth-btn-primary {
-    width: 100%; padding: 12px; background: var(--accent); color: white;
-    border: none; border-radius: 10px; font-weight: 600; cursor: pointer; margin-bottom: 8px;
-  }
-  .auth-btn-secondary {
-    width: 100%; padding: 12px; background: var(--surface-2); color: var(--accent);
-    border: none; border-radius: 10px; font-weight: 600; cursor: pointer;
-  }
+  .auth-input { width: 100%; padding: 12px; margin-bottom: 12px; border: 1px solid var(--line); border-radius: 10px; font-family: 'Inter'; font-size: 14px; }
+  .auth-btn-primary { width: 100%; padding: 12px; background: var(--accent); color: white; border: none; border-radius: 10px; font-weight: 600; cursor: pointer; margin-bottom: 8px; }
+  .auth-btn-secondary { width: 100%; padding: 12px; background: var(--surface-2); color: var(--accent); border: none; border-radius: 10px; font-weight: 600; cursor: pointer; }
   #auth-msg { text-align: center; font-size: 13px; margin-top: 12px; font-weight: 500; }
   .msg-error { color: var(--warn); }
   .msg-success { color: var(--status-ok); }
 
   /* --- ANA UYGULAMA STİLLERİ --- */
-  header{
-    position:sticky; top:0; z-index:10;
-    background:var(--bg);
-    padding:18px 16px 0 16px;
-    border-bottom:1px solid var(--line);
-    display: flex; flex-direction: column;
-  }
+  header{ position:sticky; top:0; z-index:10; background:var(--bg); padding:18px 16px 0 16px; border-bottom:1px solid var(--line); display: flex; flex-direction: column; }
   .header-top { display: flex; justify-content: space-between; align-items: center; }
-  h1{
-    font-family:'Barlow Condensed', sans-serif; font-weight:700; font-size:26px; letter-spacing:0.5px;
-    margin:0 0 2px 0; text-transform:uppercase;
-  }
-  .logout-btn {
-    background: transparent; border: 1px solid var(--line); color: var(--text-dim);
-    padding: 6px 12px; border-radius: 8px; font-size: 12px; cursor: pointer; font-family: 'Inter';
-  }
+  h1{ font-family:'Barlow Condensed', sans-serif; font-weight:700; font-size:26px; letter-spacing:0.5px; margin:0 0 2px 0; text-transform:uppercase; }
+  .logout-btn { background: transparent; border: 1px solid var(--line); color: var(--text-dim); padding: 6px 12px; border-radius: 8px; font-size: 12px; cursor: pointer; font-family: 'Inter'; }
   .sub{ color:var(--text-dim); font-size:12.5px; margin-bottom:14px;}
   .tabs{ display:flex; gap:4px; margin-bottom:0; overflow-x:auto; scrollbar-width:none; }
   .tabs::-webkit-scrollbar{ display:none; }
-  .tab{
-    flex:0 0 auto; text-align:center; padding:10px 10px 12px 10px;
-    font-family:'Barlow Condensed', sans-serif; font-weight:700; font-size:14.5px;
-    color:var(--text-dim); border-bottom:3px solid transparent;
-    cursor:pointer; letter-spacing:0.2px; text-transform:uppercase; white-space:nowrap;
-  }
+  .tab{ flex:0 0 auto; text-align:center; padding:10px 10px 12px 10px; font-family:'Barlow Condensed', sans-serif; font-weight:700; font-size:14.5px; color:var(--text-dim); border-bottom:3px solid transparent; cursor:pointer; letter-spacing:0.2px; text-transform:uppercase; white-space:nowrap; }
   .tab.active{ color:var(--accent); border-bottom:3px solid var(--accent); }
 
   main{ padding:14px 14px 0 14px; max-width:520px; margin:0 auto; }
   .day-note{ color:var(--text-dim); font-size:12px; margin:12px 2px 14px 2px; line-height:1.5;}
-  .block-label{
-    font-family:'IBM Plex Mono', monospace; font-size:11px; letter-spacing:0.6px;
-    color:var(--accent-dim); text-transform:uppercase; margin:18px 2px 6px 2px;
-  }
+  .block-label{ font-family:'IBM Plex Mono', monospace; font-size:11px; letter-spacing:0.6px; color:var(--accent-dim); text-transform:uppercase; margin:18px 2px 6px 2px; }
   .block-label.first{ margin-top:4px; }
-
-  .card{
-    background:var(--surface); border:1px solid var(--line); border-radius:14px;
-    padding:14px 14px 12px 14px; margin-bottom:10px;
-    box-shadow:0 1px 3px rgba(16,24,40,0.06);
-  }
+  .card{ background:var(--surface); border:1px solid var(--line); border-radius:14px; padding:14px 14px 12px 14px; margin-bottom:10px; box-shadow:0 1px 3px rgba(16,24,40,0.06); }
   .card.superset{ border-left:3px solid var(--accent-dim); }
   .row-top{ display:flex; justify-content:space-between; align-items:flex-start; gap:10px; }
   .ex-name{ font-size:15.5px; font-weight:600; line-height:1.3; }
   .meta{ display:flex; gap:14px; margin-top:6px; }
   .meta-item{ font-family:'IBM Plex Mono', monospace; font-size:12.5px; color:var(--text-dim); }
   .meta-item b{ color:var(--text); font-weight:600; }
-  .link-btn{
-    font-size:11px; color:var(--accent); text-decoration:none;
-    border:1px solid var(--accent-dim); border-radius:20px; padding:5px 10px;
-    white-space:nowrap; font-family:'Inter'; font-weight:500;
-  }
-
+  .link-btn{ font-size:11px; color:var(--accent); text-decoration:none; border:1px solid var(--accent-dim); border-radius:20px; padding:5px 10px; white-space:nowrap; font-family:'Inter'; font-weight:500; }
   .stepper{ display:flex; align-items:center; justify-content:space-between; margin-top:12px; background:var(--surface-2); border-radius:12px; padding:4px; }
   .stepper button{ width:46px; height:44px; border:none; border-radius:9px; background:transparent; color:var(--text); font-size:22px; font-weight:600; cursor:pointer; user-select:none; }
   .stepper button:active{ background:var(--accent); color:#ffffff; }
@@ -121,7 +65,6 @@
   .set-dot.filled{ background:var(--accent); border-color:var(--accent); }
   .set-btn.complete{ border-color:var(--accent); color:var(--accent); }
   .set-reset{ width:40px; height:44px; border-radius:10px; border:1px solid var(--line); background:transparent; color:var(--text-dim); font-size:15px; cursor:pointer; }
-
   .timer-row{ display:flex; align-items:center; gap:8px; margin-top:8px; background:var(--surface-2); border-radius:12px; padding:6px 8px; }
   .timer-display{ font-family:'IBM Plex Mono', monospace; font-size:19px; font-weight:600; width:64px; text-align:center; letter-spacing:0.5px; }
   .timer-display.running{ color:var(--accent); }
@@ -130,10 +73,10 @@
   .timer-btn.start{ background:var(--accent); color:#ffffff; }
   .timer-btn.pause{ background:var(--surface); border:1px solid var(--line); }
   .timer-btn.reset{ width:38px; flex:none; color:var(--text-dim); }
-
   .save-btn{ display:block; width:100%; margin-top:18px; padding:14px; background:var(--accent); color:#ffffff; border:none; border-radius:14px; font-family:'Barlow Condensed', sans-serif; font-weight:700; font-size:16px; letter-spacing:0.4px; text-transform:uppercase; cursor:pointer; }
   .save-toast{ text-align:center; color:var(--accent); font-size:12.5px; font-weight:600; margin-top:8px; height:16px; }
 
+  /* --- GEÇMİŞ VE TOPLULUK --- */
   .hist-empty{ text-align:center; color:var(--text-dim); font-size:13px; margin-top:40px; padding:0 20px; }
   .hist-card{ background:var(--surface); border:1px solid var(--line); border-radius:14px; padding:14px; margin-bottom:12px; box-shadow:0 1px 3px rgba(16,24,40,0.06); }
   .hist-head{ display:flex; justify-content:space-between; align-items:flex-start; }
@@ -143,21 +86,24 @@
   .hist-ex-row{ display:flex; justify-content:space-between; align-items:center; font-size:13px; padding:7px 0; border-top:1px solid var(--line); }
   .hist-ex-name{ color:var(--text); }
   .hist-ex-stats{ font-family:'IBM Plex Mono', monospace; color:var(--text-dim); font-size:12.5px; white-space:nowrap; margin-left:10px; }
+  .comm-card { background:var(--surface); border:1px solid var(--line); border-radius:14px; padding:14px; margin-bottom:12px; box-shadow:0 1px 3px rgba(16,24,40,0.06); }
+  .comm-author { font-size:11.5px; color:var(--accent); font-family:'IBM Plex Mono', monospace; margin-bottom:6px; }
+  .comm-title { font-family:'Barlow Condensed', sans-serif; font-weight:700; font-size:17px; text-transform:uppercase; margin-bottom:10px; }
+  .comm-ex { font-size:12.5px; padding:4px 0; border-top:1px dashed var(--line); display:flex; justify-content:space-between;}
+  .comm-ex:first-of-type { border-top: none; }
 
-  /* --- Program Oluştur --- */
+  /* --- PROGRAM OLUŞTURMA & ANALİZ --- */
   .count-row{ display:flex; align-items:center; justify-content:space-between; background:var(--surface); border:1px solid var(--line); border-radius:14px; padding:12px 14px; margin-bottom:16px; box-shadow:0 1px 3px rgba(16,24,40,0.06); }
   .count-label{ font-size:13.5px; font-weight:600; }
   .count-stepper{ display:flex; align-items:center; gap:2px; background:var(--surface-2); border-radius:10px; padding:3px; }
   .count-stepper button{ width:36px; height:36px; border:none; border-radius:8px; background:transparent; color:var(--text); font-size:18px; font-weight:700; cursor:pointer; }
   .count-stepper button:active{ background:var(--accent); color:#fff; }
   .count-num{ font-family:'IBM Plex Mono', monospace; font-weight:600; font-size:15px; width:26px; text-align:center; }
-
   .day-card{ background:var(--surface); border:1px solid var(--line); border-radius:14px; padding:14px; margin-bottom:12px; box-shadow:0 1px 3px rgba(16,24,40,0.06); }
   .day-name-input{ font-family:'Barlow Condensed', sans-serif; font-weight:700; font-size:17px; color:var(--accent); border:none; background:transparent; width:70%; text-transform:uppercase; letter-spacing:0.3px; padding:2px 0; }
   .day-name-input:focus{ outline:none; border-bottom:1px solid var(--accent); }
   .day-del{ float:right; border:none; background:transparent; color:var(--text-dim); font-size:12.5px; cursor:pointer; }
   .share-btn{ background:var(--surface-2); color:var(--accent); border:none; border-radius:8px; padding:6px 10px; font-size:11px; font-weight:600; cursor:pointer; font-family:'Inter'; margin-top:8px; width:100%;}
-
   .added-ex-row{ border-top:1px solid var(--line); padding:10px 0; margin-top:8px; display:flex; flex-direction:column; gap:6px; }
   .added-ex-top{ display:flex; justify-content:space-between; align-items:flex-start; gap:8px; }
   .added-ex-name{ font-size:13.5px; font-weight:600; line-height:1.3; }
@@ -167,8 +113,8 @@
   .reps-input{ width:64px; }
   .ex-remove{ border:none; background:transparent; color:var(--warn); font-size:13px; cursor:pointer; padding:4px 6px; }
   .added-ex-link{ font-size:10.5px; color:var(--accent); text-decoration:none; }
-
   .add-ex-btn{ display:block; width:100%; margin-top:10px; padding:11px; background:transparent; border:1.5px dashed var(--accent-dim); border-radius:10px; color:var(--accent); font-weight:600; font-size:13px; cursor:pointer; }
+  
   .picker{ margin-top:10px; border:1px solid var(--line); border-radius:12px; overflow:hidden; background:var(--bg); }
   .picker-group-head{ padding:10px 12px; font-weight:600; font-size:13px; cursor:pointer; display:flex; justify-content:space-between; align-items:center; background:var(--surface-2); border-top:1px solid var(--line); }
   .picker-group-head:first-child{ border-top:none; }
@@ -181,7 +127,6 @@
   .picker-ex-preview{ font-size:11px; color:var(--accent); border:1px solid var(--accent-dim); border-radius:12px; padding:3px 8px; margin-left:8px;}
   .picker-close{ display:block; width:100%; text-align:center; padding:10px; font-size:12px; color:var(--text-dim); background:var(--surface-2); border:none; cursor:pointer; }
 
-  /* --- Görsel Analiz (Anatomik Harita) --- */
   .analysis-section{ margin-top:22px; }
   .analysis-title{ font-family:'Barlow Condensed', sans-serif; font-size:19px; font-weight:700; color:var(--text); text-transform:uppercase; margin-bottom:10px; }
   .analysis-card-visual{ background:var(--surface); border:1px solid var(--line); border-radius:14px; padding:14px; margin-bottom:14px; box-shadow:0 1px 3px rgba(16,24,40,0.06); display:flex; gap:16px; align-items:flex-start; }
@@ -202,7 +147,6 @@
   .status-low { background: var(--status-low) !important; }
   .status-ok { background: var(--status-ok) !important; }
   .status-high { background: var(--status-high) !important; }
-
   .analysis-text { flex: 1; display: flex; flex-direction: column; gap: 8px; }
   .muscle-row-mini{ display:flex; justify-content:space-between; align-items:center; padding:8px 0; border-top:1px solid var(--line); }
   .muscle-row-mini:first-child{ border-top:none; }
@@ -213,19 +157,11 @@
   .status-label-mini.ok{ background:#e3f6e8; color:var(--status-ok); }
   .status-label-mini.high{ background:#fff3d6; color:var(--status-high); }
   .status-label-mini.zero{ background:var(--surface-2); color:var(--text-dim); }
-
   .suggest-box{ background:#fde8e6; border-radius:12px; padding:12px 14px; margin-bottom:12px; font-size:12.5px; line-height:1.6; color:#7a2a1a; margin-top:14px; }
   .suggest-box b{ display:block; margin-bottom:4px; color:#c2371f; font-size:13px; }
   .suggest-empty{ text-align:center; color:var(--text-dim); font-size:12.5px; padding:16px; }
 
-  /* --- Topluluk Sekmesi Kartları --- */
-  .comm-card { background:var(--surface); border:1px solid var(--line); border-radius:14px; padding:14px; margin-bottom:12px; box-shadow:0 1px 3px rgba(16,24,40,0.06); }
-  .comm-author { font-size:11.5px; color:var(--accent); font-family:'IBM Plex Mono', monospace; margin-bottom:6px; }
-  .comm-title { font-family:'Barlow Condensed', sans-serif; font-weight:700; font-size:17px; text-transform:uppercase; margin-bottom:10px; }
-  .comm-ex { font-size:12.5px; padding:4px 0; border-top:1px dashed var(--line); display:flex; justify-content:space-between;}
-  .comm-ex:first-of-type { border-top: none; }
-
-  /* --- Hareket Önizleme Modalı --- */
+  /* --- MODAL --- */
   .modal { display: none; position: fixed; z-index: 100; left: 0; top: 0; width: 100%; height: 100%; overflow: auto; background-color: rgba(0,0,0,0.4); backdrop-filter: blur(2px); }
   .modal-content { background-color: var(--surface); margin: 10% auto; padding: 20px; border: 1px solid var(--line); border-radius: 14px; width: 85%; max-width: 400px; box-shadow: 0 4px 12px rgba(0,0,0,0.15); }
   .modal-header { display: flex; justify-content: space-between; align-items: flex-start; gap: 10px; margin-bottom: 14px; }
@@ -283,7 +219,7 @@
     </div>
   </div>
 
-  <footer>Ağırlık değerleri cihazınızda, geçmişiniz bulutta saklanır.</footer>
+  <footer>Tüm kişisel ayarlarınız ve ağırlıklarınız bulutta saklanır.</footer>
 </div>
 
 <script>
@@ -293,31 +229,30 @@
 const SUPABASE_URL = 'https://luhjxfpnhszoptusadwl.supabase.co';
 const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imx1aGp4ZnBuaHN6b3B0dXNhZHdsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODU4MTA1NDksImV4cCI6MjEwMTM4NjU0OX0.bbZky4piJuYWDORymhZi-t7C4aDBbqDHbOCMLq7TAag';
 
-// ÇAKIŞMAYI ÖNLEMEK İÇİN İSİM DEĞİŞTİRİLDİ (supabaseClient)
 const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 let currentUser = null;
 let currentUsername = "";
+
+// Kullanıcının tüm ayarlarını ve ağırlıklarını tutacağımız bulut belleği
+let cloudData = { weights: {}, custom_program: null, active_program: null };
 
 const authScreen = document.getElementById('auth-screen');
 const appScreen = document.getElementById('app-screen');
 const authMsg = document.getElementById('auth-msg');
 
 function showMsg(text, isError = false) {
-  authMsg.textContent = text;
-  authMsg.className = isError ? 'msg-error' : 'msg-success';
+  authMsg.textContent = text; authMsg.className = isError ? 'msg-error' : 'msg-success';
 }
 
 async function signUp() {
   const email = document.getElementById('email-input').value;
   const password = document.getElementById('password-input').value;
   if (!email || password.length < 6) return showMsg('Geçerli e-posta ve en az 6 haneli şifre girin.', true);
-  
   authMsg.textContent = 'Kayıt yapılıyor...';
   const { data, error } = await supabaseClient.auth.signUp({ email, password });
   
-  if (error) {
-    showMsg(error.message, true);
-  } else {
+  if (error) { showMsg(error.message, true); } 
+  else {
     showMsg('Kayıt başarılı! Giriş yapılıyor...');
     if(data.user) {
       const username = email.split('@')[0];
@@ -330,7 +265,6 @@ async function signIn() {
   const email = document.getElementById('email-input').value;
   const password = document.getElementById('password-input').value;
   if (!email || !password) return showMsg('E-posta ve şifre giriniz.', true);
-
   authMsg.textContent = 'Giriş yapılıyor...';
   const { error } = await supabaseClient.auth.signInWithPassword({ email, password });
   if (error) showMsg('Hatalı e-posta veya şifre.', true);
@@ -341,8 +275,20 @@ async function signOut() { await supabaseClient.auth.signOut(); }
 supabaseClient.auth.onAuthStateChange(async (event, session) => {
   if (session && session.user) {
     currentUser = session.user;
-    const { data } = await supabaseClient.from('profiles').select('username').eq('id', currentUser.id).single();
-    if(data) currentUsername = data.username;
+    
+    // 1. Profil bilgisini al
+    const { data: profile } = await supabaseClient.from('profiles').select('username').eq('id', currentUser.id).single();
+    if(profile) currentUsername = profile.username;
+    
+    // 2. Kullanıcının bulut verilerini (ağırlıklar, programlar) al
+    const { data: uData } = await supabaseClient.from('user_data').select('*').eq('user_id', currentUser.id).single();
+    if(uData) {
+      cloudData = { weights: uData.weights || {}, custom_program: uData.custom_program, active_program: uData.active_program };
+    } else {
+      // İlk kez giren kullanıcı için tabloya kayıt aç
+      await supabaseClient.from('user_data').insert([{ user_id: currentUser.id }]);
+      cloudData = { weights: {}, custom_program: null, active_program: null };
+    }
     
     authScreen.style.display = 'none';
     appScreen.style.display = 'block';
@@ -356,19 +302,16 @@ supabaseClient.auth.onAuthStateChange(async (event, session) => {
 });
 
 // ==========================================
-// ANA UYGULAMA MANTIĞI
+// ANA UYGULAMA MANTIĞI VE BULUT VERİ ERİŞİMİ
 // ==========================================
 let currentDay = 0;
 
-function initApp() {
-  renderTabs();
-  renderView();
-}
+function initApp() { renderTabs(); renderView(); }
 
 const DEFAULT_DAYS = [
-  { id: "gunA", shortLabel: "Gün A", title: "Gün A — Üst Vücut (İtiş)", note: "Isınma: 5 dk hafif kardiyo.", exercises: [ {blok:"İtiş - Ana", name:"Bench Press (barbell)", sr:"4x6-8", rest:"2 dk", start:20}, {blok:"İtiş - Ana", name:"Overhead Press (dumbbell)", sr:"3x8-10", rest:"2 dk", start:10}, {blok:"Çekiş", name:"Lat Pulldown veya Pull-up", sr:"3x8-10", rest:"2 dk", start:0}, {blok:"Omuz", name:"Lateral Raise", sr:"3x12-15", rest:"60 sn", start:5}, {blok:"Kol", name:"Triceps Pushdown", sr:"2x10-12", rest:"60 sn", start:15} ] },
-  { id: "gunB", shortLabel: "Gün B", title: "Gün B — Üst Vücut (Çekiş)", note: "Isınma: 5 dk hafif kardiyo.", exercises: [ {blok:"Çekiş - Ana", name:"Barbell Row", sr:"4x8-10", rest:"2 dk", start:30}, {blok:"Çekiş - İkincil", name:"Seated Cable Row", sr:"3x10-12", rest:"2 dk", start:25}, {blok:"Omuz Sağlığı", name:"Face Pull", sr:"3x15", rest:"60 sn", start:10}, {blok:"Kol", name:"Biceps Curl", sr:"3x10-12", rest:"60 sn", start:10} ] },
-  { id: "gunC", shortLabel: "Gün C", title: "Gün C — Alt Vücut + Karın", note: "Süper setler işaretli.", exercises: [ {blok:"Ana", name:"Back Squat", sr:"4x6-8", rest:"3 dk", start:40}, {blok:"Ana", name:"Romanian Deadlift", sr:"3x8-10", rest:"2-3 dk", start:40}, {blok:"Süper Set", name:"Leg Press", sr:"3x10-12", rest:"0 sn", start:60}, {blok:"Süper Set", name:"Leg Curl", sr:"3x12-15", rest:"90 sn", start:20}, {blok:"Karın", name:"Weighted Cable Crunch", sr:"3x12-15", rest:"60 sn", start:15} ] }
+  { id: "gunA", shortLabel: "Gün A", title: "Gün A — Üst Vücut (İtiş)", note: "Isınma: 5 dk hafif kardiyo.", exercises: [ {blok:"İtiş - Ana", name:"Bench Press (Barbell)", sr:"4x6-8", rest:"2 dk", start:20}, {blok:"İtiş - Ana", name:"Overhead Press", sr:"3x8-10", rest:"2 dk", start:10}, {blok:"Çekiş", name:"Lat Pulldown", sr:"3x8-10", rest:"2 dk", start:0}, {blok:"Omuz", name:"Lateral Raise", sr:"3x12-15", rest:"60 sn", start:5}, {blok:"Kol", name:"Triceps Pushdown", sr:"2x10-12", rest:"60 sn", start:15} ] },
+  { id: "gunB", shortLabel: "Gün B", title: "Gün B — Üst Vücut (Çekiş)", note: "Isınma: 5 dk hafif kardiyo.", exercises: [ {blok:"Çekiş - Ana", name:"Barbell Row", sr:"4x8-10", rest:"2 dk", start:30}, {blok:"Çekiş - İkincil", name:"Seated Cable Row", sr:"3x10-12", rest:"2 dk", start:25}, {blok:"Omuz Sağlığı", name:"Face Pull", sr:"3x15", rest:"60 sn", start:10}, {blok:"Kol", name:"Barbell Curl", sr:"3x10-12", rest:"60 sn", start:10} ] },
+  { id: "gunC", shortLabel: "Gün C", title: "Gün C — Alt Vücut + Karın", note: "Süper setler işaretli.", exercises: [ {blok:"Ana", name:"Back Squat", sr:"4x6-8", rest:"3 dk", start:40}, {blok:"Ana", name:"Romanian Deadlift", sr:"3x8-10", rest:"2-3 dk", start:40}, {blok:"Süper Set", name:"Leg Press", sr:"3x10-12", rest:"0 sn", start:60}, {blok:"Süper Set", name:"Leg Curl", sr:"3x12-15", rest:"90 sn", start:20}, {blok:"Karın", name:"Cable Crunch", sr:"3x12-15", rest:"60 sn", start:15} ] }
 ];
 
 const NOTES = [
@@ -376,9 +319,24 @@ const NOTES = [
   ["Efor Seviyesi", "Setleri 0-2 tekrar rezervinde (RIR) bitirin; her set mutlak failure olmak zorunda değil."]
 ];
 
+// Aktif programı buluttan getir
 function getActiveDays(){
-  try{ const raw = localStorage.getItem('active_program'); if(raw){ const parsed = JSON.parse(raw); if(parsed && Array.isArray(parsed.days) && parsed.days.length > 0) return parsed.days; } }catch(e){}
+  if(cloudData.active_program && cloudData.active_program.days && cloudData.active_program.days.length > 0) {
+    return cloudData.active_program.days;
+  }
   return DEFAULT_DAYS;
+}
+
+// Özel oluşturulan programı buluttan getir
+function getCustomProgram(){
+  if(cloudData.custom_program && cloudData.custom_program.days) return cloudData.custom_program;
+  return { days: [ { id: cpUid(), name:"Gün 1", exercises: [] } ] };
+}
+
+// Özel programı buluta kaydet
+function saveCustomProgram(prog){
+  cloudData.custom_program = prog;
+  supabaseClient.from('user_data').update({ custom_program: prog }).eq('user_id', currentUser.id).then();
 }
 
 function getTabLabels(){
@@ -410,6 +368,7 @@ function renderView(){
 
 const STEP = 2.5;
 function fmt(w){ return (Number.isInteger(w) ? w : w.toFixed(1)); }
+function cpUid(){ return 'id' + Math.random().toString(36).slice(2,9) + Date.now().toString(36); }
 function exLink(name){ return "https://www.google.com/search?q=" + encodeURIComponent(name + " exercise form") + "&tbm=isch"; }
 function exImgLink(name){ return "https://www.google.com/search?q=" + encodeURIComponent(name + " exercise form") + "&tbm=isch"; }
 
@@ -417,10 +376,23 @@ function parseSetsTotal(sr){ const m = sr.match(/^(\d+)\s*x/i); return m ? parse
 function parseRestSeconds(rt){ const nums=[]; let m; const re=/(\d+(?:\.\d+)?)\s*(dk|sn)/gi; while((m=re.exec(rt))!==null){ nums.push(m[2].toLowerCase()==='dk'?parseFloat(m[1])*60:parseFloat(m[1])); } return nums.length?Math.round(nums.reduce((a,b)=>a+b,0)/nums.length):90; }
 function fmtTime(s){ s=Math.max(0,Math.round(s)); const m=Math.floor(s/60); return `${String(m).padStart(2,'0')}:${String(s%60).padStart(2,'0')}`; }
 
+// Set sayıları (sadece antrenman anlık olarak tarayıcıda tutulur)
 function getSetsDone(dayId, idx){ try{ const raw = localStorage.getItem(`s:${dayId}:${idx}`); if(raw !== null) return parseInt(raw, 10); }catch(e){} return 0; }
 function setSetsDone(dayId, idx, value){ try{ localStorage.setItem(`s:${dayId}:${idx}`, String(value)); }catch(e){} }
-async function getWeight(dayId, idx, fallback){ try{ const raw = localStorage.getItem(`w:${dayId}:${idx}`); if(raw !== null) return parseFloat(raw); }catch(e){} return fallback; }
-async function setWeight(dayId, idx, value){ try{ localStorage.setItem(`w:${dayId}:${idx}`, String(value)); }catch(e){} }
+
+// Ağırlıkları buluttan getir ve buluta kaydet
+function getWeight(dayId, idx, fallback){ 
+  const key = `${dayId}_${idx}`;
+  if(cloudData.weights && cloudData.weights[key] !== undefined) return cloudData.weights[key];
+  return fallback;
+}
+function setWeight(dayId, idx, value){
+  const key = `${dayId}_${idx}`;
+  if(!cloudData.weights) cloudData.weights = {};
+  cloudData.weights[key] = value;
+  // Arka planda bulutu güncelle
+  supabaseClient.from('user_data').update({ weights: cloudData.weights }).eq('user_id', currentUser.id).then();
+}
 
 // --- SUPABASE VERİ İŞLEMLERİ ---
 async function saveHistoryEntryToCloud(entry){
@@ -428,23 +400,16 @@ async function saveHistoryEntryToCloud(entry){
 }
 
 async function renderHistory(){
-  const main = document.getElementById('main');
-  main.innerHTML = `<div class="day-note">Yükleniyor...</div>`;
-  
+  const main = document.getElementById('main'); main.innerHTML = `<div class="day-note">Yükleniyor...</div>`;
   const { data, error } = await supabaseClient.from('workouts').select('workout_data').eq('user_id', currentUser.id).order('created_at', { ascending: false });
-  
   main.innerHTML = `<div class="day-note">Kaydedilen antrenmanlarınız buluttan çekildi.</div>`;
-  if(!data || data.length === 0){
-    main.innerHTML += `<div class="hist-empty">Henüz kayıtlı antrenman yok.</div>`; return;
-  }
+  if(!data || data.length === 0){ main.innerHTML += `<div class="hist-empty">Henüz kayıtlı antrenman yok.</div>`; return; }
   
   data.forEach(row => {
     const entry = row.workout_data;
     const card = document.createElement('div'); card.className = 'hist-card';
     card.innerHTML = `
-      <div class="hist-head">
-        <div><div class="hist-day">${entry.dayLabel.split('—')[0].trim()}</div><div class="hist-datetime">${entry.dateStr}</div></div>
-      </div>
+      <div class="hist-head"><div><div class="hist-day">${entry.dayLabel.split('—')[0].trim()}</div><div class="hist-datetime">${entry.dateStr}</div></div></div>
       ${entry.exercises.map(ex => `<div class="hist-ex-row"><span class="hist-ex-name">${ex.name}</span><span class="hist-ex-stats">${ex.sets}/${ex.setsTotal} set · ${fmt(ex.weight)} kg</span></div>`).join('')}
     `;
     main.appendChild(card);
@@ -452,21 +417,15 @@ async function renderHistory(){
 }
 
 async function renderCommunity(){
-  const main = document.getElementById('main');
-  main.innerHTML = `<div class="day-note">Topluluk programları yükleniyor...</div>`;
-  
+  const main = document.getElementById('main'); main.innerHTML = `<div class="day-note">Topluluk programları yükleniyor...</div>`;
   const { data, error } = await supabaseClient.from('programs').select('*, profiles(username)').eq('is_public', true).order('id', {ascending: false}).limit(20);
-  
   main.innerHTML = `<div class="day-note">Diğer üyelerin oluşturduğu açık programlar.</div>`;
-  if(!data || data.length === 0){
-    main.innerHTML += `<div class="hist-empty">Henüz paylaşılan program yok.</div>`; return;
-  }
+  if(!data || data.length === 0){ main.innerHTML += `<div class="hist-empty">Henüz paylaşılan program yok.</div>`; return; }
   
   data.forEach(row => {
     const card = document.createElement('div'); card.className = 'comm-card';
     const author = row.profiles ? row.profiles.username : "Bilinmiyor";
     const prog = row.program_data;
-    
     card.innerHTML = `
       <div class="comm-author">@${author} paylaştı:</div>
       <div class="comm-title">${row.title}</div>
@@ -479,19 +438,19 @@ async function renderCommunity(){
 async function renderDay(){
   const day = getActiveDays()[currentDay];
   const main = document.getElementById('main');
-  main.innerHTML = `<div class="day-note">${day.note}</div>`;
+  main.innerHTML = `<div class="day-note">${day.note || ''}</div>`;
   const dayState = [];
   let lastBlok = null;
   
   for(let idx=0; idx<day.exercises.length; idx++){
     const ex = day.exercises[idx];
-    if(ex.blok !== lastBlok){
+    if(ex.blok !== lastBlok && ex.blok){
       const label = document.createElement('div'); label.className = 'block-label' + (idx===0 ? ' first' : ''); label.textContent = ex.blok;
       main.appendChild(label); lastBlok = ex.blok;
     }
 
     const card = document.createElement('div'); card.className = 'card' + (ex.superset ? ' superset' : '');
-    const weight = await getWeight(day.id, idx, ex.start || 0);
+    const weight = getWeight(day.id, idx, ex.start || 0);
 
     card.innerHTML = `
       <div class="row-top"><div class="ex-name">${ex.name}</div><a class="link-btn" href="${exLink(ex.name)}" target="_blank" rel="noopener">Görsel</a></div>
@@ -504,8 +463,8 @@ async function renderDay(){
     `;
 
     const wNum = card.querySelector('.wnum'); let current = weight;
-    card.querySelector('.minus').onclick = async () => { current = Math.max(0, current - STEP); wNum.textContent = fmt(current); await setWeight(day.id, idx, current); };
-    card.querySelector('.plus').onclick = async () => { current = current + STEP; wNum.textContent = fmt(current); await setWeight(day.id, idx, current); };
+    card.querySelector('.minus').onclick = () => { current = Math.max(0, current - STEP); wNum.textContent = fmt(current); setWeight(day.id, idx, current); };
+    card.querySelector('.plus').onclick = () => { current = current + STEP; wNum.textContent = fmt(current); setWeight(day.id, idx, current); };
 
     const setsTotal = parseSetsTotal(ex.sr); let setsDone = getSetsDone(day.id, idx);
     const setBtn = card.querySelector('.set-btn'); const dotsEl = card.querySelector('.dots'); const setLabelEl = card.querySelector('.set-label');
@@ -546,7 +505,7 @@ async function renderDay(){
     const doneExercises = dayState.filter(s => s.getSetsDone() > 0).map(s => ({ name: s.name, sets: s.getSetsDone(), setsTotal: s.setsTotal, weight: s.getWeight() }));
     if(doneExercises.length === 0){ toast.textContent = 'Kaydedilecek set bulunamadı.'; setTimeout(()=>{ toast.textContent=''; }, 2500); return; }
     const now = new Date();
-    const entry = { dayLabel: day.title, dateStr: now.toLocaleDateString('tr-TR'), exercises: doneExercises };
+    const entry = { dayLabel: day.title || day.shortLabel, dateStr: now.toLocaleDateString('tr-TR'), exercises: doneExercises };
     
     saveBtn.textContent = "Kaydediliyor...";
     await saveHistoryEntryToCloud(entry);
@@ -558,59 +517,108 @@ async function renderDay(){
   main.appendChild(saveBtn); main.appendChild(toast);
 }
 
+// --- HAREKET VERİTABANI VE OLUŞTURMA BÖLÜMÜ ---
 const MUSCLE_LABELS = { gogus: "Göğüs", sirt: "Sırt", omuz: "Omuz", biceps: "Biceps", triceps: "Triceps", quad: "Ön Bacak", hamstring: "Arka Bacak", kalca: "Kalça", baldir: "Baldır", karin: "Karın" };
 const EXERCISE_DB = {
-  gogus: [{name:"Bench Press (Barbell)", reps:"6-10"}, {name:"Incline Dumbbell Press", reps:"8-12"}, {name:"Cable Crossover", reps:"12-15"}],
-  sirt: [{name:"Lat Pulldown", reps:"8-12"}, {name:"Barbell Row", reps:"8-10"}, {name:"Seated Cable Row", reps:"10-12"}],
-  omuz: [{name:"Overhead Press", reps:"6-10"}, {name:"Lateral Raise", reps:"12-15"}, {name:"Face Pull", reps:"12-15"}],
-  biceps: [{name:"Barbell Curl", reps:"8-12"}, {name:"Hammer Curl", reps:"10-12"}],
-  triceps: [{name:"Triceps Pushdown", reps:"10-15"}, {name:"Skull Crusher", reps:"8-12"}],
-  quad: [{name:"Back Squat", reps:"6-10"}, {name:"Leg Press", reps:"8-12"}, {name:"Bulgarian Split Squat", reps:"8-12"}],
-  hamstring: [{name:"Romanian Deadlift", reps:"8-10"}, {name:"Leg Curl", reps:"10-15"}],
-  karin: [{name:"Cable Crunch", reps:"12-15"}, {name:"Plank", reps:"60 sn"}]
+  gogus: [{name:"Bench Press (Barbell)", reps:"6-10", type:"compound"}, {name:"Incline Dumbbell Press", reps:"8-12", type:"compound"}, {name:"Cable Crossover", reps:"12-15", type:"izolasyon"}, {name:"Chest Press Machine", reps:"8-12", type:"compound"}],
+  sirt: [{name:"Lat Pulldown", reps:"8-12", type:"compound"}, {name:"Barbell Row", reps:"8-10", type:"compound"}, {name:"Seated Cable Row", reps:"10-12", type:"compound"}, {name:"Deadlift", reps:"4-6", type:"compound"}],
+  omuz: [{name:"Overhead Press", reps:"6-10", type:"compound"}, {name:"Lateral Raise", reps:"12-15", type:"izolasyon"}, {name:"Face Pull", reps:"12-15", type:"izolasyon"}],
+  biceps: [{name:"Barbell Curl", reps:"8-12", type:"izolasyon"}, {name:"Hammer Curl", reps:"10-12", type:"izolasyon"}, {name:"Cable Curl", reps:"10-15", type:"izolasyon"}],
+  triceps: [{name:"Triceps Pushdown", reps:"10-15", type:"izolasyon"}, {name:"Skull Crusher", reps:"8-12", type:"izolasyon"}, {name:"Dips", reps:"8-12", type:"compound"}],
+  quad: [{name:"Back Squat", reps:"6-10", type:"compound"}, {name:"Leg Press", reps:"8-12", type:"compound"}, {name:"Bulgarian Split Squat", reps:"8-12", type:"compound"}, {name:"Leg Extension", reps:"12-15", type:"izolasyon"}],
+  hamstring: [{name:"Romanian Deadlift", reps:"8-10", type:"compound"}, {name:"Leg Curl", reps:"10-15", type:"izolasyon"}],
+  kalca: [{name:"Hip Thrust", reps:"8-12", type:"compound"}, {name:"Cable Kickback", reps:"12-15", type:"izolasyon"}],
+  baldir: [{name:"Standing Calf Raise", reps:"12-20", type:"izolasyon"}],
+  karin: [{name:"Cable Crunch", reps:"12-15", type:"core"}, {name:"Plank", reps:"60 sn", type:"core"}, {name:"Hanging Leg Raise", reps:"10-15", type:"core"}]
 };
-
 Object.values(EXERCISE_DB).forEach(list => { list.forEach(e => { if(!e.rest){ e.rest = e.type === 'compound' ? '2-3 dk' : (e.type === 'core' ? '45-60 sn' : '60-90 sn'); } }); });
-function getCustomProgram(){ try{ const raw = localStorage.getItem('custom_program'); if(raw) return JSON.parse(raw); }catch(e){} return { days: [ { id: Math.random().toString(36).slice(2,9), name:"Gün 1", exercises: [] } ] }; }
-function saveCustomProgram(prog){ try{ localStorage.setItem('custom_program', JSON.stringify(prog)); }catch(e){} }
+
+// Modal Kontrolleri
+let currentAddingDay = null; let currentAddingEx = null;
+function openPreviewModal(muscleKey, exName, dayId = null) {
+  currentAddingEx = EXERCISE_DB[muscleKey].find(e => e.name === exName); currentAddingDay = dayId;
+  document.getElementById('modalTitle').textContent = exName;
+  document.getElementById('modalImg').style.backgroundImage = `url('data:image/svg+xml;charset=utf-8,%3Csvg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 300 300"%3E%3Crect width="100%25" height="100%25" fill="%23eee" /%3E%3Ctext x="150" y="160" font-size="14" text-anchor="middle" fill="%23aaa"%3E${encodeURIComponent(exName)} Form Görseli %3C/text%3E%3C/svg%3E')`; 
+  document.getElementById('modalAddBtn').style.display = currentAddingDay ? 'block' : 'none';
+  document.getElementById('previewModal').style.display = 'block';
+}
+function closePreviewModal() { document.getElementById('previewModal').style.display = 'none'; currentAddingDay = null; currentAddingEx = null; }
+document.getElementById('modalAddBtn').onclick = () => {
+  const prog = getCustomProgram(); const day = prog.days.find(d => d.id === currentAddingDay);
+  const muscleKey = Object.keys(EXERCISE_DB).find(k => EXERCISE_DB[k].some(e => e.name === currentAddingEx.name));
+  day.exercises.push({ name: currentAddingEx.name, muscleKey, sets: 3, reps: currentAddingEx.reps, rest: currentAddingEx.rest });
+  saveCustomProgram(prog); closePreviewModal(); renderBuilder();
+};
 
 let builderOpenPicker = {};
 
 function renderBuilder(){
-  const main = document.getElementById('main'); main.innerHTML = `<div class="day-note">Kendi programını oluştur ve istersen toplulukla paylaş.</div>`;
+  const main = document.getElementById('main'); main.innerHTML = `<div class="day-note">Kendi programını oluştur ve istersen toplulukla paylaş. Aşağıdaki harita haftalık hacmini ölçer.</div>`;
   const prog = getCustomProgram();
   const analysisContainer = document.createElement('div');
 
+  // GÜN EKLEME / ÇIKARMA BÖLÜMÜ (GERİ GETİRİLDİ)
+  const countRow = document.createElement('div'); countRow.className = 'count-row';
+  countRow.innerHTML = `
+    <div class="count-label">Antrenman Günü Sayısı</div>
+    <div class="count-stepper">
+      <button class="cs-minus">−</button><div class="count-num">${prog.days.length}</div><button class="cs-plus">+</button>
+    </div>
+  `;
+  countRow.querySelector('.cs-minus').onclick = () => { if(prog.days.length > 1){ prog.days.pop(); saveCustomProgram(prog); renderBuilder(); } };
+  countRow.querySelector('.cs-plus').onclick = () => { if(prog.days.length < 7){ prog.days.push({ id: cpUid(), name:`Gün ${prog.days.length+1}`, exercises: [] }); saveCustomProgram(prog); renderBuilder(); } };
+  main.appendChild(countRow);
+
   prog.days.forEach((day) => {
     const card = document.createElement('div'); card.className = 'day-card';
-    card.innerHTML = `<div style="display:flex; justify-content:space-between"><input class="day-name-input" value="${day.name}" /><button class="day-del">Günü Sil</button></div>`;
-    card.querySelector('.day-name-input').oninput = (e) => { day.name = e.target.value; saveCustomProgram(prog); };
+    const head = document.createElement('div'); head.style.display = 'flex'; head.style.justifyContent = 'space-between'; head.style.alignItems = 'center';
+    head.innerHTML = `<input class="day-name-input" value="${day.name}" /><button class="day-del">Günü Sil ✕</button>`;
+    head.querySelector('.day-name-input').oninput = (e) => { day.name = e.target.value; saveCustomProgram(prog); };
+    head.querySelector('.day-del').onclick = () => { if(prog.days.length <= 1){ return; } prog.days = prog.days.filter(d => d.id !== day.id); saveCustomProgram(prog); renderBuilder(); };
+    card.appendChild(head);
     
     day.exercises.forEach((ex, exIdx) => {
       const row = document.createElement('div'); row.className = 'added-ex-row';
-      row.innerHTML = `<div class="added-ex-top"><div><div class="added-ex-name">${ex.name}</div><div class="added-ex-muscle">${MUSCLE_LABELS[ex.muscleKey]}</div></div><button class="ex-remove">Kaldır</button></div>
-      <div class="added-ex-controls"><label class="muscle-sets-mini">Set <input type="number" class="mini-input sets-input" value="${ex.sets}"/></label><label class="muscle-sets-mini">Tekrar <input type="text" class="mini-input reps-input" value="${ex.reps}"/></label></div>`;
-      row.querySelector('.sets-input').oninput = (e) => { ex.sets = parseFloat(e.target.value) || 0; saveCustomProgram(prog); };
+      row.innerHTML = `
+        <div class="added-ex-top"><div><div class="added-ex-name">${ex.name}</div><div class="added-ex-muscle">${MUSCLE_LABELS[ex.muscleKey]}</div></div><button class="ex-remove">Kaldır</button></div>
+        <div class="added-ex-controls">
+          <label class="muscle-sets-mini">Set <input type="number" min="1" max="10" class="mini-input sets-input" value="${ex.sets}"/></label>
+          <label class="muscle-sets-mini">Tekrar <input type="text" class="mini-input reps-input" value="${ex.reps}"/></label>
+          <label class="muscle-sets-mini">Dinlenme <input type="text" class="mini-input rest-input" value="${ex.rest || '90 sn'}"/></label>
+        </div>
+      `;
+      row.querySelector('.sets-input').oninput = (e) => { ex.sets = parseFloat(e.target.value) || 0; saveCustomProgram(prog); renderAnalysis(prog, analysisContainer); };
+      row.querySelector('.reps-input').oninput = (e) => { ex.reps = e.target.value; saveCustomProgram(prog); };
+      row.querySelector('.rest-input').oninput = (e) => { ex.rest = e.target.value; saveCustomProgram(prog); };
       row.querySelector('.ex-remove').onclick = () => { day.exercises.splice(exIdx, 1); saveCustomProgram(prog); renderBuilder(); };
       card.appendChild(row);
     });
 
-    const addBtn = document.createElement('button'); addBtn.className = 'add-ex-btn'; addBtn.textContent = '+ Hareket Ekle';
+    const addBtn = document.createElement('button'); addBtn.className = 'add-ex-btn'; addBtn.textContent = builderOpenPicker[day.id] ? '− Hareket Seçiciyi Kapat' : '+ Hareket Ekle';
     addBtn.onclick = () => { builderOpenPicker[day.id] = !builderOpenPicker[day.id]; renderBuilder(); };
     card.appendChild(addBtn);
 
     if(builderOpenPicker[day.id]){
       const picker = document.createElement('div'); picker.className = 'picker';
       Object.keys(EXERCISE_DB).forEach(muscleKey => {
-        const list = document.createElement('div'); list.innerHTML = `<div class="picker-group-head">${MUSCLE_LABELS[muscleKey]}</div>`;
+        const groupHead = document.createElement('div'); groupHead.className = 'picker-group-head';
+        groupHead.innerHTML = `<span>${MUSCLE_LABELS[muscleKey]}</span><span class="picker-group-count">${EXERCISE_DB[muscleKey].length} hareket</span>`;
+        groupHead.onclick = () => { builderOpenPicker[`group_${day.id}`] = (builderOpenPicker[`group_${day.id}`] === muscleKey) ? null : muscleKey; renderBuilder(); };
+        picker.appendChild(groupHead);
+
+        const list = document.createElement('div'); list.className = 'picker-ex-list' + (builderOpenPicker[`group_${day.id}`] === muscleKey ? ' open' : '');
         EXERCISE_DB[muscleKey].forEach(dbEx => {
-          const item = document.createElement('div'); item.className = 'picker-ex-item'; item.innerHTML = `<span>${dbEx.name}</span>`;
-          item.onclick = () => { day.exercises.push({ name: dbEx.name, muscleKey, sets: 3, reps: dbEx.reps }); saveCustomProgram(prog); renderBuilder(); };
+          const item = document.createElement('div'); item.className = 'picker-ex-item';
+          item.innerHTML = `<span>${dbEx.name}</span><div><span class="picker-ex-preview" onclick="openPreviewModal('${muscleKey}','${dbEx.name}', '${day.id}')" title="Hareketi Önizle">👁️</span><span class="picker-ex-reps">${dbEx.reps}</span></div>`;
+          item.onclick = (e) => {
+            if(e.target.className !== 'picker-ex-preview'){ day.exercises.push({ name: dbEx.name, muscleKey, sets: 3, reps: dbEx.reps, rest: dbEx.rest }); saveCustomProgram(prog); renderBuilder(); }
+          };
           list.appendChild(item);
         });
         picker.appendChild(list);
       });
-      card.appendChild(picker);
+      const closeBtn = document.createElement('button'); closeBtn.className = 'picker-close'; closeBtn.textContent = 'Seçiciyi Kapat'; closeBtn.onclick = () => { builderOpenPicker[day.id] = false; renderBuilder(); };
+      picker.appendChild(closeBtn); card.appendChild(picker);
     }
     
     if(day.exercises.length > 0) {
@@ -626,13 +634,55 @@ function renderBuilder(){
     main.appendChild(card);
   });
 
-  const activateBtn = document.createElement('button'); activateBtn.className = 'save-btn'; activateBtn.textContent = 'Kendi Programımı Aktif Et';
+  main.appendChild(analysisContainer);
+  renderAnalysis(prog, analysisContainer);
+
+  const activateBtn = document.createElement('button'); activateBtn.className = 'save-btn'; activateBtn.textContent = 'Bu Programı Ana Ekrana Aktif Et (Buluta Kaydet)';
   activateBtn.onclick = () => {
-    const activeDays = prog.days.map(d => ({ id: d.id, shortLabel: d.name, title: d.name, note: 'Kendi programım', exercises: d.exercises.map(ex => ({ blok: MUSCLE_LABELS[ex.muscleKey], name: ex.name, sr: `${ex.sets}x${ex.reps}`, rest: '90 sn', start: 0 })) }));
-    localStorage.setItem('active_program', JSON.stringify({ days: activeDays }));
+    const activeDays = prog.days.map(d => ({ id: d.id, shortLabel: d.name, title: d.name, note: 'Özel Programınız', exercises: d.exercises.map(ex => ({ blok: MUSCLE_LABELS[ex.muscleKey], name: ex.name, sr: `${ex.sets}x${ex.reps}`, rest: ex.rest || '90 sn', start: 0 })) }));
+    cloudData.active_program = { days: activeDays };
+    supabaseClient.from('user_data').update({ active_program: cloudData.active_program }).eq('user_id', currentUser.id).then();
     currentDay = 0; renderTabs(); renderView();
   };
   main.appendChild(activateBtn);
+  
+  if(cloudData.active_program){
+    const resetBtn = document.createElement('button'); resetBtn.className = 'picker-close'; resetBtn.style.marginTop = '8px'; resetBtn.style.borderRadius = '10px'; resetBtn.textContent = 'Varsayılan 3 Günlük Programa Geri Dön';
+    resetBtn.onclick = () => { cloudData.active_program = null; supabaseClient.from('user_data').update({ active_program: null }).eq('user_id', currentUser.id).then(); currentDay = 0; renderTabs(); renderView(); };
+    main.appendChild(resetBtn);
+  }
+}
+
+// GÖRSEL HACİM ANALİZİ (GERİ GETİRİLDİ)
+function renderAnalysis(prog, container){
+  container.className = 'analysis-section';
+  const totals = {}; Object.keys(MUSCLE_LABELS).forEach(k => totals[k] = 0);
+  prog.days.forEach(d => d.exercises.forEach(ex => { if(totals[ex.muscleKey] !== undefined) totals[ex.muscleKey] += (parseFloat(ex.sets)||0); }));
+  
+  const volStat = (s) => { if(s<=0) return 'zero'; if(s<10) return 'low'; if(s<=20) return 'ok'; return 'high'; };
+  const statText = (s) => ({ zero:'Çalışılmıyor', low:'Yetersiz', ok:'Yeterli', high:'Çok Yüksek' }[s]);
+
+  const rowsHtml = Object.keys(MUSCLE_LABELS).map(key => {
+    const sets = Math.round(totals[key] * 10) / 10; const status = volStat(sets);
+    return `<div class="muscle-row-mini"><div><div class="muscle-name-mini">${MUSCLE_LABELS[key]}</div><div class="muscle-sets-mini">${sets} set/hafta</div></div><div class="status-label-mini ${status}">${statText(status)}</div></div>`;
+  }).join('');
+
+  container.innerHTML = `
+    <div class="analysis-title">Görsel Hacim Analizi</div>
+    <div class="analysis-card-visual">
+      <div class="muscle-map-container">
+        <div class="muscle-map-bg"></div>
+        <div class="muscle-overlay overlay-gogus status-${volStat(totals.gogus)}"></div><div class="muscle-overlay overlay-sirt status-${volStat(totals.sirt)}"></div>
+        <div class="muscle-overlay overlay-omuz status-${volStat(totals.omuz)}"></div><div class="muscle-overlay overlay-omuz-arka status-${volStat(totals.omuz)}"></div>
+        <div class="muscle-overlay overlay-biceps status-${volStat(totals.biceps)}"></div><div class="muscle-overlay overlay-triceps status-${volStat(totals.triceps)}"></div>
+        <div class="muscle-overlay overlay-quad status-${volStat(totals.quad)}"></div><div class="muscle-overlay overlay-hamstring status-${volStat(totals.hamstring)}"></div>
+        <div class="muscle-overlay overlay-kalca status-${volStat(totals.kalca)}"></div><div class="muscle-overlay overlay-baldir status-${volStat(totals.baldir)}"></div>
+        <div class="muscle-overlay overlay-karin status-${volStat(totals.karin)}"></div>
+      </div>
+      <div class="analysis-text">${rowsHtml}</div>
+    </div>
+    <div class="day-note" style="margin-top:4px;">Kılavuz: kas grubu başına haftada &lt;10 set yetersiz, 10-20 set optimal, 20+ set yüksek hacimdir.</div>
+  `;
 }
 </script>
 </body>

@@ -348,7 +348,24 @@ function setWeight(dayId, idx, value){
 }
 
 async function saveHistoryEntryToCloud(entry){
-  await supabaseClient.from('workouts').insert([{ user_id: currentUser.id, workout_data: entry }]);
+
+    const { data, error } = await supabaseClient
+        .from("workouts")
+        .insert([
+            {
+                user_id: currentUser.id,
+                workout_data: entry
+            }
+        ]);
+
+    console.log("DATA:", data);
+    console.log("ERROR:", error);
+
+    if(error){
+        alert(error.message);
+    }
+
+    return {data,error};
 }
 
 async function renderHistory(){

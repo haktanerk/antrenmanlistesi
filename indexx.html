@@ -1,0 +1,1321 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Antrenman Takip Pro</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700&family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@500;600&display=swap" rel="stylesheet">
+<!-- Supabase JS Kütüphanesi -->
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<style>
+  :root{
+    --bg:#f5f8fc;
+    --surface:#ffffff;
+    --surface-2:#eaf1fc;
+    --line:#dbe6f5;
+    --text:#101828;
+    --text-dim:#64748b;
+    --accent:#2563eb;
+    --accent-dim:#93c5fd;
+    --warn:#e6543f;
+    --status-low: #c2371f; 
+    --status-ok: #1a7a3d;  
+    --status-high: #9a6b00; 
+  }
+  *{box-sizing:border-box; -webkit-tap-highlight-color:transparent;}
+  body{
+    margin:0; background:var(--bg); color:var(--text);
+    font-family:'Inter', sans-serif;
+    padding-bottom:40px;
+  }
+  
+  /* --- AUTH EKRANI STİLLERİ --- */
+  #auth-screen {
+    max-width: 400px; margin: 60px auto; padding: 24px;
+    background: var(--surface); border-radius: 16px;
+    border: 1px solid var(--line); box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+  }
+  .auth-title { font-family: 'Barlow Condensed', sans-serif; font-size: 24px; text-transform: uppercase; margin-bottom: 8px; color: var(--accent); text-align: center; }
+  .auth-sub { font-size: 13px; color: var(--text-dim); text-align: center; margin-bottom: 24px; }
+  .auth-input {
+    width: 100%; padding: 12px; margin-bottom: 12px;
+    border: 1px solid var(--line); border-radius: 10px; font-family: 'Inter'; font-size: 14px;
+  }
+  .auth-btn-primary {
+    width: 100%; padding: 12px; background: var(--accent); color: white;
+    border: none; border-radius: 10px; font-weight: 600; cursor: pointer; margin-bottom: 8px;
+  }
+  .auth-btn-secondary {
+    width: 100%; padding: 12px; background: var(--surface-2); color: var(--accent);
+    border: none; border-radius: 10px; font-weight: 600; cursor: pointer;
+  }
+  #auth-msg { text-align: center; font-size: 13px; margin-top: 12px; font-weight: 500; }
+  .msg-error { color: var(--warn); }
+  .msg-success { color: var(--status-ok); }
+
+  /* --- ANA UYGULAMA STİLLERİ --- */
+  header{
+    position:sticky; top:0; z-index:10;
+    background:var(--bg);
+    padding:18px 16px 0 16px;
+    border-bottom:1px solid var(--line);
+    display: flex;
+    flex-direction: column;
+  }
+  .header-top { display: flex; justify-content: space-between; align-items: center; }
+  h1{
+    font-family:'Barlow Condensed', sans-serif;
+    font-weight:700; font-size:26px; letter-spacing:0.5px;
+    margin:0 0 2px 0; text-transform:uppercase;
+  }
+  .logout-btn {
+    background: transparent; border: 1px solid var(--line); color: var(--text-dim);
+    padding: 6px 12px; border-radius: 8px; font-size: 12px; cursor: pointer; font-family: 'Inter';
+  }
+  .sub{ color:var(--text-dim); font-size:12.5px; margin-bottom:14px;}
+  .tabs{ display:flex; gap:4px; margin-bottom:0; overflow-x:auto; scrollbar-width:none; }
+  .tabs::-webkit-scrollbar{ display:none; }
+  .tab{
+    flex:0 0 auto; text-align:center; padding:10px 10px 12px 10px;
+    font-family:'Barlow Condensed', sans-serif; font-weight:700; font-size:14.5px;
+    color:var(--text-dim); border-bottom:3px solid transparent;
+    cursor:pointer; letter-spacing:0.2px; text-transform:uppercase; white-space:nowrap;
+  }
+  .tab.active{ color:var(--accent); border-bottom:3px solid var(--accent); }
+
+  main{ padding:14px 14px 0 14px; max-width:520px; margin:0 auto; }
+  .day-note{ color:var(--text-dim); font-size:12px; margin:12px 2px 14px 2px; line-height:1.5;}
+  .block-label{
+    font-family:'IBM Plex Mono', monospace; font-size:11px; letter-spacing:0.6px;
+    color:var(--accent-dim); text-transform:uppercase; margin:18px 2px 6px 2px;
+  }
+  .block-label.first{ margin-top:4px; }
+
+  .card{
+    background:var(--surface); border:1px solid var(--line); border-radius:14px;
+    padding:14px 14px 12px 14px; margin-bottom:10px;
+    box-shadow:0 1px 3px rgba(16,24,40,0.06);
+  }
+  .card.superset{ border-left:3px solid var(--accent-dim); }
+  .row-top{ display:flex; justify-content:space-between; align-items:flex-start; gap:10px; }
+  .ex-name{ font-size:15.5px; font-weight:600; line-height:1.3; }
+  .meta{ display:flex; gap:14px; margin-top:6px; }
+  .meta-item{ font-family:'IBM Plex Mono', monospace; font-size:12.5px; color:var(--text-dim); }
+  .meta-item b{ color:var(--text); font-weight:600; }
+  .link-btn{
+    font-size:11px; color:var(--accent); text-decoration:none;
+    border:1px solid var(--accent-dim); border-radius:20px; padding:5px 10px;
+    white-space:nowrap; font-family:'Inter'; font-weight:500;
+  }
+
+  .stepper{
+    display:flex; align-items:center; justify-content:space-between;
+    margin-top:12px; background:var(--surface-2); border-radius:12px; padding:4px;
+  }
+  .stepper button{
+    width:46px; height:44px; border:none; border-radius:9px;
+    background:transparent; color:var(--text); font-size:22px; font-weight:600;
+    cursor:pointer; user-select:none;
+  }
+  .stepper button:active{ background:var(--accent); color:#ffffff; }
+  .stepper button.minus:active{ background:var(--warn); color:#ffffff; }
+  .weight-display{
+    flex:1; text-align:center; font-family:'IBM Plex Mono', monospace;
+    font-size:19px; font-weight:600; letter-spacing:0.5px;
+    transition:transform 0.12s ease;
+  }
+  .weight-display.bump{ transform:scale(1.12); color:var(--accent); }
+  .weight-unit{ font-size:12px; color:var(--text-dim); margin-left:3px; font-weight:500;}
+
+  .sets-row{
+    display:flex; align-items:center; gap:8px; margin-top:8px;
+  }
+  .set-btn{
+    flex:1; display:flex; align-items:center; justify-content:center; gap:8px;
+    height:44px; border-radius:10px; border:1px solid var(--accent-dim);
+    background:transparent; color:var(--text); font-family:'Inter'; font-weight:600;
+    font-size:13.5px; cursor:pointer; user-select:none;
+  }
+  .set-btn .dots{ display:flex; gap:5px; }
+  .set-dot{
+    width:9px; height:9px; border-radius:50%; background:var(--surface-2);
+    border:1px solid var(--line); transition:background 0.15s ease;
+  }
+  .set-dot.filled{ background:var(--accent); border-color:var(--accent); }
+  .set-btn.complete{ border-color:var(--accent); color:var(--accent); }
+  .set-reset{
+    width:40px; height:44px; border-radius:10px; border:1px solid var(--line);
+    background:transparent; color:var(--text-dim); font-size:15px; cursor:pointer;
+  }
+
+  .timer-row{
+    display:flex; align-items:center; gap:8px; margin-top:8px;
+    background:var(--surface-2); border-radius:12px; padding:6px 8px;
+  }
+  .timer-display{
+    font-family:'IBM Plex Mono', monospace; font-size:19px; font-weight:600;
+    width:64px; text-align:center; letter-spacing:0.5px;
+  }
+  .timer-display.running{ color:var(--accent); }
+  .timer-display.done{ color:var(--warn); }
+  .timer-btn{
+    flex:1; height:38px; border:none; border-radius:9px;
+    background:transparent; color:var(--text); font-family:'Inter'; font-weight:600;
+    font-size:12.5px; cursor:pointer;
+  }
+  .timer-btn.start{ background:var(--accent); color:#ffffff; }
+  .timer-btn.pause{ background:var(--surface); border:1px solid var(--line); }
+  .timer-btn.reset{ width:38px; flex:none; color:var(--text-dim); }
+
+  .save-btn{
+    display:block; width:100%; margin-top:18px; padding:14px;
+    background:var(--accent); color:#ffffff; border:none; border-radius:14px;
+    font-family:'Barlow Condensed', sans-serif; font-weight:700; font-size:16px;
+    letter-spacing:0.4px; text-transform:uppercase; cursor:pointer;
+  }
+  .save-toast{
+    text-align:center; color:var(--accent); font-size:12.5px; font-weight:600;
+    margin-top:8px; height:16px;
+  }
+
+  .hist-empty{ text-align:center; color:var(--text-dim); font-size:13px; margin-top:40px; padding:0 20px; }
+  .hist-card{
+    background:var(--surface); border:1px solid var(--line); border-radius:14px;
+    padding:14px; margin-bottom:12px; box-shadow:0 1px 3px rgba(16,24,40,0.06);
+  }
+  .hist-head{ display:flex; justify-content:space-between; align-items:flex-start; }
+  .hist-day{
+    font-family:'Barlow Condensed', sans-serif; font-weight:700; font-size:15px;
+    color:var(--accent); text-transform:uppercase;
+  }
+  .hist-datetime{ font-size:11.5px; color:var(--text-dim); font-family:'IBM Plex Mono', monospace; margin-top:2px; }
+  .hist-del{
+    border:none; background:transparent; color:var(--text-dim); font-size:13px; cursor:pointer;
+    padding:4px 6px;
+  }
+  .hist-ex-row{
+    display:flex; justify-content:space-between; align-items:center;
+    font-size:13px; padding:7px 0; border-top:1px solid var(--line);
+  }
+  .hist-ex-name{ color:var(--text); }
+  .hist-ex-stats{ font-family:'IBM Plex Mono', monospace; color:var(--text-dim); font-size:12.5px; white-space:nowrap; margin-left:10px; }
+
+  /* --- Program Oluştur --- */
+  .count-row{
+    display:flex; align-items:center; justify-content:space-between;
+    background:var(--surface); border:1px solid var(--line); border-radius:14px;
+    padding:12px 14px; margin-bottom:16px; box-shadow:0 1px 3px rgba(16,24,40,0.06);
+  }
+  .count-label{ font-size:13.5px; font-weight:600; }
+  .count-stepper{ display:flex; align-items:center; gap:2px; background:var(--surface-2); border-radius:10px; padding:3px; }
+  .count-stepper button{
+    width:36px; height:36px; border:none; border-radius:8px; background:transparent;
+    color:var(--text); font-size:18px; font-weight:700; cursor:pointer;
+  }
+  .count-stepper button:active{ background:var(--accent); color:#fff; }
+  .count-num{ font-family:'IBM Plex Mono', monospace; font-weight:600; font-size:15px; width:26px; text-align:center; }
+
+  .day-card{
+    background:var(--surface); border:1px solid var(--line); border-radius:14px;
+    padding:14px; margin-bottom:12px; box-shadow:0 1px 3px rgba(16,24,40,0.06);
+  }
+  .day-name-input{
+    font-family:'Barlow Condensed', sans-serif; font-weight:700; font-size:17px;
+    color:var(--accent); border:none; background:transparent; width:70%;
+    text-transform:uppercase; letter-spacing:0.3px; padding:2px 0;
+  }
+  .day-name-input:focus{ outline:none; border-bottom:1px solid var(--accent); }
+  .day-del{ float:right; border:none; background:transparent; color:var(--text-dim); font-size:12.5px; cursor:pointer; }
+
+  .added-ex-row{
+    border-top:1px solid var(--line); padding:10px 0; margin-top:8px;
+    display:flex; flex-direction:column; gap:6px;
+  }
+  .added-ex-top{ display:flex; justify-content:space-between; align-items:flex-start; gap:8px; }
+  .added-ex-name{ font-size:13.5px; font-weight:600; line-height:1.3; }
+  .added-ex-muscle{ font-size:10.5px; color:var(--accent); font-family:'IBM Plex Mono',monospace; text-transform:uppercase; }
+  .added-ex-controls{ display:flex; align-items:center; gap:8px; }
+  .mini-input{
+    font-family:'IBM Plex Mono', monospace; font-size:12.5px; border:1px solid var(--line);
+    border-radius:8px; padding:6px 8px; width:50px; text-align:center; background:var(--bg); color:var(--text);
+  }
+  .reps-input{ width:64px; }
+  .ex-remove{ border:none; background:transparent; color:var(--warn); font-size:13px; cursor:pointer; padding:4px 6px; }
+  .added-ex-link{ font-size:10.5px; color:var(--accent); text-decoration:none; }
+
+  .add-ex-btn{
+    display:block; width:100%; margin-top:10px; padding:11px;
+    background:transparent; border:1.5px dashed var(--accent-dim); border-radius:10px;
+    color:var(--accent); font-weight:600; font-size:13px; cursor:pointer;
+  }
+
+  .picker{
+    margin-top:10px; border:1px solid var(--line); border-radius:12px; overflow:hidden;
+    background:var(--bg);
+  }
+  .picker-group-head{
+    padding:10px 12px; font-weight:600; font-size:13px; cursor:pointer;
+    display:flex; justify-content:space-between; align-items:center;
+    background:var(--surface-2); border-top:1px solid var(--line);
+  }
+  .picker-group-head:first-child{ border-top:none; }
+  .picker-group-count{ font-size:11px; color:var(--text-dim); font-family:'IBM Plex Mono', monospace; }
+  .picker-ex-list{ display:none; }
+  .picker-ex-list.open{ display:block; }
+  .picker-ex-item{
+    padding:10px 12px; font-size:12.5px; border-top:1px solid var(--line);
+    display:flex; justify-content:space-between; align-items:center; cursor:pointer;
+    background:var(--surface);
+  }
+  .picker-ex-item:active{ background:var(--surface-2); }
+  .picker-ex-reps{ color:var(--text-dim); font-family:'IBM Plex Mono', monospace; font-size:11px; white-space:nowrap; margin-left:8px; }
+  .picker-ex-preview{ font-size:11px; color:var(--accent); border:1px solid var(--accent-dim); border-radius:12px; padding:3px 8px; margin-left:8px;}
+  .picker-close{
+    display:block; width:100%; text-align:center; padding:10px; font-size:12px;
+    color:var(--text-dim); background:var(--surface-2); border:none; cursor:pointer;
+  }
+
+  /* --- Görsel Analiz (Anatomik Harita) --- */
+  .analysis-section{ margin-top:22px; }
+  .analysis-title{
+    font-family:'Barlow Condensed', sans-serif; font-size:19px; font-weight:700;
+    color:var(--text); text-transform:uppercase; margin-bottom:10px;
+  }
+  .analysis-card-visual{
+    background:var(--surface); border:1px solid var(--line); border-radius:14px;
+    padding:14px; margin-bottom:14px; box-shadow:0 1px 3px rgba(16,24,40,0.06);
+    display:flex; gap:16px; align-items:flex-start;
+  }
+  .muscle-map-container {
+    flex: 0 0 160px; /* Sabit genişlik */
+    position: relative;
+    aspect-ratio: 1 / 1.5; /* Referans görseline benzer oran */
+    border: 1px solid var(--line); border-radius: 10px;
+    background: #fff; overflow: hidden;
+  }
+  /* Referans anatomik görseli (ön ve arka) */
+  .muscle-map-bg {
+    width: 100%; height: 100%;
+    background-image: url('data:image/svg+xml;charset=utf-8,%3Csvg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 600"%3E%3C!-- Ön ve Arka İnsan Anatomisi Şeması --%3E%3Crect width="100%25" height="100%25" fill="%23fff" /%3E%3C!-- Basit çizim yer tutucusu --%3E%3Cpath d="M100 50 L120 50 L120 80 L100 80 Z" fill="%23ddd" /%3E%3Cpath d="M280 50 L300 50 L300 80 L280 80 Z" fill="%23ddd" /%3E%3Ctext x="110" y="70" font-size="12" text-anchor="middle" fill="%23888"%3EÖn%3C/text%3E%3Ctext x="290" y="70" font-size="12" text-anchor="middle" fill="%23888"%3EArka%3C/text%3E%3C/svg%3E');
+    background-size: contain; background-repeat: no-repeat; background-position: center;
+  }
+  /* Kas overlay'leri için koordinat tabanlı sınıflar */
+  .muscle-overlay {
+    position: absolute; border-radius: 50%; opacity: 0.7;
+    background: var(--text-dim); /* varsayılan gri */
+  }
+  /* Örnek koordinatlar (referans görsele göre SVG veya overlay alanı) */
+  .overlay-gogus { top: 18%; left: 32%; width: 36%; height: 12%; border-radius: 10px; }
+  .overlay-sirt { top: 18%; left: 62%; width: 36%; height: 25%; border-radius: 10px; }
+  .overlay-omuz { top: 12%; left: 22%; width: 14%; height: 14%; } /* Ön Omuz */
+  .overlay-omuz-arka { top: 12%; left: 84%; width: 14%; height: 14%; } /* Arka Omuz */
+  .overlay-biceps { top: 25%; left: 20%; width: 12%; height: 18%; }
+  .overlay-triceps { top: 25%; left: 88%; width: 12%; height: 18%; }
+  .overlay-quad { top: 50%; left: 28%; width: 44%; height: 20%; border-radius: 10px; }
+  .overlay-hamstring { top: 50%; left: 68%; width: 24%; height: 20%; border-radius: 10px; }
+  .overlay-kalca { top: 40%; left: 74%; width: 18%; height: 15%; }
+  .overlay-baldir { top: 75%; left: 35%; width: 30%; height: 12%; }
+  .overlay-karin { top: 32%; left: 36%; width: 28%; height: 15%; border-radius: 10px; }
+
+  /* Hacim durumlarına göre renk sınıfları */
+  .status-low { background: var(--status-low) !important; }
+  .status-ok { background: var(--status-ok) !important; }
+  .status-high { background: var(--status-high) !important; }
+
+  .analysis-text { flex: 1; display: flex; flex-direction: column; gap: 8px; }
+  .muscle-row-mini{
+    display:flex; justify-content:space-between; align-items:center;
+    padding:8px 0; border-top:1px solid var(--line);
+  }
+  .muscle-row-mini:first-child{ border-top:none; }
+  .muscle-name-mini{ font-size:12.5px; font-weight:600; }
+  .muscle-sets-mini{ font-size:11px; color:var(--text-dim); font-family:'IBM Plex Mono', monospace; }
+  .status-label-mini{
+    font-size:10px; font-weight:700; padding:3px 7px; border-radius:20px;
+    font-family:'Inter'; white-space:nowrap;
+  }
+  /* Mini durum etiket renkleri */
+  .status-label-mini.low{ background:#fde8e6; color:var(--status-low); }
+  .status-label-mini.ok{ background:#e3f6e8; color:var(--status-ok); }
+  .status-label-mini.high{ background:#fff3d6; color:var(--status-high); }
+  .status-label-mini.zero{ background:var(--surface-2); color:var(--text-dim); }
+
+  .suggest-box{
+    background:#fde8e6; border-radius:12px; padding:12px 14px; margin-bottom:12px;
+    font-size:12.5px; line-height:1.6; color:#7a2a1a; margin-top:14px;
+  }
+  .suggest-box b{ display:block; margin-bottom:4px; color:#c2371f; font-size:13px; }
+  .suggest-empty{ text-align:center; color:var(--text-dim); font-size:12.5px; padding:16px; }
+
+  /* --- Hareket Önizleme Modalı --- */
+  .modal {
+    display: none; position: fixed; z-index: 100; left: 0; top: 0;
+    width: 100%; height: 100%; overflow: auto; background-color: rgba(0,0,0,0.4);
+    backdrop-filter: blur(2px);
+  }
+  .modal-content {
+    background-color: var(--surface); margin: 10% auto; padding: 20px;
+    border: 1px solid var(--line); border-radius: 14px; width: 85%; max-width: 400px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+  }
+  .modal-header {
+    display: flex; justify-content: space-between; align-items: flex-start; gap: 10px;
+    margin-bottom: 14px;
+  }
+  .modal-title { font-size: 16px; font-weight: 600; line-height: 1.3; }
+  .modal-close { border: none; background: transparent; color: var(--text-dim); font-size: 20px; cursor: pointer; padding: 0 4px;}
+  .modal-body { text-align: center; }
+  .ex-preview-img {
+    width: 100%; aspect-ratio: 1; border: 1px solid var(--line); border-radius: 10px;
+    background-image: url('data:image/svg+xml;charset=utf-8,%3Csvg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 300 300"%3E%3Crect width="100%25" height="100%25" fill="%23eee" /%3E%3Ctext x="150" y="160" font-size="14" text-anchor="middle" fill="%23aaa"%3EForm Görseli Yer Tutucu%3C/text%3E%3C/svg%3E');
+    background-size: contain; background-repeat: no-repeat; background-position: center;
+    margin-bottom: 12px;
+  }
+  .modal-body-text { font-size: 12.5px; color: var(--text-dim); line-height: 1.5; margin-bottom: 14px;}
+  .modal-add-btn {
+    display: block; width: 100%; padding: 11px;
+    background: var(--accent); color: #fff; border: none; border-radius: 10px;
+    font-weight: 600; font-size: 13px; cursor: pointer;
+  }
+
+  .notes-section{
+    margin-top:24px; padding:14px; background:var(--surface);
+    border:1px solid var(--line); border-radius:14px;
+  }
+  .notes-section h2{
+    font-family:'Barlow Condensed', sans-serif; font-size:17px; text-transform:uppercase;
+    margin:0 0 10px 0; color:var(--accent);
+  }
+  .note-item{ margin-bottom:10px; }
+  .note-item .t{ font-weight:600; font-size:13px; margin-bottom:2px; }
+  .note-item .d{ font-size:12.5px; color:var(--text-dim); line-height:1.5; }
+
+  footer{ text-align:center; color:var(--text-dim); font-size:11px; margin-top:26px; padding:0 20px; }
+</style>
+</head>
+<body>
+
+<!-- GİRİŞ / KAYIT EKRANI -->
+<div id="auth-screen">
+  <div class="auth-title">Antrenman Takip Pro</div>
+  <div class="auth-sub">Bulut yedekleme ve topluluk özellikleri için giriş yapın</div>
+  <input type="email" id="email-input" class="auth-input" placeholder="E-posta adresiniz" />
+  <input type="password" id="password-input" class="auth-input" placeholder="Şifreniz (En az 6 karakter)" />
+  <button class="auth-btn-primary" onclick="signIn()">Giriş Yap</button>
+  <button class="auth-btn-secondary" onclick="signUp()">Yeni Kayıt Ol</button>
+  <div id="auth-msg"></div>
+</div>
+
+<!-- ANA UYGULAMA (Giriş yapana kadar gizli kalacak) -->
+<div id="app-screen" style="display: none;">
+  <header>
+    <div class="header-top">
+      <h1>Antrenman Takip Pro</h1>
+      <button class="logout-btn" onclick="signOut()">Çıkış Yap</button>
+    </div>
+    <div class="sub" id="user-greeting">Hazır program + kendi antrenmanını oluştur</div>
+    <div class="tabs" id="tabs"></div>
+  </header>
+  <main id="main"></main>
+  
+  <!-- Hareket Önizleme Modalı -->
+  <div id="previewModal" class="modal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <div class="modal-title" id="modalTitle">Hareket Adı</div>
+        <button class="modal-close" onclick="closePreviewModal()">&times;</button>
+      </div>
+      <div class="modal-body">
+        <div class="ex-preview-img" id="modalImg"></div>
+        <div class="modal-body-text" id="modalDesc">Bu hareketin temel form illüstrasyonu. Temel adımları gösterir.</div>
+        <button class="modal-add-btn" id="modalAddBtn">Hareketi Günüme Ekle</button>
+      </div>
+    </div>
+  </div>
+
+  <footer>Ağırlık değerleri cihazınızda, geçmişiniz bulutta saklanır.</footer>
+</div>
+
+<script>
+// ==========================================
+// SUPABASE BAĞLANTISI 
+// ==========================================
+const SUPABASE_URL = 'https://luhjxfpnhszoptusadwl.supabase.co/rest/v1/';
+const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imx1aGp4ZnBuaHN6b3B0dXNhZHdsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODU4MTA1NDksImV4cCI6MjEwMTM4NjU0OX0.bbZky4piJuYWDORymhZi-t7C4aDBbqDHbOCMLq7TAag';
+
+const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+let currentUser = null;
+
+// ==========================================
+// KİMLİK DOĞRULAMA (AUTH) İŞLEMLERİ
+// ==========================================
+const authScreen = document.getElementById('auth-screen');
+const appScreen = document.getElementById('app-screen');
+const authMsg = document.getElementById('auth-msg');
+
+function showMsg(text, isError = false) {
+  authMsg.textContent = text;
+  authMsg.className = isError ? 'msg-error' : 'msg-success';
+}
+
+async function signUp() {
+  const email = document.getElementById('email-input').value;
+  const password = document.getElementById('password-input').value;
+  if (!email || password.length < 6) return showMsg('Geçerli bir e-posta ve en az 6 haneli şifre girin.', true);
+  
+  authMsg.textContent = 'Kayıt yapılıyor...';
+  const { data, error } = await supabase.auth.signUp({ email, password });
+  
+  if (error) {
+    showMsg(error.message, true);
+  } else {
+    showMsg('Kayıt başarılı! Oturum açılıyor...');
+    if(data.user) {
+      await supabase.from('profiles').insert([{ id: data.user.id, username: email.split('@')[0] }]);
+    }
+  }
+}
+
+async function signIn() {
+  const email = document.getElementById('email-input').value;
+  const password = document.getElementById('password-input').value;
+  if (!email || !password) return showMsg('E-posta ve şifre giriniz.', true);
+
+  authMsg.textContent = 'Giriş yapılıyor...';
+  const { error } = await supabase.auth.signInWithPassword({ email, password });
+  
+  if (error) showMsg('Hatalı e-posta veya şifre.', true);
+}
+
+async function signOut() {
+  await supabase.auth.signOut();
+}
+
+supabase.auth.onAuthStateChange((event, session) => {
+  if (session && session.user) {
+    currentUser = session.user;
+    authScreen.style.display = 'none';
+    appScreen.style.display = 'block';
+    document.getElementById('user-greeting').textContent = `Hoş geldin, ${currentUser.email.split('@')[0]}`;
+    initApp(); 
+  } else {
+    currentUser = null;
+    authScreen.style.display = 'block';
+    appScreen.style.display = 'none';
+  }
+});
+
+// ==========================================
+// ANA UYGULAMA MANTIĞI
+// ==========================================
+function initApp() {
+  renderTabs();
+  renderView();
+}
+
+const DEFAULT_DAYS = [
+  {
+    id: "gunA",
+    shortLabel: "Gün A",
+    title: "Gün A — Üst Vücut (İtiş)",
+    note: "Isınma: 5 dk hafif kardiyo + 1-2 hafif set çalışılacak eklemler için.",
+    exercises: [
+      {blok:"İtiş - Ana", name:"Bench Press (barbell)", sr:"4x6-8", rest:"2-3 dk", start:20},
+      {blok:"İtiş - Ana", name:"Overhead Press (dumbbell)", sr:"3x8-10", rest:"2 dk", start:10},
+      {blok:"Çekiş", name:"Lat Pulldown veya Pull-up", sr:"3x8-10", rest:"2 dk", start:0},
+      {blok:"İtiş - İkincil", name:"Incline Dumbbell Press", sr:"3x10-12", rest:"90 sn", start:12.5},
+      {blok:"Omuz", name:"Lateral Raise", sr:"3x12-15", rest:"60 sn", start:5},
+      {blok:"Kol", name:"Triceps Pushdown", sr:"2x10-12", rest:"60 sn", start:15},
+    ]
+  },
+  {
+    id: "gunB",
+    shortLabel: "Gün B",
+    title: "Gün B — Üst Vücut (Çekiş)",
+    note: "Isınma: 5 dk hafif kardiyo + 1-2 hafif set çalışılacak eklemler için.",
+    exercises: [
+      {blok:"Çekiş - Ana", name:"Barbell Row veya T-Bar Row", sr:"4x8-10", rest:"2-3 dk", start:30},
+      {blok:"Çekiş - İkincil", name:"Seated Cable Row", sr:"3x10-12", rest:"2 dk", start:25},
+      {blok:"İtiş", name:"Chest Press (machine)", sr:"3x8-10", rest:"2 dk", start:15},
+      {blok:"Omuz Sağlığı", name:"Face Pull", sr:"3x15", rest:"60 sn", start:10},
+      {blok:"Kol", name:"Biceps Curl", sr:"3x10-12", rest:"60 sn", start:10},
+      {blok:"Omuz", name:"Rear Delt Fly", sr:"2x12-15", rest:"60 sn", start:5},
+    ]
+  },
+  {
+    id: "gunC",
+    shortLabel: "Gün C",
+    title: "Gün C — Alt Vücut + Karın",
+    note: "Süper setler işaretli: aralarda dinlenmeden geç, çift bitince belirtilen süre dinlen. Toplam ~60 dk.",
+    exercises: [
+      {blok:"Ana Hareket", name:"Back Squat", sr:"4x6-8", rest:"3 dk", start:40, superset:false},
+      {blok:"Ana Hareket", name:"Romanian Deadlift", sr:"3x8-10", rest:"2-3 dk", start:40, superset:false},
+      {blok:"Süper Set 1", name:"Leg Press", sr:"3x10-12", rest:"0 sn (süper set)", start:60, superset:true},
+      {blok:"Süper Set 1", name:"Leg Curl", sr:"3x12-15", rest:"90 sn (çift sonra)", start:20, superset:true},
+      {blok:"Süper Set 2", name:"Bulgarian Split Squat", sr:"2x10-12/bacak", rest:"0 sn (süper set)", start:10, superset:true},
+      {blok:"Süper Set 2", name:"Standing Calf Raise", sr:"2x12-15", rest:"60-90 sn (çift sonra)", start:30, superset:true},
+      {blok:"Süper Set 3 - Karın", name:"Weighted Cable Crunch", sr:"3x12-15", rest:"0 sn (süper set)", start:15, superset:true},
+      {blok:"Süper Set 3 - Karın", name:"Hanging Leg Raise", sr:"2x10-15", rest:"60 sn (çift sonra)", start:0, superset:true},
+      {blok:"Karın - Oblik", name:"Cable Woodchopper", sr:"2x12/taraf", rest:"60 sn", start:10, superset:false},
+    ]
+  }
+];
+
+const NOTES = [
+  ["İlerleme (Progressive Overload)", "Set/tekrar aralığının üst sınırına ulaşınca ağırlığı bir sonraki antrenmanda artırıp tekrar alt sınırdan başlayın."],
+  ["Efor Seviyesi", "Setleri 0-2 tekrar rezervinde (RIR) bitirin; her set mutlak failure olmak zorunda değil."],
+  ["Deload", "4-6 haftada bir, hacmi %40-50 azaltan hafif bir hafta uygulayın."],
+  ["Dinlenme Süreleri", "Bileşik/ağır hareketlerde 2-3 dk, izolasyon hareketlerinde 60-90 sn dinlenme önerilir."],
+];
+
+function getActiveDays(){
+  try{
+    const raw = localStorage.getItem('active_program');
+    if(raw){
+      const parsed = JSON.parse(raw);
+      if(parsed && Array.isArray(parsed.days) && parsed.days.length > 0) return parsed.days;
+    }
+  }catch(e){}
+  return DEFAULT_DAYS;
+}
+
+let currentDay = 0;
+
+function getTabLabels(){
+  const days = getActiveDays();
+  return [...days.map(d => d.shortLabel || (d.title || d.name || '').split('—')[0].trim()), 'Geçmiş', 'Program Oluştur'];
+}
+
+function renderTabs(){
+  const labels = getTabLabels();
+  if(currentDay >= labels.length) currentDay = 0;
+  const tabsEl = document.getElementById('tabs');
+  tabsEl.innerHTML = '';
+  labels.forEach((label, i) => {
+    const t = document.createElement('div');
+    t.className = 'tab' + (i === currentDay ? ' active' : '');
+    t.textContent = label;
+    t.onclick = () => { currentDay = i; renderTabs(); renderView(); };
+    tabsEl.appendChild(t);
+  });
+}
+
+function renderView(){
+  const days = getActiveDays();
+  if(currentDay >= days.length + 2) currentDay = 0;
+  if(currentDay === days.length){ renderHistory(); }
+  else if(currentDay === days.length + 1){ renderBuilder(); }
+  else { renderDay(); }
+}
+
+const STEP = 2.5;
+
+function fmt(w){ return (Number.isInteger(w) ? w : w.toFixed(1)); }
+function exLink(name){ return "https://www.google.com/search?q=" + encodeURIComponent(name + " exercise form") + "&tbm=isch"; }
+function exImgLink(name){ return "https://www.google.com/search?q=" + encodeURIComponent(name + " exercise form") + "&tbm=isch"; }
+
+function parseSetsTotal(sr){
+  const m = sr.match(/^(\d+)\s*x/i);
+  return m ? parseInt(m[1], 10) : 3;
+}
+
+function parseRestSeconds(restText){
+  const nums = [];
+  const re = /(\d+(?:\.\d+)?)\s*(dk|sn)/gi;
+  let match;
+  while((match = re.exec(restText)) !== null){
+    const val = parseFloat(match[1]);
+    const unit = match[2].toLowerCase();
+    nums.push(unit === 'dk' ? val * 60 : val);
+  }
+  if(nums.length === 0) return 90;
+  const avg = nums.reduce((a,b)=>a+b,0) / nums.length;
+  return Math.round(avg);
+}
+
+function fmtTime(totalSeconds){
+  const s = Math.max(0, Math.round(totalSeconds));
+  const m = Math.floor(s / 60);
+  const sec = s % 60;
+  return `${String(m).padStart(2,'0')}:${String(sec).padStart(2,'0')}`;
+}
+
+function getSetsDone(dayId, idx){
+  try{ const raw = localStorage.getItem(`s:${dayId}:${idx}`); if(raw !== null) return parseInt(raw, 10); }catch(e){}
+  return 0;
+}
+function setSetsDone(dayId, idx, value){
+  try{ localStorage.setItem(`s:${dayId}:${idx}`, String(value)); }catch(e){}
+}
+
+function getHistory(){
+  try{ const raw = localStorage.getItem('workout_history'); if(raw) return JSON.parse(raw); }catch(e){}
+  return [];
+}
+function saveHistoryEntry(entry){
+  const hist = getHistory();
+  hist.unshift(entry);
+  try{ localStorage.setItem('workout_history', JSON.stringify(hist)); }catch(e){}
+}
+function deleteHistoryEntry(id){
+  const hist = getHistory().filter(h => h.id !== id);
+  try{ localStorage.setItem('workout_history', JSON.stringify(hist)); }catch(e){}
+}
+
+async function getWeight(dayId, idx, fallback){
+  try{ const raw = localStorage.getItem(`w:${dayId}:${idx}`); if(raw !== null) return parseFloat(raw); }catch(e){}
+  return fallback;
+}
+async function setWeight(dayId, idx, value){
+  try{ localStorage.setItem(`w:${dayId}:${idx}`, String(value)); }catch(e){}
+}
+
+async function renderDay(){
+  const day = getActiveDays()[currentDay];
+  const main = document.getElementById('main');
+  main.innerHTML = `<div class="day-note">${day.note}</div>`;
+  const dayState = [];
+  let lastBlok = null;
+  
+  for(let idx=0; idx<day.exercises.length; idx++){
+    const ex = day.exercises[idx];
+    if(ex.blok !== lastBlok){
+      const label = document.createElement('div');
+      label.className = 'block-label' + (idx===0 ? ' first' : '');
+      label.textContent = ex.blok;
+      main.appendChild(label);
+      lastBlok = ex.blok;
+    }
+
+    const card = document.createElement('div');
+    card.className = 'card' + (ex.superset ? ' superset' : '');
+    const weight = await getWeight(day.id, idx, ex.start);
+
+    card.innerHTML = `
+      <div class="row-top">
+        <div class="ex-name">${ex.name}</div>
+        <a class="link-btn" href="${exLink(ex.name)}" target="_blank" rel="noopener">Görsel</a>
+      </div>
+      <div class="meta">
+        <div class="meta-item">Set: <b>${ex.sr}</b></div>
+        <div class="meta-item">Dinlenme: <b>${ex.rest}</b></div>
+      </div>
+      <div class="stepper">
+        <button class="minus" aria-label="2.5 kg azalt">−</button>
+        <div class="weight-display"><span class="wnum">${fmt(weight)}</span><span class="weight-unit">kg</span></div>
+        <button class="plus" aria-label="2.5 kg artır">+</button>
+      </div>
+      <div class="sets-row">
+        <button class="set-btn">
+          <span class="dots"></span>
+          <span class="set-label"></span>
+        </button>
+        <button class="set-reset" aria-label="Setleri sıfırla">↺</button>
+      </div>
+      <div class="timer-row">
+        <div class="timer-display">00:00</div>
+        <button class="timer-btn start">Başlat</button>
+        <button class="timer-btn reset" aria-label="Kronometreyi sıfırla">↺</button>
+      </div>
+    `;
+
+    const wDisplay = card.querySelector('.weight-display');
+    const wNum = card.querySelector('.wnum');
+    const minusBtn = card.querySelector('.minus');
+    const plusBtn = card.querySelector('.plus');
+    let current = weight;
+    const bump = () => { wDisplay.classList.add('bump'); setTimeout(()=>wDisplay.classList.remove('bump'), 140); };
+
+    minusBtn.onclick = async () => { current = Math.max(0, current - STEP); wNum.textContent = fmt(current); bump(); await setWeight(day.id, idx, current); };
+    plusBtn.onclick = async () => { current = current + STEP; wNum.textContent = fmt(current); bump(); await setWeight(day.id, idx, current); };
+
+    const setsTotal = parseSetsTotal(ex.sr);
+    let setsDone = getSetsDone(day.id, idx);
+    if(setsDone > setsTotal) setsDone = setsTotal;
+
+    const setBtn = card.querySelector('.set-btn');
+    const dotsEl = card.querySelector('.dots');
+    const setLabelEl = card.querySelector('.set-label');
+    const setResetBtn = card.querySelector('.set-reset');
+
+    function renderSets(){
+      dotsEl.innerHTML = '';
+      for(let i=0;i<setsTotal;i++){
+        const d = document.createElement('span');
+        d.className = 'set-dot' + (i < setsDone ? ' filled' : '');
+        dotsEl.appendChild(d);
+      }
+      const complete = setsDone >= setsTotal;
+      setLabelEl.textContent = complete ? 'Tamamlandı ✓' : `Set ${setsDone}/${setsTotal}`;
+      setBtn.classList.toggle('complete', complete);
+    }
+    renderSets();
+
+    setBtn.onclick = () => { setsDone = setsDone >= setsTotal ? 0 : setsDone + 1; setSetsDone(day.id, idx, setsDone); renderSets(); };
+    setResetBtn.onclick = () => { setsDone = 0; setSetsDone(day.id, idx, setsDone); renderSets(); };
+
+    dayState.push({ name: ex.name, setsTotal, getSetsDone: () => setsDone, getWeight: () => current, });
+
+    const restSeconds = parseRestSeconds(ex.rest);
+    let timeLeft = restSeconds;
+    let timerInterval = null;
+    let running = false;
+    const timerDisplay = card.querySelector('.timer-display');
+    const timerStartBtn = card.querySelector('.timer-btn.start');
+    const timerResetBtn = card.querySelector('.timer-btn.reset');
+
+    function renderTimer(){
+      timerDisplay.textContent = fmtTime(timeLeft);
+      timerDisplay.classList.toggle('running', running);
+      timerDisplay.classList.toggle('done', timeLeft <= 0);
+    }
+    timeLeft = restSeconds;
+    renderTimer();
+
+    function beep(){
+      try{
+        const ctx = new (window.AudioContext || window.webkitAudioContext)();
+        const o = ctx.createOscillator(); const g = ctx.createGain();
+        o.connect(g); g.connect(ctx.destination);
+        o.frequency.value = 880; g.gain.setValueAtTime(0.15, ctx.currentTime);
+        o.start(); g.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.4); o.stop(ctx.currentTime + 0.4);
+      }catch(e){}
+      if(navigator.vibrate) navigator.vibrate([200,80,200]);
+    }
+
+    function tick(){
+      timeLeft -= 1;
+      if(timeLeft <= 0){
+        timeLeft = 0; clearInterval(timerInterval); running = false;
+        timerStartBtn.textContent = 'Başlat'; timerStartBtn.classList.remove('pause'); timerStartBtn.classList.add('start'); beep();
+      }
+      renderTimer();
+    }
+
+    timerStartBtn.onclick = () => {
+      if(!running){
+        if(timeLeft <= 0) timeLeft = restSeconds;
+        running = true; timerStartBtn.textContent = 'Durdur'; timerStartBtn.classList.remove('start'); timerStartBtn.classList.add('pause');
+        timerInterval = setInterval(tick, 1000);
+      } else {
+        running = false; clearInterval(timerInterval); timerStartBtn.textContent = 'Devam'; timerStartBtn.classList.remove('pause'); timerStartBtn.classList.add('start');
+      }
+      renderTimer();
+    };
+    timerResetBtn.onclick = () => {
+      running = false; clearInterval(timerInterval); timeLeft = restSeconds;
+      timerStartBtn.textContent = 'Başlat'; timerStartBtn.classList.remove('pause'); timerStartBtn.classList.add('start');
+      renderTimer();
+    };
+
+    main.appendChild(card);
+  }
+
+  const saveBtn = document.createElement('button');
+  saveBtn.className = 'save-btn'; saveBtn.textContent = 'Antrenmanı Kaydet';
+  const toast = document.createElement('div'); toast.className = 'save-toast';
+  saveBtn.onclick = () => {
+    const doneExercises = dayState.filter(s => s.getSetsDone() > 0).map(s => ({ name: s.name, sets: s.getSetsDone(), setsTotal: s.setsTotal, weight: s.getWeight() }));
+    if(doneExercises.length === 0){
+      toast.textContent = 'Kaydedilecek set bulunamadı — önce set işaretleyin.';
+      setTimeout(()=>{ toast.textContent=''; }, 2500); return;
+    }
+    const now = new Date();
+    const entry = {
+      id: `${day.id}-${now.getTime()}`, dayId: day.id, dayLabel: day.title,
+      dateStr: now.toLocaleDateString('tr-TR'), timeStr: now.toLocaleTimeString('tr-TR', {hour:'2-digit', minute:'2-digit'}),
+      timestamp: now.getTime(), exercises: doneExercises,
+    };
+    saveHistoryEntry(entry);
+    day.exercises.forEach((ex, idx) => setSetsDone(day.id, idx, 0));
+    toast.textContent = 'Antrenman kaydedildi ✓';
+    setTimeout(()=>{ toast.textContent=''; renderDay(); }, 900);
+  };
+  main.appendChild(saveBtn); main.appendChild(toast);
+
+  const notesSection = document.createElement('div');
+  notesSection.className = 'notes-section';
+  notesSection.innerHTML = `<h2>Notlar</h2>` + NOTES.map(([t,d]) => `<div class="note-item"><div class="t">${t}</div><div class="d">${d}</div></div>`).join('');
+  main.appendChild(notesSection);
+}
+
+const MUSCLE_LABELS = {
+  gogus: "Göğüs", sirt: "Sırt", omuz: "Omuz", biceps: "Biceps (Ön Kol)",
+  triceps: "Triceps (Arka Kol)", quad: "Bacak - Ön (Quadriceps)",
+  hamstring: "Bacak - Arka (Hamstring)", kalca: "Kalça (Glute)",
+  baldir: "Baldır", karin: "Karın",
+};
+
+const EXERCISE_DB = {
+  gogus: [
+    {name:"Barbell Bench Press", type:"compound", reps:"6-10", secondary:[{g:"triceps",w:0.5},{g:"omuz",w:0.25}]},
+    {name:"Incline Barbell Bench Press", type:"compound", reps:"6-10", secondary:[{g:"triceps",w:0.5},{g:"omuz",w:0.4}]},
+    {name:"Dumbbell Bench Press", type:"compound", reps:"8-12", secondary:[{g:"triceps",w:0.5},{g:"omuz",w:0.25}]},
+    {name:"Incline Dumbbell Press", type:"compound", reps:"8-12", secondary:[{g:"triceps",w:0.4},{g:"omuz",w:0.4}]},
+    {name:"Decline Bench Press", type:"compound", reps:"8-12", secondary:[{g:"triceps",w:0.5}]},
+    {name:"Chest Press Machine", type:"compound", reps:"8-12", secondary:[{g:"triceps",w:0.4}]},
+    {name:"Pec Deck / Chest Fly Machine", type:"izolasyon", reps:"10-15", secondary:[]},
+    {name:"Dumbbell Fly", type:"izolasyon", reps:"10-15", secondary:[]},
+    {name:"Cable Crossover", type:"izolasyon", reps:"12-15", secondary:[]},
+    {name:"Dips (Göğüs ağırlıklı)", type:"compound", reps:"8-12", secondary:[{g:"triceps",w:0.5},{g:"omuz",w:0.25}]},
+    {name:"Push-up", type:"compound", reps:"10-20", secondary:[{g:"triceps",w:0.4},{g:"omuz",w:0.2}]},
+    {name:"Smith Machine Bench Press", type:"compound", reps:"8-12", secondary:[{g:"triceps",w:0.4}]},
+    {name:"Machine Fly", type:"izolasyon", reps:"12-15", secondary:[]},
+    {name:"Incline Cable Fly", type:"izolasyon", reps:"12-15", secondary:[]},
+    {name:"Landmine Press", type:"compound", reps:"8-12", secondary:[{g:"triceps",w:0.3},{g:"omuz",w:0.3}]},
+    {name:"Svend Press", type:"izolasyon", reps:"12-15", secondary:[]},
+    {name:"Single-Arm Cable Fly", type:"izolasyon", reps:"12-15", secondary:[]},
+    {name:"Weighted Push-up", type:"compound", reps:"8-15", secondary:[{g:"triceps",w:0.4},{g:"omuz",w:0.2}]},
+    {name:"Incline Dumbbell Fly", type:"izolasyon", reps:"10-15", secondary:[]},
+    {name:"Pec-Deck Machine Fly", type:"izolasyon", reps:"12-15", secondary:[]},
+    {name:"Single-Arm Machine Fly", type:"izolasyon", reps:"12-15", secondary:[]},
+  ],
+  sirt: [
+    {name:"Deadlift (Conventional)", type:"compound", reps:"4-6", secondary:[{g:"hamstring",w:0.5},{g:"kalca",w:0.4}]},
+    {name:"Barbell Row", type:"compound", reps:"6-10", secondary:[{g:"biceps",w:0.4}]},
+    {name:"Pendlay Row", type:"compound", reps:"6-10", secondary:[{g:"biceps",w:0.3}]},
+    {name:"T-Bar Row (Barbell)", type:"compound", reps:"8-10", secondary:[{g:"biceps",w:0.4}]},
+    {name:"Seated Cable Row", type:"compound", reps:"10-12", secondary:[{g:"biceps",w:0.4}]},
+    {name:"Lat Pulldown (Wide Grip)", type:"compound", reps:"8-12", secondary:[{g:"biceps",w:0.4}]},
+    {name:"Pull-up (Overhand)", type:"compound", reps:"6-10", secondary:[{g:"biceps",w:0.5}]},
+    {name:"One-Arm Dumbbell Row", type:"compound", reps:"8-12", secondary:[{g:"biceps",w:0.3}]},
+    {name:"Straight-Arm Pulldown (Cable)", type:"izolasyon", reps:"12-15", secondary:[]},
+    {name:"Machine Row", type:"compound", reps:"10-12", secondary:[{g:"biceps",w:0.3}]},
+    {name:"Hyperextension (Alt Sırt)", type:"izolasyon", reps:"12-15", secondary:[{g:"hamstring",w:0.3},{g:"kalca",w:0.3}]},
+    {name:"Chest-Supported Row (Machine)", type:"compound", reps:"8-12", secondary:[{g:"biceps",w:0.3}]},
+    {name:"Meadows Row (Dumbbell)", type:"compound", reps:"8-12", secondary:[{g:"biceps",w:0.3}]},
+    {name:"Inverted Row", type:"compound", reps:"10-15", secondary:[{g:"biceps",w:0.3}]},
+    {name:"Rack Pull", type:"compound", reps:"5-8", secondary:[{g:"hamstring",w:0.3},{g:"kalca",w:0.3}]},
+    {name:"Wide-Grip Lat Pulldown", type:"compound", reps:"10-12", secondary:[{g:"biceps",w:0.3}]},
+    {name:"Close-Grip Lat Pulldown", type:"compound", reps:"10-12", secondary:[{g:"biceps",w:0.4}]},
+    {name:"Landmine Row", type:"compound", reps:"8-12", secondary:[{g:"biceps",w:0.3}]},
+    {name:"Single-Arm Lat Pulldown", type:"compound", reps:"10-12", secondary:[{g:"biceps",w:0.3}]},
+    {name:"Kroc Row (Dumbbell)", type:"compound", reps:"10-15", secondary:[{g:"biceps",w:0.3}]},
+    {name:"Chin-up (Underhand Pull-up)", type:"compound", reps:"6-10", secondary:[{g:"biceps",w:0.5}]},
+    {name:"Neutral Grip Pulldown", type:"compound", reps:"10-12", secondary:[{g:"biceps",w:0.4}]},
+    {name:"Sumo Deadlift", type:"compound", reps:"4-6", secondary:[{g:"hamstring",w:0.4},{g:"kalca",w:0.5}]},
+    {name:"Single-Arm T-Bar Row", type:"compound", reps:"8-10", secondary:[{g:"biceps",w:0.3}]},
+  ],
+  omuz: [
+    {name:"Overhead Press (Barbell)", type:"compound", reps:"6-10", secondary:[{g:"triceps",w:0.4}]},
+    {name:"Dumbbell Shoulder Press", type:"compound", reps:"8-12", secondary:[{g:"triceps",w:0.4}]},
+    {name:"Arnold Press", type:"compound", reps:"8-12", secondary:[{g:"triceps",w:0.3}]},
+    {name:"Machine Shoulder Press", type:"compound", reps:"8-12", secondary:[{g:"triceps",w:0.3}]},
+    {name:"Lateral Raise (Dumbbell)", type:"izolasyon", reps:"12-15", secondary:[]},
+    {name:"Cable Lateral Raise", type:"izolasyon", reps:"12-15", secondary:[]},
+    {name:"Front Raise", type:"izolasyon", reps:"12-15", secondary:[]},
+    {name:"Rear Delt Fly (Dumbbell)", type:"izolasyon", reps:"12-15", secondary:[]},
+    {name:"Face Pull (Cable)", type:"izolasyon", reps:"12-15", secondary:[{g:"sirt",w:0.2}]},
+    {name:"Upright Row (EZ Bar/Cable)", type:"compound", reps:"10-12", secondary:[{g:"biceps",w:0.2}]},
+    {name:"Landmine Press (Omuz)", type:"compound", reps:"8-12", secondary:[{g:"triceps",w:0.3}]},
+    {name:"Cable Front Raise", type:"izolasyon", reps:"12-15", secondary:[]},
+    {name:"Plate Front Raise", type:"izolasyon", reps:"12-15", secondary:[]},
+    {name:"Bent-Over Dumbbell Raise", type:"izolasyon", reps:"12-15", secondary:[]},
+    {name:"Machine Lateral Raise", type:"izolasyon", reps:"12-15", secondary:[]},
+    {name:"Cuban Press", type:"compound", reps:"10-12", secondary:[{g:"triceps",w:0.2}]},
+    {name:"Y-Raise", type:"izolasyon", reps:"12-15", secondary:[{g:"sirt",w:0.2}]},
+    {name:"Bradford Press", type:"compound", reps:"8-12", secondary:[{g:"triceps",w:0.3}]},
+    {name:"Pike Push-up", type:"compound", reps:"8-15", secondary:[{g:"triceps",w:0.3}]},
+    {name:"Single-Arm Cable Front Raise", type:"izolasyon", reps:"12-15", secondary:[]},
+    {name:"Face Pull (Dumbbell)", type:"izolasyon", reps:"12-15", secondary:[{g:"sirt",w:0.2}]},
+    {name:"Bent-Over Cable Raise", type:"izolasyon", reps:"12-15", secondary:[]},
+  ],
+  biceps: [
+    {name:"Barbell Curl", type:"izolasyon", reps:"8-12", secondary:[]},
+    {name:"Dumbbell Curl", type:"izolasyon", reps:"8-12", secondary:[]},
+    {name:"Hammer Curl (Dumbbell)", type:"izolasyon", reps:"8-12", secondary:[]},
+    {name:"Incline Dumbbell Curl", type:"izolasyon", reps:"10-12", secondary:[]},
+    {name:"Preacher Curl (EZ Bar)", type:"izolasyon", reps:"10-12", secondary:[]},
+    {name:"Cable Curl (Straight Bar)", type:"izolasyon", reps:"10-15", secondary:[]},
+    {name:"Concentration Curl", type:"izolasyon", reps:"10-15", secondary:[]},
+    {name:"EZ Bar Curl (Standing)", type:"izolasyon", reps:"8-12", secondary:[]},
+    {name:"Spider Curl (EZ Bar)", type:"izolasyon", reps:"10-12", secondary:[]},
+    {name:"Zottman Curl (Dumbbell)", type:"izolasyon", reps:"10-12", secondary:[]},
+    {name:"Cable Hammer Curl", type:"izolasyon", reps:"10-15", secondary:[]},
+    {name:"Drag Curl (Barbell/EZ Bar)", type:"izolasyon", reps:"8-12", secondary:[]},
+    {name:"Reverse Curl (Barbell/EZ Bar)", type:"izolasyon", reps:"10-15", secondary:[]},
+    {name:"Bayesian Cable Curl", type:"izolasyon", reps:"10-15", secondary:[]},
+    {name:"21s Curl (EZ Bar)", type:"izolasyon", reps:"21 (7+7+7)", secondary:[]},
+    {name:"Cross-Body Hammer Curl", type:"izolasyon", reps:"8-12", secondary:[]},
+    {name:"Close GripEZ Bar Curl", type:"izolasyon", reps:"8-12", secondary:[]},
+    {name:"Machine Biceps Curl", type:"izolasyon", reps:"10-15", secondary:[]},
+    {name:"Biceps Curl on Flat Bench", type:"izolasyon", reps:"10-12", secondary:[]},
+  ],
+  triceps: [
+    {name:"Triceps Pushdown (Cable)", type:"izolasyon", reps:"10-15", secondary:[]},
+    {name:"Skull Crusher (EZ Bar)", type:"izolasyon", reps:"8-12", secondary:[]},
+    {name:"Overhead Triceps Extension (Dumbbell)", type:"izolasyon", reps:"10-12", secondary:[]},
+    {name:"Close-Grip Bench Press", type:"compound", reps:"6-10", secondary:[{g:"gogus",w:0.3}]},
+    {name:"Dips (Triceps ağırlıklı)", type:"compound", reps:"8-12", secondary:[{g:"gogus",w:0.2}]},
+    {name:"Rope Pushdown (Cable)", type:"izolasyon", reps:"10-15", secondary:[]},
+    {name:"Cable Overhead Extension (Rope)", type:"izolasyon", reps:"10-12", secondary:[]},
+    {name:"Bench Dips", type:"izolasyon", reps:"10-15", secondary:[]},
+    {name:"JM Press", type:"compound", reps:"8-12", secondary:[]},
+    {name:"Diamond Push-up", type:"compound", reps:"10-15", secondary:[{g:"gogus",w:0.2}]},
+    {name:"Tate Press (Dumbbell)", type:"izolasyon", reps:"10-12", secondary:[]},
+    {name:"Single-Arm Overhead Extension (Dumbbell)", type:"izolasyon", reps:"10-12", secondary:[]},
+    {name:"Cable Kickback", type:"izolasyon", reps:"12-15", secondary:[]},
+    {name:"Machine Triceps Extension", type:"izolasyon", reps:"10-15", secondary:[]},
+    {name:"V-Bar Pushdown (Cable)", type:"izolasyon", reps:"10-15", secondary:[]},
+    {name:"Reverse Grip Pushdown", type:"izolasyon", reps:"10-15", secondary:[]},
+    {name:"Weighted Dips", type:"compound", reps:"6-10", secondary:[{g:"gogus",w:0.2}]},
+    {name:"Barbell JM Press", type:"compound", reps:"8-12", secondary:[]},
+    {name:"Lying Triceps Extension", type:"izolasyon", reps:"10-12", secondary:[]},
+  ],
+  quad: [
+    {name:"Back Squat (High Bar)", type:"compound", reps:"6-10", secondary:[{g:"kalca",w:0.3}]},
+    {name:"Front Squat (Barbell)", type:"compound", reps:"6-10", secondary:[{g:"kalca",w:0.2}]},
+    {name:"Leg Press (Machine)", type:"compound", reps:"8-12", secondary:[{g:"kalca",w:0.3}]},
+    {name:"Hack Squat (Machine)", type:"compound", reps:"8-12", secondary:[{g:"kalca",w:0.2}]},
+    {name:"Bulgarian Split Squat (Dumbbell)", type:"compound", reps:"8-12/bacak", secondary:[{g:"kalca",w:0.3}]},
+    {name:"Walking Lunge (Dumbbell)", type:"compound", reps:"10-12/bacak", secondary:[{g:"kalca",w:0.3}]},
+    {name:"Leg Extension (Machine)", type:"izolasyon", reps:"12-15", secondary:[]},
+    {name:"Goblet Squat (Kettlebell)", type:"compound", reps:"10-12", secondary:[{g:"kalca",w:0.2}]},
+    {name:"Sissy Squat", type:"izolasyon", reps:"10-15", secondary:[]},
+    {name:"Zercher Squat", type:"compound", reps:"6-10", secondary:[{g:"kalca",w:0.2}]},
+    {name:"Belt Squat (Machine/Cable)", type:"compound", reps:"8-12", secondary:[{g:"kalca",w:0.2}]},
+    {name:"Smith Machine Squat", type:"compound", reps:"8-12", secondary:[{g:"kalca",w:0.2}]},
+    {name:"Pistol Squat (Bodyweight/Weighted)", type:"compound", reps:"6-10/bacak", secondary:[{g:"kalca",w:0.3}]},
+    {name:"Curtsy Lunge", type:"compound", reps:"10-12/bacak", secondary:[{g:"kalca",w:0.3}]},
+    {name:"Reverse Lunge (Dumbbell)", type:"compound", reps:"10-12/bacak", secondary:[{g:"kalca",w:0.3}]},
+    {name:"Back Squat (Low Bar)", type:"compound", reps:"5-8", secondary:[{g:"kalca",w:0.4}]},
+    {name:"Hack Squat (Barbell)", type:"compound", reps:"8-12", secondary:[{g:"kalca",w:0.2}]},
+    {name:"Forward Lunge", type:"compound", reps:"10-12/bacak", secondary:[{g:"kalca",w:0.3}]},
+    {name:"Step-up", type:"compound", reps:"10-12/bacak", secondary:[{g:"kalca",w:0.3}]},
+  ],
+  hamstring: [
+    {name:"Romanian Deadlift (Barbell)", type:"compound", reps:"8-10", secondary:[{g:"kalca",w:0.4}]},
+    {name:"Leg Curl (Seated Machine)", type:"izolasyon", reps:"10-15", secondary:[]},
+    {name:"Leg Curl (Lying Machine)", type:"izolasyon", reps:"10-15", secondary:[]},
+    {name:"Good Morning (Barbell)", type:"compound", reps:"8-10", secondary:[{g:"kalca",w:0.3}]},
+    {name:"Stiff-Leg Deadlift (Barbell)", type:"compound", reps:"8-10", secondary:[{g:"kalca",w:0.4}]},
+    {name:"Nordic Curl (Bodyweight)", type:"izolasyon", reps:"6-10", secondary:[]},
+    {name:"Glute-Ham Raise", type:"compound", reps:"8-12", secondary:[{g:"kalca",w:0.3}]},
+    {name:"Single-Leg RDL (Dumbbell)", type:"compound", reps:"8-10/bacak", secondary:[{g:"kalca",w:0.4}]},
+    {name:"Leg Curl (Lying Dumbbell)", type:"izolasyon", reps:"10-15", secondary:[]},
+    {name:"Cable Pull-Through", type:"compound", reps:"10-15", secondary:[{g:"kalca",w:0.4}]},
+    {name:"Kettlebell Swing", type:"compound", reps:"12-20", secondary:[{g:"kalca",w:0.4}]},
+    {name:"Reverse Hyper", type:"izolasyon", reps:"10-15", secondary:[{g:"kalca",w:0.3}]},
+    {name:"Romanian Deadlift (Dumbbell)", type:"compound", reps:"8-10", secondary:[{g:"kalca",w:0.4}]},
+    {name:"Leg Curl (Single-Leg Seated)", type:"izolasyon", reps:"10-15/bacak", secondary:[]},
+    {name:"Stiff-Leg Deadlift (Dumbbell)", type:"compound", reps:"8-10", secondary:[{g:"kalca",w:0.4}]},
+  ],
+  kalca: [
+    {name:"Hip Thrust (Barbell)", type:"compound", reps:"8-12", secondary:[{g:"hamstring",w:0.2}]},
+    {name:"Glute Bridge (Barbell)", type:"compound", reps:"10-15", secondary:[]},
+    {name:"Cable Kickback (Glute)", type:"izolasyon", reps:"12-15", secondary:[]},
+    {name:"Sumo Deadlift (Kalça)", type:"compound", reps:"6-10", secondary:[{g:"hamstring",w:0.3},{g:"quad",w:0.2}]},
+    {name:"Hip Abductor Machine", type:"izolasyon", reps:"12-15", secondary:[]},
+    {name:"Frog Pump", type:"izolasyon", reps:"15-20", secondary:[]},
+    {name:"Single-Leg Hip Thrust", type:"compound", reps:"10-12/bacak", secondary:[{g:"hamstring",w:0.2}]},
+    {name:"Banded Lateral Walk", type:"izolasyon", reps:"12-15/taraf", secondary:[]},
+    {name:"Cable Hip Abduction", type:"izolasyon", reps:"12-15", secondary:[]},
+    {name:"Hip Thrust Machine", type:"compound", reps:"8-12", secondary:[{g:"hamstring",w:0.2}]},
+    {name:"Clamshell", type:"izolasyon", reps:"15-20", secondary:[]},
+    {name:"Curtsy Lunge (Bodyweight/Weighted)", type:"compound", reps:"10-12/bacak", secondary:[{g:"quad",w:0.3}]},
+    {name:"Seated Hip Abduction (Banded)", type:"izolasyon", reps:"12-15", secondary:[]},
+  ],
+  baldir: [
+    {name:"Standing Calf Raise (Barbell/Machine)", type:"izolasyon", reps:"12-20", secondary:[]},
+    {name:"Seated Calf Raise (Machine)", type:"izolasyon", reps:"12-20", secondary:[]},
+    {name:"Leg Press Calf Raise", type:"izolasyon", reps:"12-20", secondary:[]},
+    {name:"Donkey Calf Raise", type:"izolasyon", reps:"12-20", secondary:[]},
+    {name:"Single-Leg Calf Raise", type:"izolasyon", reps:"12-15/bacak", secondary:[]},
+    {name:"Tibialis Raise (Ön Baldır)", type:"izolasyon", reps:"15-20", secondary:[]},
+    {name:"Standing Calf Raise (Dumbbell)", type:"izolasyon", reps:"12-20", secondary:[]},
+    {name:"Leg Curl (Seated for Calf)", type:"izolasyon", reps:"12-20", secondary:[]},
+  ],
+  karin: [
+    {name:"Weighted Cable Crunch", type:"core", reps:"12-15", secondary:[]},
+    {name:"Hanging Leg Raise", type:"core", reps:"10-15", secondary:[]},
+    {name:"Plank (Bodyweight/Weighted)", type:"core", reps:"30-60 sn", secondary:[]},
+    {name:"Ab Wheel Rollout", type:"core", reps:"8-12", secondary:[]},
+    {name:"Machine Crunch", type:"core", reps:"12-15", secondary:[]},
+    {name:"Russian Twist (Medicine Ball/Plate)", type:"core", reps:"12-15/taraf", secondary:[]},
+    {name:"Cable Woodchopper", type:"core", reps:"12/taraf", secondary:[]},
+    {name:"Reverse Crunch", type:"core", reps:"12-15", secondary:[]},
+    {name:"Sit-up", type:"core", reps:"15-20", secondary:[]},
+    {name:"V-Up (Legs Straight)", type:"core", reps:"12-15", secondary:[]},
+    {name:"Bicycle Crunch", type:"core", reps:"15-20", secondary:[]},
+    {name:"Toes-to-Bar", type:"core", reps:"8-12", secondary:[]},
+    {name:"Dead Bug", type:"core", reps:"10-12/taraf", secondary:[]},
+    {name:"Side Plank", type:"core", reps:"30-45 sn/taraf", secondary:[]},
+    {name:"Decline Sit-up", type:"core", reps:"12-15", secondary:[]},
+    {name:"Stability Ball Rollout", type:"core", reps:"10-12", secondary:[]},
+    {name:"Pallof Press (Cable)", type:"core", reps:"10-12/taraf", secondary:[]},
+    {name:"Vertical Leg Raise", type:"core", reps:"10-15", secondary:[]},
+    {name:"Ab Coaster Machine", type:"core", reps:"12-15", secondary:[]},
+    {name:"Knee-up", type:"core", reps:"15-20", secondary:[]},
+    {name:"Weighted Sit-up", type:"core", reps:"10-15", secondary:[]},
+  ],
+};
+
+Object.values(EXERCISE_DB).forEach(list => {
+  list.forEach(e => { if(!e.rest){ e.rest = e.type === 'compound' ? '2-3 dk' : (e.type === 'core' ? '45-60 sn' : '60-90 sn'); } });
+});
+
+function getCustomProgram(){
+  try{ const raw = localStorage.getItem('custom_program'); if(raw) return JSON.parse(raw); }catch(e){}
+  return { days: [ { id: cpUid(), name:"Gün 1", exercises: [] } ] };
+}
+function saveCustomProgram(prog){ try{ localStorage.setItem('custom_program', JSON.stringify(prog)); }catch(e){} }
+function cpUid(){ return 'id' + Math.random().toString(36).slice(2,9) + Date.now().toString(36); }
+
+async function renderHistory(){
+  const main = document.getElementById('main');
+  main.innerHTML = `<div class="day-note">Kaydedilen antrenmanlarınız burada listelenir — en yeni en üstte.</div>`;
+  const hist = getHistory();
+  if(hist.length === 0){
+    const empty = document.createElement('div'); empty.className = 'hist-empty';
+    empty.textContent = 'Henüz kayıtlı antrenman yok. Bir günü tamamlayıp "Antrenmanı Kaydet" butonuna bastığınızda burada görünecek.';
+    main.appendChild(empty); return;
+  }
+  hist.forEach(entry => {
+    const card = document.createElement('div'); card.className = 'hist-card';
+    const shortDay = entry.dayLabel.split('—')[0].trim();
+    card.innerHTML = `
+      <div class="hist-head">
+        <div>
+          <div class="hist-day">${shortDay}</div>
+          <div class="hist-datetime">${entry.dateStr} · ${entry.timeStr}</div>
+        </div>
+        <button class="hist-del" aria-label="Kaydı sil">Sil</button>
+      </div>
+      ${entry.exercises.map(ex => `<div class="hist-ex-row"><span class="hist-ex-name">${ex.name}</span><span class="hist-ex-stats">${ex.sets}/${ex.setsTotal} set · ${fmt(ex.weight)} kg</span></div>`).join('')}
+    `;
+    card.querySelector('.hist-del').onclick = () => { deleteHistoryEntry(entry.id); renderHistory(); };
+    main.appendChild(card);
+  });
+}
+
+let builderOpenPicker = {};
+let builderOpenGroup = {};
+
+function computeVolume(prog){
+  const totals = {}; const daysHit = {};
+  Object.keys(MUSCLE_LABELS).forEach(k => { totals[k] = 0; daysHit[k] = new Set(); });
+  prog.days.forEach(day => {
+    day.exercises.forEach(ex => {
+      const sets = parseFloat(ex.sets) || 0;
+      if(totals[ex.muscleKey] === undefined) return;
+      totals[ex.muscleKey] += sets; daysHit[ex.muscleKey].add(day.id);
+      (ex.secondary||[]).forEach(s => {
+        if(totals[s.g] === undefined) return;
+        totals[s.g] += sets * s.w; daysHit[s.g].add(day.id);
+      });
+    });
+  });
+  return { totals, daysHit };
+}
+
+function volumeStatus(sets){
+  if(sets <= 0.4) return 'zero'; if(sets < 10) return 'low'; if(sets <= 20) return 'ok'; return 'high';
+}
+function statusText(status){
+  return { zero:'Çalışılmıyor', low:'Yetersiz', ok:'Yeterli', high:'Çok Yüksek' }[status];
+}
+
+function usedExerciseNames(prog){
+  const set = new Set(); prog.days.forEach(d => d.exercises.forEach(ex => set.add(ex.name))); return set;
+}
+
+function renderAnalysis(prog, container){
+  container.className = 'analysis-section';
+  const { totals, daysHit } = computeVolume(prog);
+  const used = usedExerciseNames(prog);
+
+  const rowsHtml = Object.keys(MUSCLE_LABELS).map(key => {
+    const sets = Math.round(totals[key] * 10) / 10;
+    const status = volumeStatus(sets);
+    return `
+      <div class="muscle-row-mini">
+        <div>
+          <div class="muscle-name-mini">${MUSCLE_LABELS[key]}</div>
+          <div class="muscle-sets-mini">${sets} set/hafta</div>
+        </div>
+        <div class="status-label-mini ${status}">${statusText(status)}</div>
+      </div>
+    `;
+  }).join('');
+
+  const suggestions = Object.keys(MUSCLE_LABELS).filter(key => ['zero','low'].includes(volumeStatus(totals[key]))).map(key => {
+      const current = Math.round(totals[key]*10)/10;
+      const need = Math.max(1, Math.round((10 - current) / 3));
+      const candidates = EXERCISE_DB[key].filter(e => !used.has(e.name)).slice(0, 2);
+      const names = candidates.length ? candidates.map(e => `${e.name} (${e.reps} tekrar)`).join(', ') : 'mevcut hareketlerin set sayısını artırın';
+      return `<div class="suggest-box"><b>${MUSCLE_LABELS[key]} — şu an ${current} set/hafta</b>Haftalık en az 10 sete ulaşmak için önerilen: ${names}.</div>`;
+    }).join('');
+
+  container.innerHTML = `
+    <div class="analysis-title">Görsel Hacim Analizi</div>
+    <div class="analysis-card-visual">
+      <div class="muscle-map-container">
+        <div class="muscle-map-bg"></div>
+        <div class="muscle-overlay overlay-gogus status-${volumeStatus(totals.gogus)}" title="Göğüs: ${Math.round(totals.gogus*10)/10} set"></div>
+        <div class="muscle-overlay overlay-sirt status-${volumeStatus(totals.sirt)}" title="Sırt: ${Math.round(totals.sirt*10)/10} set"></div>
+        <div class="muscle-overlay overlay-omuz status-${volumeStatus(totals.omuz)}" title="Ön Omuz: ${Math.round(totals.omuz*10)/10} set"></div>
+        <div class="muscle-overlay overlay-omuz-arka status-${volumeStatus(totals.omuz)}" title="Arka Omuz: ${Math.round(totals.omuz*10)/10} set"></div>
+        <div class="muscle-overlay overlay-biceps status-${volumeStatus(totals.biceps)}" title="Biceps: ${Math.round(totals.biceps*10)/10} set"></div>
+        <div class="muscle-overlay overlay-triceps status-${volumeStatus(totals.triceps)}" title="Triceps: ${Math.round(totals.triceps*10)/10} set"></div>
+        <div class="muscle-overlay overlay-quad status-${volumeStatus(totals.quad)}" title="Quads: ${Math.round(totals.quad*10)/10} set"></div>
+        <div class="muscle-overlay overlay-hamstring status-${volumeStatus(totals.hamstring)}" title="Hamstrings: ${Math.round(totals.hamstring*10)/10} set"></div>
+        <div class="muscle-overlay overlay-kalca status-${volumeStatus(totals.kalca)}" title="Glutes: ${Math.round(totals.kalca*10)/10} set"></div>
+        <div class="muscle-overlay overlay-baldir status-${volumeStatus(totals.baldir)}" title="Baldır: ${Math.round(totals.baldir*10)/10} set"></div>
+        <div class="muscle-overlay overlay-karin status-${volumeStatus(totals.karin)}" title="Karın: ${Math.round(totals.karin*10)/10} set"></div>
+      </div>
+      <div class="analysis-text">${rowsHtml}</div>
+    </div>
+    ${suggestions || '<div class="suggest-empty">Tüm bölgeler için yeterli hacim sağlanmış görünüyor 👍</div>'}
+    <div class="day-note" style="margin-top:4px;">Kılavuz: kas grubu başına haftada &lt;10 set yetersiz, 10-20 set optimal aralık, 20+ set dikkatli olunması gereken yüksek hacim olarak değerlendirilir. Haritadaki kas bölgeleri haftalık hacme göre kırmızı, yeşil, turuncu veya gri (çalışılmıyor) olarak renklenir.</div>
+  `;
+}
+
+let currentAddingDay = null; 
+let currentAddingEx = null;
+
+function openPreviewModal(muscleKey, exName, dayId = null) {
+  currentAddingEx = EXERCISE_DB[muscleKey].find(e => e.name === exName);
+  currentAddingDay = dayId;
+  document.getElementById('modalTitle').textContent = exName;
+  document.getElementById('modalImg').style.backgroundImage = `url('data:image/svg+xml;charset=utf-8,%3Csvg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 300 300"%3E%3Crect width="100%25" height="100%25" fill="%23eee" /%3E%3Ctext x="150" y="160" font-size="14" text-anchor="middle" fill="%23aaa"%3E${encodeURIComponent(exName)} Form Görseli Yer Tutucu%3C/text%3E%3C/svg%3E')`; 
+  document.getElementById('modalDesc').textContent = `Bu hareketin temel form illüstrasyonu. ${currentAddingEx.type === 'compound' ? 'Bileşik' : 'İzolasyon'} bir harekettir. Temel adımları gösterir.`;
+
+  const addBtn = document.getElementById('modalAddBtn');
+  if(currentAddingDay) { addBtn.style.display = 'block'; addBtn.onclick = () => addExFromModal(); } 
+  else { addBtn.style.display = 'none'; }
+  document.getElementById('previewModal').style.display = 'block';
+}
+
+function closePreviewModal() {
+  document.getElementById('previewModal').style.display = 'none';
+  currentAddingDay = null; currentAddingEx = null;
+}
+
+function addExFromModal() {
+  const prog = getCustomProgram();
+  const day = prog.days.find(d => d.id === currentAddingDay);
+  const muscleKey = Object.keys(EXERCISE_DB).find(k => EXERCISE_DB[k].some(e => e.name === currentAddingEx.name));
+
+  day.exercises.push({ name: currentAddingEx.name, muscleKey, sets: 3, reps: currentAddingEx.reps, rest: currentAddingEx.rest, secondary: currentAddingEx.secondary || [], });
+  saveCustomProgram(prog); closePreviewModal(); renderBuilder();
+}
+
+function renderBuilder(){
+  const main = document.getElementById('main'); main.innerHTML = '';
+  const prog = getCustomProgram();
+
+  const note = document.createElement('div'); note.className = 'day-note';
+  note.textContent = 'Kendi programını oluştur: kaç gün antrenman yapacağını seç, her güne istediğin bölgeden hareket ekle. Aşağıda haftalık görsel hacim analizi otomatik hesaplanır.';
+  main.appendChild(note);
+
+  const countRow = document.createElement('div'); countRow.className = 'count-row';
+  countRow.innerHTML = `
+    <div class="count-label">Antrenman Günü Sayısı</div>
+    <div class="count-stepper">
+      <button class="cs-minus" aria-label="Gün çıkar">−</button>
+      <div class="count-num">${prog.days.length}</div>
+      <button class="cs-plus" aria-label="Gün ekle">+</button>
+    </div>
+  `;
+  countRow.querySelector('.cs-minus').onclick = () => { if(prog.days.length > 1){ prog.days.pop(); saveCustomProgram(prog); renderBuilder(); } };
+  countRow.querySelector('.cs-plus').onclick = () => { if(prog.days.length < 7){ prog.days.push({ id: cpUid(), name:`Gün ${prog.days.length+1}`, exercises: [] }); saveCustomProgram(prog); renderBuilder(); } };
+  main.appendChild(countRow);
+
+  const analysisContainer = document.createElement('div');
+
+  prog.days.forEach((day) => {
+    const card = document.createElement('div'); card.className = 'day-card';
+    const head = document.createElement('div');
+    head.style.display = 'flex'; head.style.justifyContent = 'space-between'; head.style.alignItems = 'center';
+    head.innerHTML = `<input class="day-name-input" value="${day.name}" /><button class="day-del">Günü Sil ✕</button>`;
+    const nameInput = head.querySelector('.day-name-input');
+    nameInput.oninput = () => { day.name = nameInput.value; saveCustomProgram(prog); };
+    head.querySelector('.day-del').onclick = () => { if(prog.days.length <= 1){ return; } prog.days = prog.days.filter(d => d.id !== day.id); saveCustomProgram(prog); renderBuilder(); };
+    card.appendChild(head);
+
+    day.exercises.forEach((ex, exIdx) => {
+      const row = document.createElement('div'); row.className = 'added-ex-row';
+      row.innerHTML = `
+        <div class="added-ex-top">
+          <div><div class="added-ex-name">${ex.name}</div><div class="added-ex-muscle">${MUSCLE_LABELS[ex.muscleKey]}</div></div>
+          <button class="ex-remove" aria-label="Hareketi kaldır">Kaldır</button>
+        </div>
+        <div class="added-ex-controls">
+          <label class="muscle-sets-mini">Set <input type="number" min="1" max="10" class="mini-input sets-input" value="${ex.sets}"/></label>
+          <label class="muscle-sets-mini">Tekrar <input type="text" class="mini-input reps-input" value="${ex.reps}"/></label>
+          <label class="muscle-sets-mini">Dinlenme <input type="text" class="mini-input rest-input" value="${ex.rest || '90 sn'}"/></label>
+          <a class="added-ex-link" href="${exImgLink(ex.name)}" target="_blank" rel="noopener">Görsel</a>
+        </div>
+      `;
+      row.querySelector('.sets-input').oninput = (e) => { ex.sets = parseFloat(e.target.value) || 0; saveCustomProgram(prog); renderAnalysis(prog, analysisContainer); };
+      row.querySelector('.reps-input').oninput = (e) => { ex.reps = e.target.value; saveCustomProgram(prog); };
+      row.querySelector('.rest-input').oninput = (e) => { ex.rest = e.target.value; saveCustomProgram(prog); };
+      row.querySelector('.ex-remove').onclick = () => { day.exercises.splice(exIdx, 1); saveCustomProgram(prog); renderBuilder(); };
+      card.appendChild(row);
+    });
+
+    const addBtn = document.createElement('button'); addBtn.className = 'add-ex-btn';
+    addBtn.textContent = builderOpenPicker[day.id] ? '− Hareket Seçiciyi Kapat' : '+ Hareket Ekle';
+    addBtn.onclick = () => { builderOpenPicker[day.id] = !builderOpenPicker[day.id]; renderBuilder(); };
+    card.appendChild(addBtn);
+
+    if(builderOpenPicker[day.id]){
+      const picker = document.createElement('div'); picker.className = 'picker';
+      Object.keys(EXERCISE_DB).forEach(muscleKey => {
+        const groupHead = document.createElement('div'); groupHead.className = 'picker-group-head';
+        groupHead.innerHTML = `<span>${MUSCLE_LABELS[muscleKey]}</span><span class="picker-group-count">${EXERCISE_DB[muscleKey].length} hareket</span>`;
+        groupHead.onclick = () => { builderOpenGroup[day.id] = (builderOpenGroup[day.id] === muscleKey) ? null : muscleKey; renderBuilder(); };
+        picker.appendChild(groupHead);
+
+        const list = document.createElement('div'); list.className = 'picker-ex-list' + (builderOpenGroup[day.id] === muscleKey ? ' open' : '');
+        EXERCISE_DB[muscleKey].forEach(dbEx => {
+          const item = document.createElement('div'); item.className = 'picker-ex-item';
+          item.innerHTML = `<span>${dbEx.name}</span><div><span class="picker-ex-preview" onclick="openPreviewModal('${muscleKey}','${dbEx.name}', '${day.id}')" title="Hareketi Önizle">👁️</span><span class="picker-ex-reps">${dbEx.reps}</span></div>`;
+          item.onclick = (e) => {
+            if(e.target.className !== 'picker-ex-preview'){
+              day.exercises.push({ name: dbEx.name, muscleKey, sets: 3, reps: dbEx.reps, rest: dbEx.rest, secondary: dbEx.secondary || [], });
+              saveCustomProgram(prog); renderBuilder();
+            }
+          };
+          list.appendChild(item);
+        });
+        picker.appendChild(list);
+      });
+      const closeBtn = document.createElement('button'); closeBtn.className = 'picker-close';
+      closeBtn.textContent = 'Seçiciyi Kapat'; closeBtn.onclick = () => { builderOpenPicker[day.id] = false; renderBuilder(); };
+      picker.appendChild(closeBtn); card.appendChild(picker);
+    }
+    main.appendChild(card);
+  });
+
+  main.appendChild(analysisContainer);
+  renderAnalysis(prog, analysisContainer);
+
+  const activateBtn = document.createElement('button'); activateBtn.className = 'save-btn'; activateBtn.textContent = 'Bu Programı Ana Ekrana Aktif Et';
+  const activateToast = document.createElement('div'); activateToast.className = 'save-toast';
+  activateBtn.onclick = () => {
+    const hasAny = prog.days.some(d => d.exercises.length > 0);
+    if(!hasAny){ activateToast.textContent = 'Aktif etmeden önce en az bir güne hareket ekleyin.'; setTimeout(()=>{ activateToast.textContent=''; }, 2500); return; }
+    const activeDays = prog.days.map(day => ({
+      id: day.id, shortLabel: day.name || 'Gün', title: day.name || 'Gün', note: 'Kendi oluşturduğunuz program.',
+      exercises: day.exercises.map(ex => ({ blok: MUSCLE_LABELS[ex.muscleKey] || '', name: ex.name, sr: `${ex.sets}x${ex.reps}`, rest: ex.rest || '90 sn', start: 0, })),
+    }));
+    try{ localStorage.setItem('active_program', JSON.stringify({ days: activeDays })); }catch(e){}
+    activateToast.textContent = 'Program aktif edildi ✓ Sekmeler güncelleniyor...';
+    setTimeout(()=>{ currentDay = 0; renderTabs(); renderView(); }, 700);
+  };
+  main.appendChild(activateBtn); main.appendChild(activateToast);
+
+  const usingCustom = (() => { try{ return !!localStorage.getItem('active_program'); }catch(e){ return false; } })();
+  if(usingCustom){
+    const resetBtn = document.createElement('button'); resetBtn.className = 'picker-close'; resetBtn.style.marginTop = '8px'; resetBtn.style.borderRadius = '10px';
+    resetBtn.textContent = 'Varsayılan 3 Günlük Programa Geri Dön';
+    resetBtn.onclick = () => { try{ localStorage.removeItem('active_program'); }catch(e){} currentDay = 0; renderTabs(); renderView(); };
+    main.appendChild(resetBtn);
+  }
+}
+
+</script>
+</body>
+</html>

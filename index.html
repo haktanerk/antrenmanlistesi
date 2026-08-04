@@ -175,7 +175,7 @@
     <div class="tabs" id="tabs"></div>
   </header>
   <main id="main"></main>
-  <footer>Tüm kişisel ayarlarınız ve ağırlıklarınız bulutta saklanır.</footer>
+  <footer>Tüm kişisel ayarlarınız ve ağırlıklarınız %100 bulut tabanlıdır.</footer>
 </div>
 
 <script>
@@ -189,6 +189,7 @@ const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_
 let currentUser = null;
 let currentUsername = "";
 
+// Bulut belleği
 let cloudData = { weights: {}, custom_program: null, saved_programs: [], session_state: {} };
 
 const authScreen = document.getElementById('auth-screen');
@@ -238,6 +239,7 @@ supabaseClient.auth.onAuthStateChange(async (event, session) => {
     const { data: profile } = await supabaseClient.from('profiles').select('username').eq('id', currentUser.id).single();
     if(profile) currentUsername = profile.username;
 
+    // Buluttaki verileri ÇEK
     const { data: uData } = await supabaseClient.from('user_data').select('*').eq('user_id', currentUser.id).single();
     if(uData) {
       cloudData = {
@@ -264,7 +266,7 @@ supabaseClient.auth.onAuthStateChange(async (event, session) => {
 });
 
 // ==========================================
-// ANA UYGULAMA MANTIĞI
+// ANA UYGULAMA MANTIĞI VE SENKRONİZASYON
 // ==========================================
 let currentDay = parseInt(sessionStorage.getItem('currentTab')) || 0;
 
@@ -284,22 +286,11 @@ function getProgramList(){
 function getCustomProgram(){
   if(cloudData.custom_program && cloudData.custom_program.days) return cloudData.custom_program;
   cloudData.custom_program = { days: [ { id: cpUid(), name:"Gün 1", exercises: [] } ] };
-  if(currentUser) {
-    supabaseClient.from('user_data').update({ custom_program: cloudData.custom_program }).eq('user_id', currentUser.id).then();
-  }
+  if(currentUser) saveCloudData();
   return cloudData.custom_program;
 }
 
-async function saveCustomProgram(prog) {
-  cloudData.custom_program = prog;
-  try {
-    const { error } = await supabaseClient.from('user_data')
-      .update({ custom_program: prog })
-      .eq('user_id', currentUser.id);
-    if (error) console.error('Özel program kaydedilemedi:', error);
-  } catch (err) { console.error('Özel program güncelleme hatası:', err); }
-}
-
+// ANA BULUT SENKRONİZASYON FONKSİYONU (Eksik verileri güvenle yollar)
 async function saveCloudData() {
   try {
     const { error } = await supabaseClient.from('user_data')
@@ -310,8 +301,17 @@ async function saveCloudData() {
         session_state: cloudData.session_state
       })
       .eq('user_id', currentUser.id);
-    if (error) console.error('Cloud veri güncelleme hatası:', error);
+      
+    if (error) {
+       console.error(error);
+       alert('Buluta kaydederken hata oluştu. Veritabanı tablolarının oluşturulduğundan emin olun!');
+    }
   } catch (err) { console.error('Cloud güncelleme hatası:', err); }
+}
+
+async function saveCustomProgram(prog) {
+  cloudData.custom_program = prog;
+  await saveCloudData();
 }
 
 function getTabLabels(){
@@ -353,7 +353,7 @@ function parseSetsTotal(sr){ const m = sr.match(/^(\d+)\s*x/i); return m ? parse
 function parseRestSeconds(rt){ const nums=[]; let m; const re=/(\d+(?:\.\d+)?)\s*(dk|sn)/gi; while((m=re.exec(rt))!==null){ nums.push(m[2].toLowerCase()==='dk'?parseFloat(m[1])*60:parseFloat(m[1])); } return nums.length?Math.round(nums.reduce((a,b)=>a+b,0)/nums.length):90; }
 function fmtTime(s){ s=Math.max(0,Math.round(s)); const m=Math.floor(s/60); return `${String(m).padStart(2,'0')}:${String(s%60).padStart(2,'0')}`; }
 
-// --- Set durumlarını cloud'dan oku/yaz ---
+// --- Set durumları (Bulut senkronizeli) ---
 function getSetsDone(dayId, idx) {
   const key = `${dayId}_${idx}`;
   return cloudData.session_state[key] || 0;
@@ -365,7 +365,7 @@ async function setSetsDone(dayId, idx, value) {
   await saveCloudData();
 }
 
-// --- Ağırlıkları cloud'dan oku/yaz ---
+// --- Ağırlıklar (Bulut senkronizeli) ---
 function getWeight(dayId, idx, fallback){
   const key = `${dayId}_${idx}`;
   if(cloudData.weights && cloudData.weights[key] !== undefined) return cloudData.weights[key];
@@ -379,17 +379,15 @@ async function setWeight(dayId, idx, value){
   await saveCloudData();
 }
 
-// --- Antrenman kaydını buluta ekle ---
+// --- Antrenman Kaydı (Bulut) ---
 async function saveHistoryEntryToCloud(entry){
-  const { error } = await supabaseClient
-    .from("workouts")
-    .insert([{ user_id: currentUser.id, workout_data: entry }]);
+  const { error } = await supabaseClient.from("workouts").insert([{ user_id: currentUser.id, workout_data: entry }]);
   if(error) {
     console.error('Antrenman kaydedilemedi:', error);
-    alert('Kayıt başarısız: ' + error.message);
-    return { data: null, error };
+    alert('Kayıt başarısız oldu. Workouts tablosunun kurulu olduğundan emin olun! Hata: ' + error.message);
+    return { error };
   }
-  return { data: null, error: null };
+  return { error: null };
 }
 
 async function renderHistory(){
@@ -540,6 +538,7 @@ function renderDaySection(day, main){
 
   const saveBtn = document.createElement('button'); saveBtn.className = 'save-btn'; saveBtn.textContent = `"${day.title || day.shortLabel || day.name}" Gününü Kaydet`;
   const toast = document.createElement('div'); saveBtn.style.marginBottom = '4px'; toast.className = 'save-toast';
+  
   saveBtn.onclick = async () => {
     const doneExercises = dayState.map(s => ({
       name: s.name,
@@ -554,6 +553,7 @@ function renderDaySection(day, main){
 
     saveBtn.textContent = "Kaydediliyor...";
     const result = await saveHistoryEntryToCloud(entry);
+    
     if (result.error) {
       toast.textContent = 'Kayıt başarısız!';
       saveBtn.textContent = 'Tekrar Dene';
@@ -561,7 +561,6 @@ function renderDaySection(day, main){
       return;
     }
 
-    // Set durumlarını sıfırla
     for(let idx=0; idx<day.exercises.length; idx++){
       await setSetsDone(day.id, idx, 0);
     }
@@ -730,7 +729,7 @@ async function renderBuilder(){
     saveToast2.textContent = 'Kaydediliyor...';
     await saveCloudData();
 
-    // Özel programı sıfırla
+    // Özel program taslağını sıfırla
     cloudData.custom_program = { days: [ { id: cpUid(), name:"Gün 1", exercises: [] } ] };
     await saveCustomProgram(cloudData.custom_program);
 

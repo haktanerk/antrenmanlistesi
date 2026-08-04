@@ -145,7 +145,7 @@
   .mini-input{ font-family:'IBM Plex Mono', monospace; font-size:13px; font-weight:600; border:1px solid var(--line); border-radius:6px; padding:6px 4px; width:46px; text-align:center; background:#fff; color:var(--text); }
   .reps-input{ width:60px; }
   .ex-remove{ border:1px solid #fca5a5; background:#fef2f2; color:var(--warn); border-radius:6px; font-size:11px; font-weight:600; cursor:pointer; padding:4px 8px; }
-  .add-ex-btn{ display:block; width:100%; margin-top:10px; padding:14px; background:transparent; border:2px dashed var(--accent-dim); border-radius:12px; color:var(--accent); font-weight:700; font-size:14px; cursor:pointer; }
+  .add-ex-btn{ display:block; width:100%; margin-top:10px; padding:11px; background:transparent; border:2px dashed var(--accent-dim); border-radius:12px; color:var(--accent); font-weight:700; font-size:14px; cursor:pointer; }
 
   .picker{ margin-top:10px; border:1px solid var(--line); border-radius:12px; overflow:hidden; background:var(--bg); }
   .picker-group-head{ padding:12px; font-weight:700; font-size:14px; cursor:pointer; display:flex; justify-content:space-between; align-items:center; background:var(--surface-2); border-top:1px solid var(--line); }
@@ -191,14 +191,14 @@
   </div>
 
   <div class="auth-body">
-    <!-- Giriş Formu -->
+    <!-- Giriş Formu (Sadece E-posta) -->
     <div id="login-form">
-      <input type="text" id="login-identifier" class="auth-input" placeholder="Kullanıcı Adı veya E-posta" />
+      <input type="email" id="login-email" class="auth-input" placeholder="E-posta Adresiniz" />
       <input type="password" id="login-password" class="auth-input" placeholder="Şifreniz" />
       <button class="auth-btn-primary" onclick="signIn()">Giriş Yap</button>
     </div>
 
-    <!-- Kayıt Formu -->
+    <!-- Kayıt Formu (Kullanıcı Adı ve Şifre Doğrulama İçerir) -->
     <div id="signup-form" style="display:none;">
       <input type="text" id="signup-username" class="auth-input" placeholder="Kullanıcı Adı (Örn: haktaner)" />
       <input type="email" id="signup-email" class="auth-input" placeholder="E-posta Adresiniz" />
@@ -236,6 +236,7 @@ const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_
 let currentUser = null;
 let currentUsername = "";
 
+// Bulut belleği
 let cloudData = { weights: {}, custom_program: null, saved_programs: [], session_state: {} };
 
 const authScreen = document.getElementById('auth-screen');
@@ -286,21 +287,15 @@ async function signUp() {
 }
 
 async function signIn() {
-  let identifier = document.getElementById('login-identifier').value.trim();
+  const email = document.getElementById('login-email').value.trim();
   const password = document.getElementById('login-password').value;
-  if (!identifier || !password) return showMsg('Lütfen bilgileri girin.', true);
+  
+  if (!email || !password) return showMsg('Lütfen e-posta ve şifre girin.', true);
 
   authMsg.textContent = 'Giriş yapılıyor...';
-  let loginEmail = identifier;
 
-  if (!identifier.includes('@')) {
-    const { data: prof, error: pErr } = await supabaseClient.from('profiles').select('email').eq('username', identifier).maybeSingle();
-    if(prof && prof.email) loginEmail = prof.email;
-    else return showMsg('Kullanıcı adı bulunamadı.', true);
-  }
-
-  const { error } = await supabaseClient.auth.signInWithPassword({ email: loginEmail, password });
-  if (error) showMsg('Hatalı bilgiler.', true);
+  const { error } = await supabaseClient.auth.signInWithPassword({ email, password });
+  if (error) showMsg('Hatalı e-posta veya şifre.', true);
 }
 
 async function signOut() { await supabaseClient.auth.signOut(); }
@@ -314,6 +309,7 @@ supabaseClient.auth.onAuthStateChange(async (event, session) => {
     if (hasInitialized) return;
     hasInitialized = true;
 
+    // 406 Hatasını önlemek için güvenli array çekimi
     const { data: profileArray } = await supabaseClient.from('profiles').select('username').eq('id', currentUser.id);
     if(profileArray && profileArray.length > 0) currentUsername = profileArray[0].username;
 
@@ -513,7 +509,11 @@ function renderProgramView(program){
 
   headerDiv.querySelector('#share-prog-btn').onclick = async function() {
       this.textContent = "Gönderiliyor...";
-      await supabaseClient.from('programs').insert([{ user_id: currentUser.id, title: program.name, is_public: true, program_data: program }]);
+      // TOPLULUK PAYLAŞIMI: Yazar ismini json içine gömüyoruz
+      const progDataToShare = JSON.parse(JSON.stringify(program));
+      progDataToShare.author_username = currentUsername;
+      
+      await supabaseClient.from('programs').insert([{ user_id: currentUser.id, title: program.name, is_public: true, program_data: progDataToShare }]);
       this.textContent = "Paylaşıldı ✓";
       this.disabled = true;
   };
@@ -522,8 +522,7 @@ function renderProgramView(program){
       if(!confirm(`"${program.name}" programını silmek istediğinize emin misiniz?`)) return;
       cloudData.saved_programs = cloudData.saved_programs.filter(p => p.id !== program.id);
       await saveCloudData();
-      // Silindikten sonra her ihtimale karşı Oluştur sekmesine at
-      currentDay = getProgramList().length + 1; 
+      currentDay = getProgramList().length + 1; // Oluştur sekmesine atar
       currentSubDay = 0;
       renderTabs(); renderView();
   };
@@ -692,11 +691,12 @@ async function renderCommunity(){
   if(viewingCommunityProgram) {
       const row = viewingCommunityProgram;
       const prog = row.program_data;
+      const authorName = prog.author_username || row.profiles?.username || 'anonim';
       
       main.innerHTML = `
           <button class="logout-btn" style="margin-bottom:12px; display:inline-flex; align-items:center; gap:4px;" onclick="viewingCommunityProgram=null; currentSubDay=0; renderView();">← Geri Dön</button>
           <div class="program-title" style="margin-bottom:4px;">${row.title}</div>
-          <div class="comm-author" style="margin-bottom:14px;">Paylaşan: <b>@${row.profiles?.username || 'anonim'}</b></div>
+          <div class="comm-author" style="margin-bottom:14px;">Paylaşan: <b>@${authorName}</b></div>
           <button class="save-btn" style="margin-top:0; margin-bottom:16px;" onclick="cloneCommunityProgram('${row.id}')">Bu Programı Listeme Ekle</button>
       `;
 
@@ -719,10 +719,9 @@ async function renderCommunity(){
 
   main.innerHTML = `<div class="day-note">Topluluk programları yükleniyor...</div>`;
   
-  // Güvenlik Duvarı Çökme Önleyici (Fallback) Eklendi
+  // Güvenlik Duvarı Çökme Önleyici (Fallback)
   let { data, error } = await supabaseClient.from('programs').select('*, profiles(username)').eq('is_public', true).order('created_at', {ascending: false}).limit(30);
   if (error) {
-      // İlişkisel (Join) sorgusu patlarsa sadece programları çek
       const fallback = await supabaseClient.from('programs').select('*').eq('is_public', true).order('created_at', {ascending: false}).limit(30);
       data = fallback.data;
   }
@@ -737,9 +736,12 @@ async function renderCommunity(){
     const dt = new Date(row.created_at);
     const dateStr = dt.toLocaleDateString('tr-TR');
     
+    // Gömülü yazar adı, yoksa profillerden, o da yoksa anonim
+    const authorName = row.program_data.author_username || row.profiles?.username || 'anonim';
+    
     card.innerHTML = `
       <div class="comm-header-row">
-          <div class="comm-author">Paylaşan: <b>@${row.profiles?.username || 'anonim'}</b></div>
+          <div class="comm-author">Paylaşan: <b>@${authorName}</b></div>
           <div class="comm-date">${dateStr}</div>
       </div>
       <div class="comm-title">${row.title}</div>
@@ -758,6 +760,7 @@ async function cloneCommunityProgram(programId) {
     if(!row) return;
 
     const clonedProg = JSON.parse(JSON.stringify(row.program_data));
+    delete clonedProg.author_username; // Kişisel kütüphaneye girdiği için yazar ismini siliyoruz
     clonedProg.id = cpUid();
     clonedProg.days.forEach(d => { d.id = cpUid(); });
     
@@ -793,7 +796,7 @@ Object.values(EXERCISE_DB).forEach(list => { list.forEach(e => { if(!e.rest){ e.
 
 let builderOpenPicker = JSON.parse(sessionStorage.getItem('openPicker') || '{}');
 
-// --- OLUŞTURUCU (ALT SEKMELİ YAPI VE BUG FİX) ---
+// --- OLUŞTURUCU (ALT SEKMELİ YAPI) ---
 async function renderBuilder(){
   const main = document.getElementById('main');
   main.innerHTML = `<div class="day-note">Kendi programını oluştur, en altta bir isim vererek kaydet — üst sekmelerde ayrı bir program olarak görünecek. İstediğin kadar farklı program kaydedebilirsin.</div>`;
@@ -822,7 +825,6 @@ async function renderBuilder(){
   });
   main.appendChild(stContainer);
 
-  // BUG FİX: Döngü tamamen kaldırıldı. SADECE O GÜN EKRANA BASILIYOR.
   const day = prog.days[currentSubDay];
   if(day) {
       const card = document.createElement('div'); card.className = 'day-card';

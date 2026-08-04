@@ -236,12 +236,15 @@ supabaseClient.auth.onAuthStateChange(async (event, session) => {
     if (hasInitialized) return;
     hasInitialized = true;
 
-    const { data: profile } = await supabaseClient.from('profiles').select('username').eq('id', currentUser.id).single();
-    if(profile) currentUsername = profile.username;
+    // 406 Hatasını aşmak için select yapıp array'den okuyoruz
+    const { data: profileArray } = await supabaseClient.from('profiles').select('username').eq('id', currentUser.id);
+    if(profileArray && profileArray.length > 0) currentUsername = profileArray[0].username;
 
-    // Buluttaki verileri ÇEK
-    const { data: uData } = await supabaseClient.from('user_data').select('*').eq('user_id', currentUser.id).single();
-    if(uData) {
+    // 406 ve 409 hatalarını tamamen çözen bulut çekme yöntemi
+    const { data: uDataArray } = await supabaseClient.from('user_data').select('*').eq('user_id', currentUser.id);
+    
+    if(uDataArray && uDataArray.length > 0) {
+      const uData = uDataArray[0];
       cloudData = {
         weights: uData.weights || {},
         custom_program: uData.custom_program || null,
@@ -249,7 +252,6 @@ supabaseClient.auth.onAuthStateChange(async (event, session) => {
         session_state: uData.session_state || {}
       };
     } else {
-      await supabaseClient.from('user_data').insert([{ user_id: currentUser.id }]);
       cloudData = { weights: {}, custom_program: null, saved_programs: [], session_state: {} };
     }
 
@@ -273,7 +275,7 @@ let currentDay = parseInt(sessionStorage.getItem('currentTab')) || 0;
 function initApp() { renderTabs(); renderView(); }
 
 const DEFAULT_DAYS = [
-  { id: "gunA", shortLabel: "Gün A", title: "Gün A — Üst Vücut (İtiş)", note: "Isınma: 5 dk hafif kardiyo.", exercises: [ {blok:"İtiş - Ana", name:"Bench Press (Barbell)", sr:"4x6-8", rest:"2 dk", start:20}, {blok:"İtiş - Ana", name:"Overhead Press (Barbell)", sr:"3x8-10", rest:"2 dk", start:10}, {blok:"Çekiş", name:"Lat Pulldown", sr:"3x8-10", rest:"2 dk", start:0}, {blok:"Omuz", name:"Lateral Raise (Dumbbell)", sr:"3x12-15", rest:"60 sn", start:5}, {blok:"Kol", name:"Triceps Pushdown (Cable - Straight Bar)", sr:"2x10-12", rest:"60 sn", start:15} ] },
+  { id: "gunA", shortLabel: "Gün A", title: "Gün A — Üst Vücut (İtiş)", note: "Isınma: 5 dk hafif kardiyo.", exercises: [ {blok:"İtiş - Ana", name:"Bench Press (Barbell)", sr:"4x6-8", rest:"2 dk", start:20}, {blok:"İtiş - Ana", name:"Overhead Press (Barbell)", sr:"3x8-10", rest:"2 dk", start:10}, {blok:"Çekiş", name:"Lat Pulldown", sr:"3x8-10", rest:"2 dk", start:0}, {blok:"Omuz", name:"Lateral Raise (Dumbbell)", sr:"3x12-15", rest:"60 sn", start:5}, {blok:"Kol", name:"Triceps Pushdown (Straight Bar)", sr:"2x10-12", rest:"60 sn", start:15} ] },
   { id: "gunB", shortLabel: "Gün B", title: "Gün B — Üst Vücut (Çekiş)", note: "Isınma: 5 dk hafif kardiyo.", exercises: [ {blok:"Çekiş - Ana", name:"Barbell Row", sr:"4x8-10", rest:"2 dk", start:30}, {blok:"Çekiş - İkincil", name:"Seated Cable Row", sr:"3x10-12", rest:"2 dk", start:25}, {blok:"Omuz Sağlığı", name:"Face Pull (Cable)", sr:"3x15", rest:"60 sn", start:10}, {blok:"Kol", name:"Barbell Curl", sr:"3x10-12", rest:"60 sn", start:10} ] },
   { id: "gunC", shortLabel: "Gün C", title: "Gün C — Alt Vücut + Karın", note: "Süper setler işaretli.", exercises: [ {blok:"Ana", name:"Back Squat (High Bar)", sr:"4x6-8", rest:"3 dk", start:40}, {blok:"Ana", name:"Romanian Deadlift (Barbell)", sr:"3x8-10", rest:"2-3 dk", start:40}, {blok:"Süper Set", name:"Leg Press", sr:"3x10-12", rest:"0 sn", start:60}, {blok:"Süper Set", name:"Leg Curl (Seated)", sr:"3x12-15", rest:"90 sn", start:20}, {blok:"Karın", name:"Weighted Cable Crunch", sr:"3x12-15", rest:"60 sn", start:15} ] }
 ];
@@ -290,21 +292,22 @@ function getCustomProgram(){
   return cloudData.custom_program;
 }
 
-// ANA BULUT SENKRONİZASYON FONKSİYONU (Eksik verileri güvenle yollar)
+// 409 Hatasını aşan, çok daha güvenli bulut kayıt (save) fonksiyonu
 async function saveCloudData() {
   try {
-    const { error } = await supabaseClient.from('user_data')
-      .update({
-        weights: cloudData.weights,
-        custom_program: cloudData.custom_program,
-        saved_programs: cloudData.saved_programs,
-        session_state: cloudData.session_state
-      })
-      .eq('user_id', currentUser.id);
-      
-    if (error) {
-       console.error(error);
-       alert('Buluta kaydederken hata oluştu. Veritabanı tablolarının oluşturulduğundan emin olun!');
+    const payload = {
+      weights: cloudData.weights,
+      custom_program: cloudData.custom_program,
+      saved_programs: cloudData.saved_programs,
+      session_state: cloudData.session_state
+    };
+    
+    const { data: existing } = await supabaseClient.from('user_data').select('user_id').eq('user_id', currentUser.id);
+    
+    if (existing && existing.length > 0) {
+      await supabaseClient.from('user_data').update(payload).eq('user_id', currentUser.id);
+    } else {
+      await supabaseClient.from('user_data').insert([{ user_id: currentUser.id, ...payload }]);
     }
   } catch (err) { console.error('Cloud güncelleme hatası:', err); }
 }
@@ -353,7 +356,7 @@ function parseSetsTotal(sr){ const m = sr.match(/^(\d+)\s*x/i); return m ? parse
 function parseRestSeconds(rt){ const nums=[]; let m; const re=/(\d+(?:\.\d+)?)\s*(dk|sn)/gi; while((m=re.exec(rt))!==null){ nums.push(m[2].toLowerCase()==='dk'?parseFloat(m[1])*60:parseFloat(m[1])); } return nums.length?Math.round(nums.reduce((a,b)=>a+b,0)/nums.length):90; }
 function fmtTime(s){ s=Math.max(0,Math.round(s)); const m=Math.floor(s/60); return `${String(m).padStart(2,'0')}:${String(s%60).padStart(2,'0')}`; }
 
-// --- Set durumları (Bulut senkronizeli) ---
+// --- Set durumları (Bulut) ---
 function getSetsDone(dayId, idx) {
   const key = `${dayId}_${idx}`;
   return cloudData.session_state[key] || 0;
@@ -365,7 +368,7 @@ async function setSetsDone(dayId, idx, value) {
   await saveCloudData();
 }
 
-// --- Ağırlıklar (Bulut senkronizeli) ---
+// --- Ağırlıklar (Bulut) ---
 function getWeight(dayId, idx, fallback){
   const key = `${dayId}_${idx}`;
   if(cloudData.weights && cloudData.weights[key] !== undefined) return cloudData.weights[key];
@@ -379,12 +382,12 @@ async function setWeight(dayId, idx, value){
   await saveCloudData();
 }
 
-// --- Antrenman Kaydı (Bulut) ---
+// --- Antrenman Kaydı (Geçmiş) ---
 async function saveHistoryEntryToCloud(entry){
   const { error } = await supabaseClient.from("workouts").insert([{ user_id: currentUser.id, workout_data: entry }]);
   if(error) {
     console.error('Antrenman kaydedilemedi:', error);
-    alert('Kayıt başarısız oldu. Workouts tablosunun kurulu olduğundan emin olun! Hata: ' + error.message);
+    alert('Kayıt başarısız! Lütfen RLS ayarlarını kontrol edin.');
     return { error };
   }
   return { error: null };
@@ -764,12 +767,13 @@ function renderAnalysis(prog, container){
       </text>`;
   };
 
+  // SVG height hatası çözüldü (style="height:auto;" kullanıldı)
   container.innerHTML = `
     <div class="analysis-title">Görsel Hacim Analizi</div>
     <div class="svg-container">
       <div class="svg-box">
         <div class="anatomy-label-title">ÖN ANATOMİ</div>
-        <svg viewBox="0 0 400 380" width="100%" height="auto">
+        <svg viewBox="0 0 400 380" width="100%" style="height:auto;">
           <circle cx="200" cy="40" r="22" fill="var(--surface-2)"/>
           <rect x="193" y="60" width="14" height="20" fill="var(--surface-2)"/>
           <circle cx="150" cy="90" r="16" fill="${getColor(totals.omuz)}" class="human-shape"/>
@@ -797,7 +801,7 @@ function renderAnalysis(prog, container){
 
       <div class="svg-box">
         <div class="anatomy-label-title">ARKA ANATOMİ</div>
-        <svg viewBox="0 0 400 380" width="100%" height="auto">
+        <svg viewBox="0 0 400 380" width="100%" style="height:auto;">
           <circle cx="200" cy="40" r="22" fill="var(--surface-2)"/>
           <rect x="193" y="60" width="14" height="20" fill="var(--surface-2)"/>
           <polygon points="165,80 235,80 220,170 180,170" fill="${getColor(totals.sirt)}" class="human-shape"/>

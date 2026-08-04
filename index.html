@@ -124,55 +124,43 @@
   .picker-ex-item{ padding:10px 12px; font-size:12.5px; border-top:1px solid var(--line); display:flex; justify-content:space-between; align-items:center; cursor:pointer; background:var(--surface); }
   .picker-ex-item:active{ background:var(--surface-2); }
   .picker-ex-reps{ color:var(--text-dim); font-family:'IBM Plex Mono', monospace; font-size:11px; white-space:nowrap; margin-left:8px; }
-  .picker-ex-preview{ font-size:11px; color:var(--accent); border:1px solid var(--accent-dim); border-radius:12px; padding:3px 8px; margin-left:8px;}
+  .picker-ex-preview{ font-size:11px; color:var(--accent); border:1px solid var(--accent-dim); border-radius:12px; padding:3px 8px; margin-left:8px; text-decoration:none;}
   .picker-close{ display:block; width:100%; text-align:center; padding:10px; font-size:12px; color:var(--text-dim); background:var(--surface-2); border:none; cursor:pointer; }
 
-  .analysis-section{ margin-top:22px; }
-  .analysis-title{ font-family:'Barlow Condensed', sans-serif; font-size:19px; font-weight:700; color:var(--text); text-transform:uppercase; margin-bottom:10px; }
-  .analysis-card-visual{ background:var(--surface); border:1px solid var(--line); border-radius:14px; padding:14px; margin-bottom:14px; box-shadow:0 1px 3px rgba(16,24,40,0.06); display:flex; gap:16px; align-items:flex-start; }
-  .muscle-map-container { flex: 0 0 160px; position: relative; aspect-ratio: 1 / 1.5; border: 1px solid var(--line); border-radius: 10px; background: #fff; overflow: hidden; }
-  .muscle-map-bg { width: 100%; height: 100%; background-image: url('data:image/svg+xml;charset=utf-8,%3Csvg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 600"%3E%3Crect width="100%25" height="100%25" fill="%23fff" /%3E%3Cpath d="M100 50 L120 50 L120 80 L100 80 Z" fill="%23ddd" /%3E%3Cpath d="M280 50 L300 50 L300 80 L280 80 Z" fill="%23ddd" /%3E%3Ctext x="110" y="70" font-size="12" text-anchor="middle" fill="%23888"%3EÖn%3C/text%3E%3Ctext x="290" y="70" font-size="12" text-anchor="middle" fill="%23888"%3EArka%3C/text%3E%3C/svg%3E'); background-size: contain; background-repeat: no-repeat; background-position: center; }
-  .muscle-overlay { position: absolute; border-radius: 50%; opacity: 0.7; background: var(--text-dim); }
-  .overlay-gogus { top: 18%; left: 32%; width: 36%; height: 12%; border-radius: 10px; }
-  .overlay-sirt { top: 18%; left: 62%; width: 36%; height: 25%; border-radius: 10px; }
-  .overlay-omuz { top: 12%; left: 22%; width: 14%; height: 14%; }
-  .overlay-omuz-arka { top: 12%; left: 84%; width: 14%; height: 14%; }
-  .overlay-biceps { top: 25%; left: 20%; width: 12%; height: 18%; }
-  .overlay-triceps { top: 25%; left: 88%; width: 12%; height: 18%; }
-  .overlay-quad { top: 50%; left: 28%; width: 44%; height: 20%; border-radius: 10px; }
-  .overlay-hamstring { top: 50%; left: 68%; width: 24%; height: 20%; border-radius: 10px; }
-  .overlay-kalca { top: 40%; left: 74%; width: 18%; height: 15%; }
-  .overlay-baldir { top: 75%; left: 35%; width: 30%; height: 12%; }
-  .overlay-karin { top: 32%; left: 36%; width: 28%; height: 15%; border-radius: 10px; }
-  .status-low { background: var(--status-low) !important; }
-  .status-ok { background: var(--status-ok) !important; }
-  .status-high { background: var(--status-high) !important; }
-  .analysis-text { flex: 1; display: flex; flex-direction: column; gap: 8px; }
-  .muscle-row-mini{ display:flex; justify-content:space-between; align-items:center; padding:8px 0; border-top:1px solid var(--line); }
-  .muscle-row-mini:first-child{ border-top:none; }
-  .muscle-name-mini{ font-size:12.5px; font-weight:600; }
-  .muscle-sets-mini{ font-size:11px; color:var(--text-dim); font-family:'IBM Plex Mono', monospace; }
-  .status-label-mini{ font-size:10px; font-weight:700; padding:3px 7px; border-radius:20px; font-family:'Inter'; white-space:nowrap; }
-  .status-label-mini.low{ background:#fde8e6; color:var(--status-low); }
-  .status-label-mini.ok{ background:#e3f6e8; color:var(--status-ok); }
-  .status-label-mini.high{ background:#fff3d6; color:var(--status-high); }
-  .status-label-mini.zero{ background:var(--surface-2); color:var(--text-dim); }
-  .suggest-box{ background:#fde8e6; border-radius:12px; padding:12px 14px; margin-bottom:12px; font-size:12.5px; line-height:1.6; color:#7a2a1a; margin-top:14px; }
-  .suggest-box b{ display:block; margin-bottom:4px; color:#c2371f; font-size:13px; }
-  .suggest-empty{ text-align:center; color:var(--text-dim); font-size:12.5px; padding:16px; }
+  /* --- YENİ ANATOMİK HARİTA (OKLU) --- */
+  .analysis-section{ margin-top:22px; margin-bottom:20px;}
+  .analysis-title{ font-family:'Barlow Condensed', sans-serif; font-size:19px; font-weight:700; color:var(--text); text-transform:uppercase; margin-bottom:12px; }
+  
+  .anatomy-container { display: flex; gap: 16px; overflow-x: auto; padding-bottom: 10px; scrollbar-width: none; }
+  .anatomy-container::-webkit-scrollbar { display: none; }
+  .anatomy-side { position: relative; flex: 0 0 48%; min-width: 260px; background: #fff; border-radius: 12px; border: 1px solid var(--line); overflow: hidden; }
+  .anatomy-side img { width: 100%; display: block; }
+  
+  /* Oklar ve Etiketler */
+  .m-point { position: absolute; width: 0; height: 0; z-index: 5; }
+  .m-box { position: absolute; padding: 4px 6px; font-size: 10px; font-weight: 700; color: white; border-radius: 6px; white-space: nowrap; box-shadow: 0 2px 4px rgba(0,0,0,0.25); font-family: 'Inter', sans-serif; }
+  .m-line { position: absolute; height: 2px; background: currentColor; }
+  .m-dot { position: absolute; width: 8px; height: 8px; border-radius: 50%; background: currentColor; box-shadow: 0 0 0 2px white; transform: translate(-50%, -50%); }
 
-  /* --- MODAL --- */
-  .modal { display: none; position: fixed; z-index: 100; left: 0; top: 0; width: 100%; height: 100%; overflow: auto; background-color: rgba(0,0,0,0.4); backdrop-filter: blur(2px); }
-  .modal-content { background-color: var(--surface); margin: 10% auto; padding: 20px; border: 1px solid var(--line); border-radius: 14px; width: 85%; max-width: 400px; box-shadow: 0 4px 12px rgba(0,0,0,0.15); }
-  .modal-header { display: flex; justify-content: space-between; align-items: flex-start; gap: 10px; margin-bottom: 14px; }
-  .modal-title { font-size: 16px; font-weight: 600; line-height: 1.3; }
-  .modal-close { border: none; background: transparent; color: var(--text-dim); font-size: 20px; cursor: pointer; padding: 0 4px;}
-  .modal-body { text-align: center; }
-  .ex-preview-img { width: 100%; aspect-ratio: 1; border: 1px solid var(--line); border-radius: 10px; background-size: contain; background-repeat: no-repeat; background-position: center; margin-bottom: 12px; }
-  .modal-body-text { font-size: 12.5px; color: var(--text-dim); line-height: 1.5; margin-bottom: 14px;}
-  .modal-add-btn { display: block; width: 100%; padding: 11px; background: var(--accent); color: #fff; border: none; border-radius: 10px; font-weight: 600; font-size: 13px; cursor: pointer; }
+  /* Sol tarafa bakan oklar */
+  .p-left .m-line { right: 0; top: -1px; width: 22px; }
+  .p-left .m-box { right: 22px; top: -11px; }
 
-  .notes-section{ margin-top:24px; padding:14px; background:var(--surface); border:1px solid var(--line); border-radius:14px; }
+  /* Sağ tarafa bakan oklar */
+  .p-right .m-line { left: 0; top: -1px; width: 22px; }
+  .p-right .m-box { left: 22px; top: -11px; }
+
+  /* Renk Sınıfları */
+  .status-c-zero { color: var(--text-dim); }
+  .status-c-zero .m-box { background: var(--surface-2); color: var(--text-dim); border: 1px solid var(--line); box-shadow:none;}
+  .status-c-low { color: var(--status-low); }
+  .status-c-low .m-box { background: var(--status-low); }
+  .status-c-ok { color: var(--status-ok); }
+  .status-c-ok .m-box { background: var(--status-ok); }
+  .status-c-high { color: var(--status-high); }
+  .status-c-high .m-box { background: var(--status-high); }
+
+  .notes-section{ margin-top:14px; padding:14px; background:var(--surface); border:1px solid var(--line); border-radius:14px; }
   .notes-section h2{ font-family:'Barlow Condensed', sans-serif; font-size:17px; text-transform:uppercase; margin:0 0 10px 0; color:var(--accent); }
   .note-item{ margin-bottom:10px; }
   .note-item .t{ font-weight:600; font-size:13px; margin-bottom:2px; }
@@ -205,20 +193,6 @@
   </header>
   <main id="main"></main>
   
-  <div id="previewModal" class="modal">
-    <div class="modal-content">
-      <div class="modal-header">
-        <div class="modal-title" id="modalTitle">Hareket Adı</div>
-        <button class="modal-close" onclick="closePreviewModal()">&times;</button>
-      </div>
-      <div class="modal-body">
-        <div class="ex-preview-img" id="modalImg"></div>
-        <div class="modal-body-text" id="modalDesc">Form illüstrasyonu.</div>
-        <button class="modal-add-btn" id="modalAddBtn">Hareketi Günüme Ekle</button>
-      </div>
-    </div>
-  </div>
-
   <footer>Tüm kişisel ayarlarınız ve ağırlıklarınız bulutta saklanır.</footer>
 </div>
 
@@ -285,7 +259,6 @@ supabaseClient.auth.onAuthStateChange(async (event, session) => {
     if(uData) {
       cloudData = { weights: uData.weights || {}, custom_program: uData.custom_program, active_program: uData.active_program };
     } else {
-      // İlk kez giren kullanıcı için tabloya kayıt aç
       await supabaseClient.from('user_data').insert([{ user_id: currentUser.id }]);
       cloudData = { weights: {}, custom_program: null, active_program: null };
     }
@@ -309,9 +282,9 @@ let currentDay = 0;
 function initApp() { renderTabs(); renderView(); }
 
 const DEFAULT_DAYS = [
-  { id: "gunA", shortLabel: "Gün A", title: "Gün A — Üst Vücut (İtiş)", note: "Isınma: 5 dk hafif kardiyo.", exercises: [ {blok:"İtiş - Ana", name:"Bench Press (Barbell)", sr:"4x6-8", rest:"2 dk", start:20}, {blok:"İtiş - Ana", name:"Overhead Press", sr:"3x8-10", rest:"2 dk", start:10}, {blok:"Çekiş", name:"Lat Pulldown", sr:"3x8-10", rest:"2 dk", start:0}, {blok:"Omuz", name:"Lateral Raise", sr:"3x12-15", rest:"60 sn", start:5}, {blok:"Kol", name:"Triceps Pushdown", sr:"2x10-12", rest:"60 sn", start:15} ] },
-  { id: "gunB", shortLabel: "Gün B", title: "Gün B — Üst Vücut (Çekiş)", note: "Isınma: 5 dk hafif kardiyo.", exercises: [ {blok:"Çekiş - Ana", name:"Barbell Row", sr:"4x8-10", rest:"2 dk", start:30}, {blok:"Çekiş - İkincil", name:"Seated Cable Row", sr:"3x10-12", rest:"2 dk", start:25}, {blok:"Omuz Sağlığı", name:"Face Pull", sr:"3x15", rest:"60 sn", start:10}, {blok:"Kol", name:"Barbell Curl", sr:"3x10-12", rest:"60 sn", start:10} ] },
-  { id: "gunC", shortLabel: "Gün C", title: "Gün C — Alt Vücut + Karın", note: "Süper setler işaretli.", exercises: [ {blok:"Ana", name:"Back Squat", sr:"4x6-8", rest:"3 dk", start:40}, {blok:"Ana", name:"Romanian Deadlift", sr:"3x8-10", rest:"2-3 dk", start:40}, {blok:"Süper Set", name:"Leg Press", sr:"3x10-12", rest:"0 sn", start:60}, {blok:"Süper Set", name:"Leg Curl", sr:"3x12-15", rest:"90 sn", start:20}, {blok:"Karın", name:"Cable Crunch", sr:"3x12-15", rest:"60 sn", start:15} ] }
+  { id: "gunA", shortLabel: "Gün A", title: "Gün A — Üst Vücut (İtiş)", note: "Isınma: 5 dk hafif kardiyo.", exercises: [ {blok:"İtiş - Ana", name:"Bench Press (Barbell)", sr:"4x6-8", rest:"2 dk", start:20}, {blok:"İtiş - Ana", name:"Overhead Press (Barbell)", sr:"3x8-10", rest:"2 dk", start:10}, {blok:"Çekiş", name:"Lat Pulldown", sr:"3x8-10", rest:"2 dk", start:0}, {blok:"Omuz", name:"Lateral Raise (Dumbbell)", sr:"3x12-15", rest:"60 sn", start:5}, {blok:"Kol", name:"Triceps Pushdown (Cable - Straight Bar)", sr:"2x10-12", rest:"60 sn", start:15} ] },
+  { id: "gunB", shortLabel: "Gün B", title: "Gün B — Üst Vücut (Çekiş)", note: "Isınma: 5 dk hafif kardiyo.", exercises: [ {blok:"Çekiş - Ana", name:"Barbell Row", sr:"4x8-10", rest:"2 dk", start:30}, {blok:"Çekiş - İkincil", name:"Seated Cable Row", sr:"3x10-12", rest:"2 dk", start:25}, {blok:"Omuz Sağlığı", name:"Face Pull (Cable)", sr:"3x15", rest:"60 sn", start:10}, {blok:"Kol", name:"Barbell Curl", sr:"3x10-12", rest:"60 sn", start:10} ] },
+  { id: "gunC", shortLabel: "Gün C", title: "Gün C — Alt Vücut + Karın", note: "Süper setler işaretli.", exercises: [ {blok:"Ana", name:"Back Squat (High Bar)", sr:"4x6-8", rest:"3 dk", start:40}, {blok:"Ana", name:"Romanian Deadlift (Barbell)", sr:"3x8-10", rest:"2-3 dk", start:40}, {blok:"Süper Set", name:"Leg Press", sr:"3x10-12", rest:"0 sn", start:60}, {blok:"Süper Set", name:"Leg Curl (Seated)", sr:"3x12-15", rest:"90 sn", start:20}, {blok:"Karın", name:"Weighted Cable Crunch", sr:"3x12-15", rest:"60 sn", start:15} ] }
 ];
 
 const NOTES = [
@@ -319,7 +292,6 @@ const NOTES = [
   ["Efor Seviyesi", "Setleri 0-2 tekrar rezervinde (RIR) bitirin; her set mutlak failure olmak zorunda değil."]
 ];
 
-// Aktif programı buluttan getir
 function getActiveDays(){
   if(cloudData.active_program && cloudData.active_program.days && cloudData.active_program.days.length > 0) {
     return cloudData.active_program.days;
@@ -327,13 +299,11 @@ function getActiveDays(){
   return DEFAULT_DAYS;
 }
 
-// Özel oluşturulan programı buluttan getir
 function getCustomProgram(){
   if(cloudData.custom_program && cloudData.custom_program.days) return cloudData.custom_program;
   return { days: [ { id: cpUid(), name:"Gün 1", exercises: [] } ] };
 }
 
-// Özel programı buluta kaydet
 function saveCustomProgram(prog){
   cloudData.custom_program = prog;
   supabaseClient.from('user_data').update({ custom_program: prog }).eq('user_id', currentUser.id).then();
@@ -369,18 +339,15 @@ function renderView(){
 const STEP = 2.5;
 function fmt(w){ return (Number.isInteger(w) ? w : w.toFixed(1)); }
 function cpUid(){ return 'id' + Math.random().toString(36).slice(2,9) + Date.now().toString(36); }
-function exLink(name){ return "https://www.google.com/search?q=" + encodeURIComponent(name + " exercise form") + "&tbm=isch"; }
 function exImgLink(name){ return "https://www.google.com/search?q=" + encodeURIComponent(name + " exercise form") + "&tbm=isch"; }
 
 function parseSetsTotal(sr){ const m = sr.match(/^(\d+)\s*x/i); return m ? parseInt(m[1], 10) : 3; }
 function parseRestSeconds(rt){ const nums=[]; let m; const re=/(\d+(?:\.\d+)?)\s*(dk|sn)/gi; while((m=re.exec(rt))!==null){ nums.push(m[2].toLowerCase()==='dk'?parseFloat(m[1])*60:parseFloat(m[1])); } return nums.length?Math.round(nums.reduce((a,b)=>a+b,0)/nums.length):90; }
 function fmtTime(s){ s=Math.max(0,Math.round(s)); const m=Math.floor(s/60); return `${String(m).padStart(2,'0')}:${String(s%60).padStart(2,'0')}`; }
 
-// Set sayıları (sadece antrenman anlık olarak tarayıcıda tutulur)
 function getSetsDone(dayId, idx){ try{ const raw = localStorage.getItem(`s:${dayId}:${idx}`); if(raw !== null) return parseInt(raw, 10); }catch(e){} return 0; }
 function setSetsDone(dayId, idx, value){ try{ localStorage.setItem(`s:${dayId}:${idx}`, String(value)); }catch(e){} }
 
-// Ağırlıkları buluttan getir ve buluta kaydet
 function getWeight(dayId, idx, fallback){ 
   const key = `${dayId}_${idx}`;
   if(cloudData.weights && cloudData.weights[key] !== undefined) return cloudData.weights[key];
@@ -390,11 +357,9 @@ function setWeight(dayId, idx, value){
   const key = `${dayId}_${idx}`;
   if(!cloudData.weights) cloudData.weights = {};
   cloudData.weights[key] = value;
-  // Arka planda bulutu güncelle
   supabaseClient.from('user_data').update({ weights: cloudData.weights }).eq('user_id', currentUser.id).then();
 }
 
-// --- SUPABASE VERİ İŞLEMLERİ ---
 async function saveHistoryEntryToCloud(entry){
   await supabaseClient.from('workouts').insert([{ user_id: currentUser.id, workout_data: entry }]);
 }
@@ -453,7 +418,7 @@ async function renderDay(){
     const weight = getWeight(day.id, idx, ex.start || 0);
 
     card.innerHTML = `
-      <div class="row-top"><div class="ex-name">${ex.name}</div><a class="link-btn" href="${exLink(ex.name)}" target="_blank" rel="noopener">Görsel</a></div>
+      <div class="row-top"><div class="ex-name">${ex.name}</div><a class="link-btn" href="${exImgLink(ex.name)}" target="_blank" rel="noopener">Görsel</a></div>
       <div class="meta"><div class="meta-item">Set: <b>${ex.sr}</b></div><div class="meta-item">Dinlenme: <b>${ex.rest}</b></div></div>
       <div class="stepper">
         <button class="minus">−</button><div class="weight-display"><span class="wnum">${fmt(weight)}</span><span class="weight-unit">kg</span></div><button class="plus">+</button>
@@ -517,38 +482,118 @@ async function renderDay(){
   main.appendChild(saveBtn); main.appendChild(toast);
 }
 
-// --- HAREKET VERİTABANI VE OLUŞTURMA BÖLÜMÜ ---
+// --- KAPSAMLI HAREKET VERİTABANI (172 HAREKET) ---
 const MUSCLE_LABELS = { gogus: "Göğüs", sirt: "Sırt", omuz: "Omuz", biceps: "Biceps", triceps: "Triceps", quad: "Ön Bacak", hamstring: "Arka Bacak", kalca: "Kalça", baldir: "Baldır", karin: "Karın" };
 const EXERCISE_DB = {
-  gogus: [{name:"Bench Press (Barbell)", reps:"6-10", type:"compound"}, {name:"Incline Dumbbell Press", reps:"8-12", type:"compound"}, {name:"Cable Crossover", reps:"12-15", type:"izolasyon"}, {name:"Chest Press Machine", reps:"8-12", type:"compound"}],
-  sirt: [{name:"Lat Pulldown", reps:"8-12", type:"compound"}, {name:"Barbell Row", reps:"8-10", type:"compound"}, {name:"Seated Cable Row", reps:"10-12", type:"compound"}, {name:"Deadlift", reps:"4-6", type:"compound"}],
-  omuz: [{name:"Overhead Press", reps:"6-10", type:"compound"}, {name:"Lateral Raise", reps:"12-15", type:"izolasyon"}, {name:"Face Pull", reps:"12-15", type:"izolasyon"}],
-  biceps: [{name:"Barbell Curl", reps:"8-12", type:"izolasyon"}, {name:"Hammer Curl", reps:"10-12", type:"izolasyon"}, {name:"Cable Curl", reps:"10-15", type:"izolasyon"}],
-  triceps: [{name:"Triceps Pushdown", reps:"10-15", type:"izolasyon"}, {name:"Skull Crusher", reps:"8-12", type:"izolasyon"}, {name:"Dips", reps:"8-12", type:"compound"}],
-  quad: [{name:"Back Squat", reps:"6-10", type:"compound"}, {name:"Leg Press", reps:"8-12", type:"compound"}, {name:"Bulgarian Split Squat", reps:"8-12", type:"compound"}, {name:"Leg Extension", reps:"12-15", type:"izolasyon"}],
-  hamstring: [{name:"Romanian Deadlift", reps:"8-10", type:"compound"}, {name:"Leg Curl", reps:"10-15", type:"izolasyon"}],
-  kalca: [{name:"Hip Thrust", reps:"8-12", type:"compound"}, {name:"Cable Kickback", reps:"12-15", type:"izolasyon"}],
-  baldir: [{name:"Standing Calf Raise", reps:"12-20", type:"izolasyon"}],
-  karin: [{name:"Cable Crunch", reps:"12-15", type:"core"}, {name:"Plank", reps:"60 sn", type:"core"}, {name:"Hanging Leg Raise", reps:"10-15", type:"core"}]
+  gogus: [
+    {name:"Barbell Bench Press", reps:"6-10", type:"compound"}, {name:"Incline Barbell Bench Press", reps:"6-10", type:"compound"},
+    {name:"Decline Barbell Bench Press", reps:"6-10", type:"compound"}, {name:"Dumbbell Bench Press", reps:"8-12", type:"compound"},
+    {name:"Incline Dumbbell Press", reps:"8-12", type:"compound"}, {name:"Decline Dumbbell Press", reps:"8-12", type:"compound"},
+    {name:"Chest Press Machine", reps:"8-12", type:"compound"}, {name:"Pec Deck / Machine Fly", reps:"10-15", type:"izolasyon"},
+    {name:"Dumbbell Fly", reps:"10-15", type:"izolasyon"}, {name:"Incline Dumbbell Fly", reps:"10-15", type:"izolasyon"},
+    {name:"Cable Crossover (Mid)", reps:"12-15", type:"izolasyon"}, {name:"Low-to-High Cable Crossover", reps:"12-15", type:"izolasyon"},
+    {name:"High-to-Low Cable Crossover", reps:"12-15", type:"izolasyon"}, {name:"Dips (Chest Focus)", reps:"8-12", type:"compound"},
+    {name:"Push-up", reps:"10-20", type:"compound"}, {name:"Weighted Push-up", reps:"8-12", type:"compound"},
+    {name:"Smith Machine Bench Press", reps:"8-12", type:"compound"}, {name:"Smith Machine Incline Press", reps:"8-12", type:"compound"},
+    {name:"Landmine Press", reps:"8-12", type:"compound"}, {name:"Svend Press", reps:"12-15", type:"izolasyon"},
+    {name:"Floor Press", reps:"6-10", type:"compound"}, {name:"Single-Arm Cable Fly", reps:"12-15", type:"izolasyon"}
+  ],
+  sirt: [
+    {name:"Deadlift", reps:"4-6", type:"compound"}, {name:"Barbell Row", reps:"6-10", type:"compound"},
+    {name:"Pendlay Row", reps:"6-10", type:"compound"}, {name:"T-Bar Row (Barbell)", reps:"8-10", type:"compound"},
+    {name:"Seated Cable Row", reps:"10-12", type:"compound"}, {name:"Lat Pulldown (Wide Grip)", reps:"8-12", type:"compound"},
+    {name:"Pull-up", reps:"6-10", type:"compound"}, {name:"Chin-up", reps:"6-10", type:"compound"},
+    {name:"One-Arm Dumbbell Row", reps:"8-12", type:"compound"}, {name:"Straight-Arm Pulldown (Cable)", reps:"12-15", type:"izolasyon"},
+    {name:"Machine Row", reps:"10-12", type:"compound"}, {name:"Chest-Supported Row", reps:"8-12", type:"compound"},
+    {name:"Meadows Row", reps:"8-12", type:"compound"}, {name:"Inverted Row", reps:"10-15", type:"compound"},
+    {name:"Rack Pull", reps:"5-8", type:"compound"}, {name:"Close-Grip Lat Pulldown", reps:"10-12", type:"compound"},
+    {name:"Underhand Lat Pulldown", reps:"8-12", type:"compound"}, {name:"Neutral Grip Lat Pulldown", reps:"8-12", type:"compound"},
+    {name:"Kroc Row", reps:"10-15", type:"compound"}, {name:"Hyperextension (Back Extension)", reps:"12-15", type:"izolasyon"},
+    {name:"Barbell Shrugs", reps:"10-15", type:"izolasyon"}, {name:"Dumbbell Shrugs", reps:"10-15", type:"izolasyon"},
+    {name:"Single-Arm Lat Pulldown", reps:"10-12", type:"compound"}, {name:"Single-Arm Cable Row", reps:"10-12", type:"compound"}
+  ],
+  omuz: [
+    {name:"Overhead Press (Barbell)", reps:"6-10", type:"compound"}, {name:"Dumbbell Shoulder Press", reps:"8-12", type:"compound"},
+    {name:"Arnold Press", reps:"8-12", type:"compound"}, {name:"Machine Shoulder Press", reps:"8-12", type:"compound"},
+    {name:"Lateral Raise (Dumbbell)", reps:"12-15", type:"izolasyon"}, {name:"Cable Lateral Raise", reps:"12-15", type:"izolasyon"},
+    {name:"Front Raise (Dumbbell)", reps:"12-15", type:"izolasyon"}, {name:"Cable Front Raise", reps:"12-15", type:"izolasyon"},
+    {name:"Plate Front Raise", reps:"12-15", type:"izolasyon"}, {name:"Rear Delt Fly (Dumbbell)", reps:"12-15", type:"izolasyon"},
+    {name:"Reverse Pec Deck (Machine)", reps:"12-15", type:"izolasyon"}, {name:"Face Pull (Cable)", reps:"12-15", type:"izolasyon"},
+    {name:"Upright Row (Barbell)", reps:"10-12", type:"compound"}, {name:"Upright Row (Cable)", reps:"10-12", type:"compound"},
+    {name:"Landmine Shoulder Press", reps:"8-12", type:"compound"}, {name:"Cuban Press", reps:"10-12", type:"compound"},
+    {name:"Y-Raise", reps:"12-15", type:"izolasyon"}, {name:"Pike Push-up", reps:"8-15", type:"compound"},
+    {name:"Bradford Press", reps:"8-12", type:"compound"}, {name:"Push Press", reps:"5-8", type:"compound"}
+  ],
+  biceps: [
+    {name:"Barbell Curl", reps:"8-12", type:"izolasyon"}, {name:"Dumbbell Curl", reps:"8-12", type:"izolasyon"},
+    {name:"Hammer Curl", reps:"8-12", type:"izolasyon"}, {name:"Incline Dumbbell Curl", reps:"10-12", type:"izolasyon"},
+    {name:"Preacher Curl (EZ Bar)", reps:"10-12", type:"izolasyon"}, {name:"Preacher Curl (Machine)", reps:"10-12", type:"izolasyon"},
+    {name:"Cable Curl (Straight Bar)", reps:"10-15", type:"izolasyon"}, {name:"Concentration Curl", reps:"10-15", type:"izolasyon"},
+    {name:"EZ Bar Curl", reps:"8-12", type:"izolasyon"}, {name:"Spider Curl", reps:"10-12", type:"izolasyon"},
+    {name:"Zottman Curl", reps:"10-12", type:"izolasyon"}, {name:"Cable Hammer Curl", reps:"10-15", type:"izolasyon"},
+    {name:"Drag Curl", reps:"8-12", type:"izolasyon"}, {name:"Reverse Curl", reps:"10-15", type:"izolasyon"},
+    {name:"Bayesian Cable Curl", reps:"10-15", type:"izolasyon"}, {name:"21s Curl", reps:"21", type:"izolasyon"},
+    {name:"Cross-Body Hammer Curl", reps:"8-12", type:"izolasyon"}, {name:"High Cable Curl", reps:"10-15", type:"izolasyon"}
+  ],
+  triceps: [
+    {name:"Triceps Pushdown (Cable - Straight Bar)", reps:"10-15", type:"izolasyon"}, {name:"Triceps Pushdown (Rope)", reps:"10-15", type:"izolasyon"},
+    {name:"V-Bar Pushdown", reps:"10-15", type:"izolasyon"}, {name:"Reverse Grip Pushdown", reps:"10-15", type:"izolasyon"},
+    {name:"Skull Crusher (EZ Bar)", reps:"8-12", type:"izolasyon"}, {name:"Overhead Triceps Extension (Dumbbell)", reps:"10-12", type:"izolasyon"},
+    {name:"Cable Overhead Extension", reps:"10-12", type:"izolasyon"}, {name:"Close-Grip Bench Press", reps:"6-10", type:"compound"},
+    {name:"Dips (Triceps Focus)", reps:"8-12", type:"compound"}, {name:"Bench Dips", reps:"10-15", type:"izolasyon"},
+    {name:"JM Press", reps:"8-12", type:"compound"}, {name:"Diamond Push-up", reps:"10-15", type:"compound"},
+    {name:"Tate Press", reps:"10-12", type:"izolasyon"}, {name:"Single-Arm Overhead Extension", reps:"10-12", type:"izolasyon"},
+    {name:"Cable Kickback", reps:"12-15", type:"izolasyon"}, {name:"Dumbbell Kickback", reps:"12-15", type:"izolasyon"},
+    {name:"Machine Triceps Extension", reps:"10-15", type:"izolasyon"}
+  ],
+  quad: [
+    {name:"Back Squat (High Bar)", reps:"6-10", type:"compound"}, {name:"Back Squat (Low Bar)", reps:"5-8", type:"compound"},
+    {name:"Front Squat", reps:"6-10", type:"compound"}, {name:"Leg Press", reps:"8-12", type:"compound"},
+    {name:"Hack Squat", reps:"8-12", type:"compound"}, {name:"Bulgarian Split Squat", reps:"8-12", type:"compound"},
+    {name:"Walking Lunge", reps:"10-12", type:"compound"}, {name:"Reverse Lunge", reps:"10-12", type:"compound"},
+    {name:"Forward Lunge", reps:"10-12", type:"compound"}, {name:"Leg Extension", reps:"12-15", type:"izolasyon"},
+    {name:"Goblet Squat", reps:"10-12", type:"compound"}, {name:"Sissy Squat", reps:"10-15", type:"izolasyon"},
+    {name:"Zercher Squat", reps:"6-10", type:"compound"}, {name:"Belt Squat", reps:"8-12", type:"compound"},
+    {name:"Smith Machine Squat", reps:"8-12", type:"compound"}, {name:"Pistol Squat", reps:"6-10", type:"compound"},
+    {name:"Curtsy Lunge", reps:"10-12", type:"compound"}, {name:"Step-up", reps:"10-12", type:"compound"}
+  ],
+  hamstring: [
+    {name:"Romanian Deadlift (Barbell)", reps:"8-10", type:"compound"}, {name:"Romanian Deadlift (Dumbbell)", reps:"8-10", type:"compound"},
+    {name:"Stiff-Leg Deadlift", reps:"8-10", type:"compound"}, {name:"Leg Curl (Seated)", reps:"10-15", type:"izolasyon"},
+    {name:"Leg Curl (Lying)", reps:"10-15", type:"izolasyon"}, {name:"Single-Leg Curl", reps:"10-15", type:"izolasyon"},
+    {name:"Good Morning", reps:"8-10", type:"compound"}, {name:"Nordic Curl", reps:"6-10", type:"izolasyon"},
+    {name:"Glute-Ham Raise", reps:"8-12", type:"compound"}, {name:"Single-Leg RDL", reps:"8-10", type:"compound"},
+    {name:"Cable Pull-Through", reps:"10-15", type:"compound"}, {name:"Kettlebell Swing", reps:"12-20", type:"compound"}
+  ],
+  kalca: [
+    {name:"Hip Thrust (Barbell)", reps:"8-12", type:"compound"}, {name:"Hip Thrust (Machine)", reps:"8-12", type:"compound"},
+    {name:"Glute Bridge", reps:"10-15", type:"compound"}, {name:"Cable Kickback (Glute)", reps:"12-15", type:"izolasyon"},
+    {name:"Hip Abductor Machine", reps:"12-15", type:"izolasyon"}, {name:"Frog Pump", reps:"15-20", type:"izolasyon"},
+    {name:"Single-Leg Hip Thrust", reps:"10-12", type:"compound"}, {name:"Banded Lateral Walk", reps:"12-15", type:"izolasyon"},
+    {name:"Cable Hip Abduction", reps:"12-15", type:"izolasyon"}, {name:"Clamshell", reps:"15-20", type:"izolasyon"},
+    {name:"Sumo Deadlift", reps:"6-10", type:"compound"}, {name:"Deficit Reverse Lunge", reps:"10-12", type:"compound"}
+  ],
+  baldir: [
+    {name:"Standing Calf Raise (Machine)", reps:"12-20", type:"izolasyon"}, {name:"Standing Calf Raise (Dumbbell)", reps:"12-20", type:"izolasyon"},
+    {name:"Standing Calf Raise (Barbell)", reps:"12-20", type:"izolasyon"}, {name:"Seated Calf Raise (Machine)", reps:"12-20", type:"izolasyon"},
+    {name:"Leg Press Calf Raise", reps:"12-20", type:"izolasyon"}, {name:"Donkey Calf Raise", reps:"12-20", type:"izolasyon"},
+    {name:"Single-Leg Calf Raise", reps:"12-15", type:"izolasyon"}, {name:"Tibialis Raise", reps:"15-20", type:"izolasyon"}
+  ],
+  karin: [
+    {name:"Weighted Cable Crunch", reps:"12-15", type:"core"}, {name:"Hanging Leg Raise", reps:"10-15", type:"core"},
+    {name:"Hanging Knee Raise", reps:"10-15", type:"core"}, {name:"Plank", reps:"60 sn", type:"core"},
+    {name:"Weighted Plank", reps:"45-60 sn", type:"core"}, {name:"Ab Wheel Rollout", reps:"8-12", type:"core"},
+    {name:"Machine Crunch", reps:"12-15", type:"core"}, {name:"Russian Twist", reps:"12-15", type:"core"},
+    {name:"Cable Woodchopper", reps:"12", type:"core"}, {name:"Reverse Crunch", reps:"12-15", type:"core"},
+    {name:"Sit-up", reps:"15-20", type:"core"}, {name:"V-Up", reps:"12-15", type:"core"},
+    {name:"Bicycle Crunch", reps:"15-20", type:"core"}, {name:"Toes-to-Bar", reps:"8-12", type:"core"},
+    {name:"Dead Bug", reps:"10-12", type:"core"}, {name:"Side Plank", reps:"30-45 sn", type:"core"},
+    {name:"Decline Sit-up", reps:"12-15", type:"core"}, {name:"Stability Ball Rollout", reps:"10-12", type:"core"},
+    {name:"Pallof Press", reps:"10-12", type:"core"}, {name:"Knee-up", reps:"15-20", type:"core"},
+    {name:"Ab Coaster Machine", reps:"12-15", type:"core"}
+  ]
 };
 Object.values(EXERCISE_DB).forEach(list => { list.forEach(e => { if(!e.rest){ e.rest = e.type === 'compound' ? '2-3 dk' : (e.type === 'core' ? '45-60 sn' : '60-90 sn'); } }); });
-
-// Modal Kontrolleri
-let currentAddingDay = null; let currentAddingEx = null;
-function openPreviewModal(muscleKey, exName, dayId = null) {
-  currentAddingEx = EXERCISE_DB[muscleKey].find(e => e.name === exName); currentAddingDay = dayId;
-  document.getElementById('modalTitle').textContent = exName;
-  document.getElementById('modalImg').style.backgroundImage = `url('data:image/svg+xml;charset=utf-8,%3Csvg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 300 300"%3E%3Crect width="100%25" height="100%25" fill="%23eee" /%3E%3Ctext x="150" y="160" font-size="14" text-anchor="middle" fill="%23aaa"%3E${encodeURIComponent(exName)} Form Görseli %3C/text%3E%3C/svg%3E')`; 
-  document.getElementById('modalAddBtn').style.display = currentAddingDay ? 'block' : 'none';
-  document.getElementById('previewModal').style.display = 'block';
-}
-function closePreviewModal() { document.getElementById('previewModal').style.display = 'none'; currentAddingDay = null; currentAddingEx = null; }
-document.getElementById('modalAddBtn').onclick = () => {
-  const prog = getCustomProgram(); const day = prog.days.find(d => d.id === currentAddingDay);
-  const muscleKey = Object.keys(EXERCISE_DB).find(k => EXERCISE_DB[k].some(e => e.name === currentAddingEx.name));
-  day.exercises.push({ name: currentAddingEx.name, muscleKey, sets: 3, reps: currentAddingEx.reps, rest: currentAddingEx.rest });
-  saveCustomProgram(prog); closePreviewModal(); renderBuilder();
-};
 
 let builderOpenPicker = {};
 
@@ -557,7 +602,6 @@ function renderBuilder(){
   const prog = getCustomProgram();
   const analysisContainer = document.createElement('div');
 
-  // GÜN EKLEME / ÇIKARMA BÖLÜMÜ (GERİ GETİRİLDİ)
   const countRow = document.createElement('div'); countRow.className = 'count-row';
   countRow.innerHTML = `
     <div class="count-label">Antrenman Günü Sayısı</div>
@@ -609,7 +653,8 @@ function renderBuilder(){
         const list = document.createElement('div'); list.className = 'picker-ex-list' + (builderOpenPicker[`group_${day.id}`] === muscleKey ? ' open' : '');
         EXERCISE_DB[muscleKey].forEach(dbEx => {
           const item = document.createElement('div'); item.className = 'picker-ex-item';
-          item.innerHTML = `<span>${dbEx.name}</span><div><span class="picker-ex-preview" onclick="openPreviewModal('${muscleKey}','${dbEx.name}', '${day.id}')" title="Hareketi Önizle">👁️</span><span class="picker-ex-reps">${dbEx.reps}</span></div>`;
+          
+          item.innerHTML = `<span>${dbEx.name}</span><div><a class="picker-ex-preview" href="${exImgLink(dbEx.name)}" target="_blank" rel="noopener" title="Google'da Görsel Ara">👁️</a><span class="picker-ex-reps">${dbEx.reps}</span></div>`;
           item.onclick = (e) => {
             if(e.target.className !== 'picker-ex-preview'){ day.exercises.push({ name: dbEx.name, muscleKey, sets: 3, reps: dbEx.reps, rest: dbEx.rest }); saveCustomProgram(prog); renderBuilder(); }
           };
@@ -653,35 +698,48 @@ function renderBuilder(){
   }
 }
 
-// GÖRSEL HACİM ANALİZİ (GERİ GETİRİLDİ)
+// --- YENİ ANATOMİK GÖRSEL HARİTA ---
 function renderAnalysis(prog, container){
   container.className = 'analysis-section';
   const totals = {}; Object.keys(MUSCLE_LABELS).forEach(k => totals[k] = 0);
   prog.days.forEach(d => d.exercises.forEach(ex => { if(totals[ex.muscleKey] !== undefined) totals[ex.muscleKey] += (parseFloat(ex.sets)||0); }));
   
   const volStat = (s) => { if(s<=0) return 'zero'; if(s<10) return 'low'; if(s<=20) return 'ok'; return 'high'; };
-  const statText = (s) => ({ zero:'Çalışılmıyor', low:'Yetersiz', ok:'Yeterli', high:'Çok Yüksek' }[s]);
 
-  const rowsHtml = Object.keys(MUSCLE_LABELS).map(key => {
-    const sets = Math.round(totals[key] * 10) / 10; const status = volStat(sets);
-    return `<div class="muscle-row-mini"><div><div class="muscle-name-mini">${MUSCLE_LABELS[key]}</div><div class="muscle-sets-mini">${sets} set/hafta</div></div><div class="status-label-mini ${status}">${statText(status)}</div></div>`;
-  }).join('');
+  const createLabel = (key, top, left, dir) => {
+    const sets = Math.round(totals[key] * 10) / 10;
+    const st = volStat(sets);
+    return `
+      <div class="m-point p-${dir} status-c-${st}" style="top:${top}%; left:${left}%;">
+        <div class="m-box">${MUSCLE_LABELS[key]}: ${sets} Set</div>
+        <div class="m-line"></div>
+        <div class="m-dot"></div>
+      </div>
+    `;
+  };
 
   container.innerHTML = `
-    <div class="analysis-title">Görsel Hacim Analizi</div>
-    <div class="analysis-card-visual">
-      <div class="muscle-map-container">
-        <div class="muscle-map-bg"></div>
-        <div class="muscle-overlay overlay-gogus status-${volStat(totals.gogus)}"></div><div class="muscle-overlay overlay-sirt status-${volStat(totals.sirt)}"></div>
-        <div class="muscle-overlay overlay-omuz status-${volStat(totals.omuz)}"></div><div class="muscle-overlay overlay-omuz-arka status-${volStat(totals.omuz)}"></div>
-        <div class="muscle-overlay overlay-biceps status-${volStat(totals.biceps)}"></div><div class="muscle-overlay overlay-triceps status-${volStat(totals.triceps)}"></div>
-        <div class="muscle-overlay overlay-quad status-${volStat(totals.quad)}"></div><div class="muscle-overlay overlay-hamstring status-${volStat(totals.hamstring)}"></div>
-        <div class="muscle-overlay overlay-kalca status-${volStat(totals.kalca)}"></div><div class="muscle-overlay overlay-baldir status-${volStat(totals.baldir)}"></div>
-        <div class="muscle-overlay overlay-karin status-${volStat(totals.karin)}"></div>
+    <div class="analysis-title">Bölgesel Hacim Analizi</div>
+    <div class="anatomy-container">
+      <div class="anatomy-side">
+        <img src="depositphotos_125320904-stock-photo-man-anatomy-muscle-map.jpg" alt="Ön Anatomi"[cite: 1]>
+        ${createLabel('omuz', 26, 33, 'left')}
+        ${createLabel('gogus', 28, 65, 'right')}
+        ${createLabel('biceps', 42, 28, 'left')}
+        ${createLabel('karin', 46, 50, 'right')}
+        ${createLabel('quad', 65, 38, 'left')}
       </div>
-      <div class="analysis-text">${rowsHtml}</div>
+      <div class="anatomy-side">
+        <img src="depositphotos_13281160-stock-photo-anatomy-of-male-muscular-system.jpg" alt="Arka Anatomi">
+        ${createLabel('omuz', 25, 30, 'left')}
+        ${createLabel('sirt', 35, 65, 'right')}
+        ${createLabel('triceps', 43, 25, 'left')}
+        ${createLabel('kalca', 53, 65, 'right')}
+        ${createLabel('hamstring', 70, 35, 'left')}
+        ${createLabel('baldir', 85, 65, 'right')}
+      </div>
     </div>
-    <div class="day-note" style="margin-top:4px;">Kılavuz: kas grubu başına haftada &lt;10 set yetersiz, 10-20 set optimal, 20+ set yüksek hacimdir.</div>
+    <div class="day-note" style="margin-top:4px;">Kılavuz: Haftalık 10 set altı <span style="color:var(--status-low);font-weight:bold">Yetersiz</span>, 10-20 set arası <span style="color:var(--status-ok);font-weight:bold">İdeal</span>, 20 set üstü <span style="color:var(--status-high);font-weight:bold">Yüksek</span> hacimdir. Gri kutular çalışılmayan bölgeleri gösterir.</div>
   `;
 }
 </script>

@@ -127,14 +127,21 @@
   .picker-ex-item{ padding:10px 12px; font-size:12.5px; border-top:1px solid var(--line); display:flex; justify-content:space-between; align-items:center; cursor:pointer; background:var(--surface); }
   .picker-ex-item:active{ background:var(--surface-2); }
   .picker-ex-reps{ color:var(--text-dim); font-family:'IBM Plex Mono', monospace; font-size:11px; white-space:nowrap; margin-left:8px; }
-  .picker-ex-preview{ display:inline-block; font-size:11px; color:var(--accent); border:1px solid var(--accent-dim); border-radius:12px; padding:3px 8px; margin-left:8px; text-decoration:none; cursor:pointer; background:var(--surface);}
+  
+  /* Görsel Butonu Düzenlemesi (Sorunu çözen kısım) */
+  .picker-ex-preview{ 
+    display:inline-block; font-size:11px; color:var(--accent); border:1px solid var(--accent-dim); 
+    border-radius:12px; padding:4px 8px; margin-left:8px; cursor:pointer; background:var(--surface);
+    font-family: 'Inter', sans-serif; font-weight: 500;
+  }
   .picker-close{ display:block; width:100%; text-align:center; padding:10px; font-size:12px; color:var(--text-dim); background:var(--surface-2); border:none; cursor:pointer; }
 
   /* --- YENİ DİJİTAL ANATOMİ (SVG) STİLLERİ --- */
   .analysis-section{ margin-top:22px; margin-bottom:20px;}
   .analysis-title{ font-family:'Barlow Condensed', sans-serif; font-size:19px; font-weight:700; color:var(--text); text-transform:uppercase; margin-bottom:12px; }
   .svg-container { display: flex; flex-wrap: wrap; justify-content: center; gap: 16px; margin-bottom: 14px;}
-  .svg-box { flex: 1 1 300px; max-width: 360px; background: var(--surface); border: 1px solid var(--line); border-radius: 12px; padding: 10px; box-shadow:0 1px 3px rgba(16,24,40,0.06); }
+  .svg-box { flex: 1 1 300px; max-width: 360px; background: var(--surface); border: 1px solid var(--line); border-radius: 12px; padding: 14px 10px; box-shadow:0 1px 3px rgba(16,24,40,0.06); }
+  .anatomy-label-title { text-align: center; font-family: 'Barlow Condensed', sans-serif; font-size: 16px; font-weight: 700; color: var(--accent); margin-bottom: 10px; letter-spacing: 0.5px;}
   .human-shape { stroke: #fff; stroke-width: 2.5; transition: fill 0.3s ease; }
   .svg-text { font-family: 'Inter', sans-serif; font-size: 11px; font-weight: 700; }
   .svg-subtext { font-size: 10px; font-weight: 500; }
@@ -187,6 +194,7 @@ const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_
 let currentUser = null;
 let currentUsername = "";
 
+// Kullanıcının tüm ayarlarını ve ağırlıklarını tutacağımız bulut belleği
 let cloudData = { weights: {}, custom_program: null, active_program: null };
 
 const authScreen = document.getElementById('auth-screen');
@@ -228,9 +236,12 @@ async function signOut() { await supabaseClient.auth.signOut(); }
 supabaseClient.auth.onAuthStateChange(async (event, session) => {
   if (session && session.user) {
     currentUser = session.user;
+    
+    // 1. Profil bilgisini al
     const { data: profile } = await supabaseClient.from('profiles').select('username').eq('id', currentUser.id).single();
     if(profile) currentUsername = profile.username;
     
+    // 2. Kullanıcının bulut verilerini al
     const { data: uData } = await supabaseClient.from('user_data').select('*').eq('user_id', currentUser.id).single();
     if(uData) {
       cloudData = { weights: uData.weights || {}, custom_program: uData.custom_program, active_program: uData.active_program };
@@ -269,9 +280,16 @@ function getActiveDays(){
   return DEFAULT_DAYS;
 }
 
+// 1. GÜN EKLENMEME SORUNUNUN ÇÖZÜMÜ
 function getCustomProgram(){
   if(cloudData.custom_program && cloudData.custom_program.days) return cloudData.custom_program;
-  return { days: [ { id: cpUid(), name:"Gün 1", exercises: [] } ] };
+  
+  // Eğer bulutta yoksa, tek seferlik sabit bir ID ile oluştur ve buluta kaydet
+  cloudData.custom_program = { days: [ { id: cpUid(), name:"Gün 1", exercises: [] } ] };
+  if(currentUser) {
+    supabaseClient.from('user_data').update({ custom_program: cloudData.custom_program }).eq('user_id', currentUser.id).then();
+  }
+  return cloudData.custom_program;
 }
 
 function saveCustomProgram(prog){
@@ -287,7 +305,7 @@ function getTabLabels(){
 function renderTabs(){
   const labels = getTabLabels();
   if(currentDay >= labels.length) currentDay = 0;
-  sessionStorage.setItem('currentTab', currentDay); // Sekmeyi hafızaya al
+  sessionStorage.setItem('currentTab', currentDay); 
   
   const tabsEl = document.getElementById('tabs'); tabsEl.innerHTML = '';
   labels.forEach((label, i) => {
@@ -390,7 +408,10 @@ async function renderDay(){
     const weight = getWeight(day.id, idx, ex.start || 0);
 
     card.innerHTML = `
-      <div class="row-top"><div class="ex-name">${ex.name}</div><a class="link-btn" href="${exImgLink(ex.name)}" target="_blank" rel="noopener">Görsel</a></div>
+      <div class="row-top">
+        <div class="ex-name">${ex.name}</div>
+        <button class="link-btn" onclick="window.open('${exImgLink(ex.name)}', '_blank')" style="background:transparent; cursor:pointer;">Görsel</button>
+      </div>
       <div class="meta"><div class="meta-item">Set: <b>${ex.sr}</b></div><div class="meta-item">Dinlenme: <b>${ex.rest}</b></div></div>
       <div class="stepper">
         <button class="minus">−</button><div class="weight-display"><span class="wnum">${fmt(weight)}</span><span class="weight-unit">kg</span></div><button class="plus">+</button>
@@ -538,11 +559,13 @@ function renderBuilder(){
         EXERCISE_DB[muscleKey].forEach(dbEx => {
           const item = document.createElement('div'); item.className = 'picker-ex-item';
           
-          // GÖRSEL TIKLAMA ÇAKIŞMASI ÇÖZÜMÜ
-          item.innerHTML = `<span>${dbEx.name}</span><div style="display:flex; gap:10px; align-items:center;"><a class="picker-ex-preview" href="${exImgLink(dbEx.name)}" target="_blank" rel="noopener" title="Google'da Görsel Ara">👁️ Görsel</a><span class="picker-ex-reps">${dbEx.reps}</span></div>`;
+          // GÖRSEL TIKLAMA ÇAKIŞMASI ÇÖZÜMÜ (Link yerine Buton yapıldı)
+          item.innerHTML = `<span>${dbEx.name}</span><div style="display:flex; gap:10px; align-items:center;"><button class="picker-ex-preview" title="Google'da Görsel Ara">👁️ Görsel</button><span class="picker-ex-reps">${dbEx.reps}</span></div>`;
           item.onclick = (e) => {
-            if(e.target.closest('.picker-ex-preview')){
-              e.stopPropagation(); // Görsele tıklanınca sadece yeni sekmeye git, ekleme yapma!
+            if(e.target.classList.contains('picker-ex-preview')){
+              e.preventDefault();
+              e.stopPropagation(); 
+              window.open(exImgLink(dbEx.name), '_blank');
               return; 
             }
             day.exercises.push({ name: dbEx.name, muscleKey, sets: 3, reps: dbEx.reps, rest: dbEx.rest }); 
@@ -614,6 +637,7 @@ function renderAnalysis(prog, container){
       
       <!-- ÖN VÜCUT HARİTASI -->
       <div class="svg-box">
+        <div class="anatomy-label-title">ÖN ANATOMİ</div>
         <svg viewBox="0 0 400 380" width="100%" height="auto">
           <!-- Temel Şekiller -->
           <circle cx="200" cy="40" r="22" fill="var(--surface-2)"/> <!-- Kafa -->
@@ -650,6 +674,7 @@ function renderAnalysis(prog, container){
 
       <!-- ARKA VÜCUT HARİTASI -->
       <div class="svg-box">
+        <div class="anatomy-label-title">ARKA ANATOMİ</div>
         <svg viewBox="0 0 400 380" width="100%" height="auto">
           <!-- Temel Şekiller -->
           <circle cx="200" cy="40" r="22" fill="var(--surface-2)"/> <!-- Kafa -->

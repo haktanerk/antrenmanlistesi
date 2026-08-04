@@ -93,7 +93,7 @@
   .comm-ex { font-size:12.5px; padding:4px 0; border-top:1px dashed var(--line); display:flex; justify-content:space-between;}
   .comm-ex:first-of-type { border-top: none; }
 
-  /* --- PROGRAM GÖRÜNÜMÜ (isimli, gün-gün) --- */
+  /* --- PROGRAM GÖRÜNÜMÜ --- */
   .program-title{ font-family:'Barlow Condensed', sans-serif; font-size:22px; font-weight:700; color:var(--accent); text-transform:uppercase; margin:6px 2px 2px 2px; display:inline-block; }
   .program-del{ float:right; background:transparent; border:1px solid var(--line); color:var(--text-dim); border-radius:8px; padding:6px 10px; font-size:11px; cursor:pointer; margin-top:8px; }
   .day-section-title{ font-family:'Barlow Condensed', sans-serif; font-size:16px; font-weight:700; color:var(--text); text-transform:uppercase; margin:24px 2px 8px 2px; padding-top:16px; border-top:2px solid var(--line); }
@@ -192,8 +192,6 @@ const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_
 let currentUser = null;
 let currentUsername = "";
 
-// Kullanıcının tüm ayarlarını tutan bulut belleği
-// NOT: 'active_program' kaldırıldı, yerine çoklu 'saved_programs' listesi geldi.
 let cloudData = { weights: {}, custom_program: null, saved_programs: [] };
 
 const authScreen = document.getElementById('auth-screen');
@@ -231,26 +229,13 @@ async function signIn() {
 
 async function signOut() { await supabaseClient.auth.signOut(); }
 
-// ------------------------------------------------------------------
-// KRİTİK DÜZELTME: Supabase, sekme arka plana alınıp geri geldiğinde
-// (görsel linkine bakıp döndüğünüzde) veya ilk yüklemede BİRDEN FAZLA
-// KEZ "onAuthStateChange" tetikleyebiliyor (TOKEN_REFRESHED, INITIAL_SESSION vb).
-// Eski kodda her tetiklemede bulut verisi YENİDEN ÇEKİLİP cloudData'nın
-// ÜZERİNE YAZILIYORDU — bu da henüz kaydedilmemiş yerel değişiklikleri
-// (örn. az önce eklediğiniz hareketi, açtığınız hareket seçiciyi) siliyordu.
-// Çözüm: tam veri çekme işlemini SADECE İLK KEZ yap, sonraki tetiklemelerde
-// sadece kullanıcı referansını güncelle, cloudData'ya dokunma.
-// ------------------------------------------------------------------
 let hasInitialized = false;
 
 supabaseClient.auth.onAuthStateChange(async (event, session) => {
   if (session && session.user) {
     currentUser = session.user;
 
-    if (hasInitialized) {
-      // Token yenilendi vb. — mevcut yerel veriyi EZME, sessizce çık.
-      return;
-    }
+    if (hasInitialized) return;
     hasInitialized = true;
 
     const { data: profile } = await supabaseClient.from('profiles').select('username').eq('id', currentUser.id).single();
@@ -274,7 +259,7 @@ supabaseClient.auth.onAuthStateChange(async (event, session) => {
     initApp();
   } else {
     currentUser = null;
-    hasInitialized = false; // çıkış yapılırsa bir dahaki girişte tekrar hidrasyon yapılabilsin
+    hasInitialized = false;
     authScreen.style.display = 'block';
     appScreen.style.display = 'none';
   }
@@ -293,13 +278,11 @@ const DEFAULT_DAYS = [
   { id: "gunC", shortLabel: "Gün C", title: "Gün C — Alt Vücut + Karın", note: "Süper setler işaretli.", exercises: [ {blok:"Ana", name:"Back Squat (High Bar)", sr:"4x6-8", rest:"3 dk", start:40}, {blok:"Ana", name:"Romanian Deadlift (Barbell)", sr:"3x8-10", rest:"2-3 dk", start:40}, {blok:"Süper Set", name:"Leg Press", sr:"3x10-12", rest:"0 sn", start:60}, {blok:"Süper Set", name:"Leg Curl (Seated)", sr:"3x12-15", rest:"90 sn", start:20}, {blok:"Karın", name:"Weighted Cable Crunch", sr:"3x12-15", rest:"60 sn", start:15} ] }
 ];
 
-// Varsayılan 3 günlük program + kullanıcının isimli kaydettiği tüm programlar
 function getProgramList(){
   const custom = (cloudData.saved_programs || []).map(p => ({ ...p, isDefault:false }));
   return [ { id: '__default__', name: 'Varsayılan Program', days: DEFAULT_DAYS, isDefault: true }, ...custom ];
 }
 
-// Taslak (henüz kaydedilmemiş) program oluşturucu içeriği
 function getCustomProgram(){
   if(cloudData.custom_program && cloudData.custom_program.days) return cloudData.custom_program;
   cloudData.custom_program = { days: [ { id: cpUid(), name:"Gün 1", exercises: [] } ] };
@@ -379,9 +362,10 @@ async function renderHistory(){
 
   data.forEach(row => {
     const entry = row.workout_data;
+    if(!entry || !entry.exercises) return;
     const card = document.createElement('div'); card.className = 'hist-card';
     card.innerHTML = `
-      <div class="hist-head"><div><div class="hist-day">${entry.dayLabel.split('—')[0].trim()}</div><div class="hist-datetime">${entry.dateStr}</div></div></div>
+      <div class="hist-head"><div><div class="hist-day">${(entry.dayLabel || 'Antrenman').split('—')[0].trim()}</div><div class="hist-datetime">${entry.dateStr || ''}</div></div></div>
       ${entry.exercises.map(ex => `<div class="hist-ex-row"><span class="hist-ex-name">${ex.name}</span><span class="hist-ex-stats">${ex.sets}/${ex.setsTotal} set · ${fmt(ex.weight)} kg</span></div>`).join('')}
     `;
     main.appendChild(card);
@@ -407,9 +391,6 @@ async function renderCommunity(){
   });
 }
 
-// ------------------------------------------------------------------
-// PROGRAM GÖRÜNÜMÜ: Tek bir isimli programın TÜM günlerini alt alta gösterir.
-// ------------------------------------------------------------------
 function renderProgramView(program){
   const main = document.getElementById('main');
 
@@ -437,7 +418,6 @@ function renderProgramView(program){
   });
 }
 
-// Tek bir günün kartlarını (ağırlık, set sayacı, kronometre) verilen container'a basar.
 function renderDaySection(day, main){
   if(day.note){
     const noteEl = document.createElement('div'); noteEl.className = 'day-note'; noteEl.textContent = day.note;
@@ -509,10 +489,17 @@ function renderDaySection(day, main){
   }
 
   const saveBtn = document.createElement('button'); saveBtn.className = 'save-btn'; saveBtn.textContent = `"${day.title || day.shortLabel || day.name}" Gününü Kaydet`;
-  const toast = document.createElement('div'); toast.className = 'save-toast';
+  const toast = document.createElement('div'); saveBtn.style.marginBottom = '4px'; toast.className = 'save-toast';
   saveBtn.onclick = async () => {
-    const doneExercises = dayState.filter(s => s.getSetsDone() > 0).map(s => ({ name: s.name, sets: s.getSetsDone(), setsTotal: s.setsTotal, weight: s.getWeight() }));
-    if(doneExercises.length === 0){ toast.textContent = 'Kaydedilecek set bulunamadı.'; setTimeout(()=>{ toast.textContent=''; }, 2500); return; }
+    // Tamamlanmış setler aranır; eğer kullanıcı set butonuna basıp tamamlamadıysa ama ağırlık girdiyse veya zorunlu kaydetmek istiyorsa yakalayalım
+    const doneExercises = dayState.map(s => ({
+      name: s.name,
+      sets: s.getSetsDone() > 0 ? s.getSetsDone() : s.setsTotal, // Tamamlanmamışsa bile o anki durumu kayda geçir
+      setsTotal: s.setsTotal,
+      weight: s.getWeight()
+    }));
+
+    if(doneExercises.length === 0){ toast.textContent = 'Kaydedilecek egzersiz bulunamadı.'; setTimeout(()=>{ toast.textContent=''; }, 2500); return; }
     const now = new Date();
     const entry = { dayLabel: day.title || day.shortLabel || day.name, dateStr: now.toLocaleDateString('tr-TR'), exercises: doneExercises };
 
@@ -542,7 +529,6 @@ const EXERCISE_DB = {
 };
 Object.values(EXERCISE_DB).forEach(list => { list.forEach(e => { if(!e.rest){ e.rest = e.type === 'compound' ? '2-3 dk' : (e.type === 'core' ? '45-60 sn' : '60-90 sn'); } }); });
 
-// Açık picker/grup durumunu sekme oturumu boyunca hafızada tut
 let builderOpenPicker = JSON.parse(sessionStorage.getItem('openPicker') || '{}');
 
 function renderBuilder(){
@@ -615,13 +601,13 @@ function renderBuilder(){
           const item = document.createElement('div'); item.className = 'picker-ex-item';
           item.innerHTML = `<span>${dbEx.name}</span><div style="display:flex; gap:10px; align-items:center;"><button class="picker-ex-preview">Görsel</button><span class="picker-ex-reps">${dbEx.reps}</span></div>`;
           item.querySelector('.picker-ex-preview').addEventListener('click', (e) => {
-            e.stopPropagation(); // görsele bakmak eklemeyi tetiklemesin, picker açık kalsın
+            e.stopPropagation();
             openImg(dbEx.name);
           });
           item.addEventListener('click', () => {
             day.exercises.push({ name: dbEx.name, muscleKey, sets: 3, reps: dbEx.reps, rest: dbEx.rest });
             saveCustomProgram(prog);
-            renderBuilder(); // builderOpenPicker aynı obje olduğu için picker açık kalır
+            renderBuilder();
           });
           list.appendChild(item);
         });
@@ -648,7 +634,6 @@ function renderBuilder(){
   main.appendChild(analysisContainer);
   renderAnalysis(prog, analysisContainer);
 
-  // --- İsim vererek kaydet ve üst sekmelere ekle ---
   const saveRow = document.createElement('div'); saveRow.className = 'save-name-row';
   saveRow.innerHTML = `
     <input type="text" class="save-name-input" placeholder="Programa bir isim ver (örn. Yaz Programı)" />
@@ -687,14 +672,13 @@ function renderBuilder(){
     saveToast2.textContent = 'Kaydediliyor...';
     await supabaseClient.from('user_data').update({ saved_programs: cloudData.saved_programs }).eq('user_id', currentUser.id);
 
-    // taslağı sıfırla, böylece bir dahaki "Oluştur" ziyaretinde temiz başlar
     cloudData.custom_program = { days: [ { id: cpUid(), name:"Gün 1", exercises: [] } ] };
     if(currentUser) supabaseClient.from('user_data').update({ custom_program: cloudData.custom_program }).eq('user_id', currentUser.id).then();
 
     saveToast2.textContent = `"${progName}" kaydedildi ✓`;
     setTimeout(() => {
       const programs = getProgramList();
-      currentDay = programs.length - 1; // yeni eklenen programın sekmesine geç
+      currentDay = programs.length - 1;
       renderTabs(); renderView();
     }, 700);
   };
@@ -703,7 +687,7 @@ function renderBuilder(){
   main.appendChild(saveToast2);
 }
 
-// --- HAREKET BAZLI HACİM ANALİZİ (SVG anatomi) ---
+// --- GÖRSEL HACİM ANALİZİ ---
 function renderAnalysis(prog, container){
   container.className = 'analysis-section';
   const totals = {}; Object.keys(MUSCLE_LABELS).forEach(k => totals[k] = 0);

@@ -31,7 +31,8 @@
   .auth-body { padding: 24px; }
   .auth-input { width: 100%; padding: 12px; margin-bottom: 12px; border: 1px solid var(--line); border-radius: 10px; font-family: 'Inter'; font-size: 14px; background:var(--bg); }
   .auth-input:focus { outline:none; border-color:var(--accent); }
-  .auth-btn-primary { width: 100%; padding: 12px; background: var(--accent); color: white; border: none; border-radius: 10px; font-weight: 600; cursor: pointer; font-size:14.5px; }
+  .auth-btn-primary { width: 100%; padding: 12px; background: var(--accent); color: white; border: none; border-radius: 10px; font-weight: 600; cursor: pointer; font-size:14.5px; transition:0.2s; }
+  .auth-btn-primary:active { opacity:0.8; }
   #auth-msg { text-align: center; font-size: 13px; margin-top: 14px; font-weight: 500; }
   .msg-error { color: var(--warn); }
   .msg-success { color: var(--status-ok); }
@@ -109,6 +110,7 @@
   .hist-head{ display:flex; justify-content:space-between; align-items:flex-start; }
   .hist-day{ font-family:'Barlow Condensed', sans-serif; font-weight:700; font-size:15px; color:var(--accent); text-transform:uppercase; }
   .hist-datetime{ font-size:11.5px; color:var(--text-dim); font-family:'IBM Plex Mono', monospace; margin-top:2px; }
+  .hist-del{ border:none; background:transparent; color:var(--warn); font-size:13px; font-weight:600; cursor:pointer; padding:4px 6px; }
   .hist-ex-row{ display:flex; justify-content:space-between; align-items:center; font-size:13px; padding:7px 0; border-top:1px solid var(--line); }
   .hist-ex-name{ color:var(--text); }
   .hist-ex-stats{ font-family:'IBM Plex Mono', monospace; color:var(--text-dim); font-size:12.5px; white-space:nowrap; margin-left:10px; }
@@ -201,6 +203,7 @@
       <input type="text" id="signup-username" class="auth-input" placeholder="Kullanıcı Adı (Örn: haktaner)" />
       <input type="email" id="signup-email" class="auth-input" placeholder="E-posta Adresiniz" />
       <input type="password" id="signup-password" class="auth-input" placeholder="Şifre (En az 6 karakter)" />
+      <input type="password" id="signup-password-confirm" class="auth-input" placeholder="Şifre (Tekrar)" />
       <button class="auth-btn-primary" onclick="signUp()">Kayıt Ol</button>
     </div>
 
@@ -224,7 +227,7 @@
 
 <script>
 // ==========================================
-// SUPABASE BAĞLANTISI VE AUTHENTICATION
+// SUPABASE BAĞLANTISI (Doğrudan Ekli)
 // ==========================================
 const SUPABASE_URL = 'https://luhjxfpnhszoptusadwl.supabase.co';
 const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imx1aGp4ZnBuaHN6b3B0dXNhZHdsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODU4MTA1NDksImV4cCI6MjEwMTM4NjU0OX0.bbZky4piJuYWDORymhZi-t7C4aDBbqDHbOCMLq7TAag';
@@ -233,7 +236,6 @@ const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_
 let currentUser = null;
 let currentUsername = "";
 
-// Bulut belleği (Varsayılan program kaldırıldı, ilk açılışta boş gelecek)
 let cloudData = { weights: {}, custom_program: null, saved_programs: [], session_state: {} };
 
 const authScreen = document.getElementById('auth-screen');
@@ -263,8 +265,10 @@ async function signUp() {
   const username = document.getElementById('signup-username').value.trim();
   const email = document.getElementById('signup-email').value.trim();
   const password = document.getElementById('signup-password').value;
+  const confirmPassword = document.getElementById('signup-password-confirm').value;
   
   if (!username || !email || password.length < 6) return showMsg('Lütfen tüm alanları eksiksiz doldurun.', true);
+  if (password !== confirmPassword) return showMsg('Şifreler eşleşmiyor.', true);
   
   authMsg.textContent = 'Kayıt yapılıyor...';
   const { data, error } = await supabaseClient.auth.signUp({ email, password });
@@ -272,9 +276,11 @@ async function signUp() {
   if (error) { 
     showMsg('Kayıt Hatası: ' + error.message, true); 
   } else {
-    showMsg('Kayıt başarılı! Giriş yapılıyor...');
+    showMsg('Kayıt başarılı! Otomatik giriş yapılıyor...');
     if(data.user) {
       await supabaseClient.from('profiles').upsert([{ id: data.user.id, username: username, email: email }]);
+      // Zorla (Force) Login işlemi
+      await supabaseClient.auth.signInWithPassword({ email: email, password: password });
     }
   }
 }
@@ -287,14 +293,10 @@ async function signIn() {
   authMsg.textContent = 'Giriş yapılıyor...';
   let loginEmail = identifier;
 
-  // Eğer içinde @ yoksa, bu bir kullanıcı adıdır. Veritabanından e-postasını bulalım.
   if (!identifier.includes('@')) {
     const { data: prof, error: pErr } = await supabaseClient.from('profiles').select('email').eq('username', identifier).maybeSingle();
-    if(prof && prof.email) {
-      loginEmail = prof.email;
-    } else {
-      return showMsg('Kullanıcı adı bulunamadı.', true);
-    }
+    if(prof && prof.email) loginEmail = prof.email;
+    else return showMsg('Kullanıcı adı bulunamadı.', true);
   }
 
   const { error } = await supabaseClient.auth.signInWithPassword({ email: loginEmail, password });
@@ -315,7 +317,6 @@ supabaseClient.auth.onAuthStateChange(async (event, session) => {
     const { data: profileArray } = await supabaseClient.from('profiles').select('username').eq('id', currentUser.id);
     if(profileArray && profileArray.length > 0) currentUsername = profileArray[0].username;
 
-    // Bulut verilerini çek
     const { data: uDataArray } = await supabaseClient.from('user_data').select('*').eq('user_id', currentUser.id);
     
     if(uDataArray && uDataArray.length > 0) {
@@ -337,8 +338,11 @@ supabaseClient.auth.onAuthStateChange(async (event, session) => {
     // GİRİŞ YAPILDIĞINDA EKRAN YÖNLENDİRMESİ
     let savedTab = parseInt(sessionStorage.getItem('currentTab'));
     if (isNaN(savedTab)) {
-        if (cloudData.saved_programs.length === 0) currentDay = 1; // 0:Geçmiş, 1:Oluştur, 2:Topluluk
-        else currentDay = 0; // 0: Program 1
+        if (!cloudData.saved_programs || cloudData.saved_programs.length === 0) {
+            currentDay = 1; // 0:Geçmiş, 1:Oluştur (Çünkü varsayılan program yok)
+        } else {
+            currentDay = 0; // Kayıtlı ilk programa git
+        }
     } else {
         currentDay = savedTab;
     }
@@ -356,9 +360,9 @@ supabaseClient.auth.onAuthStateChange(async (event, session) => {
 // ANA UYGULAMA MANTIĞI VE UI YÖNETİMİ
 // ==========================================
 
-let currentSubDay = 0; // Günleri alt sekme olarak yönetmek için
-let communityListCache = []; // Topluluk verilerini incelemek için
-let viewingCommunityProgram = null; // Toplulukta içine girilen program
+let currentSubDay = 0; 
+let communityListCache = []; 
+let viewingCommunityProgram = null; 
 
 function initApp() { renderTabs(); renderView(); }
 
@@ -403,7 +407,8 @@ function getTabLabels(){
 
 function renderTabs(){
   const labels = getTabLabels();
-  if(currentDay >= labels.length) currentDay = 0;
+  // Eğer sekme sayısında azalma olursa (örn program silinirse) taşıp bozulmasını engelle
+  if(currentDay >= labels.length) currentDay = Math.max(0, labels.length - 1);
   sessionStorage.setItem('currentTab', currentDay);
 
   const tabsEl = document.getElementById('tabs'); tabsEl.innerHTML = '';
@@ -454,9 +459,21 @@ async function saveHistoryEntryToCloud(entry){
   return { error: null };
 }
 
+// Yeni Geçmiş Kaydını Silme Fonksiyonu
+async function deleteHistory(id) {
+    if(!confirm("Bu antrenman kaydını geçmişten silmek istediğinize emin misiniz?")) return;
+    const { error } = await supabaseClient.from('workouts').delete().eq('id', id);
+    if(error) {
+        alert("Silinirken hata oluştu: " + error.message);
+    } else {
+        renderHistory(); // Sayfayı yenile
+    }
+}
+
 async function renderHistory(){
   const main = document.getElementById('main'); main.innerHTML = `<div class="day-note">Yükleniyor...</div>`;
-  const { data, error } = await supabaseClient.from('workouts').select('workout_data, created_at').eq('user_id', currentUser.id).order('created_at', { ascending: false });
+  // id'yi de çekiyoruz ki silme işlemi yapılabilsin
+  const { data, error } = await supabaseClient.from('workouts').select('id, workout_data, created_at').eq('user_id', currentUser.id).order('created_at', { ascending: false });
   main.innerHTML = `<div class="day-note">Tamamlanmış antrenman kayıtlarınız aşağıdadır.</div>`;
   if(!data || data.length === 0){ main.innerHTML += `<div class="hist-empty">Henüz tamamlanmış antrenman yok.</div>`; return; }
 
@@ -467,8 +484,12 @@ async function renderHistory(){
     const dateStr = dt.toLocaleDateString('tr-TR') + " " + dt.toLocaleTimeString('tr-TR', {hour:'2-digit', minute:'2-digit'});
     
     const card = document.createElement('div'); card.className = 'hist-card';
+    // Sağ üste "Sil" butonu eklendi
     card.innerHTML = `
-      <div class="hist-head"><div><div class="hist-day">${(entry.dayLabel || 'Antrenman').split('—')[0].trim()}</div><div class="hist-datetime">${dateStr}</div></div></div>
+      <div class="hist-head">
+          <div><div class="hist-day">${(entry.dayLabel || 'Antrenman').split('—')[0].trim()}</div><div class="hist-datetime">${dateStr}</div></div>
+          <button class="hist-del" onclick="deleteHistory('${row.id}')">Sil ✕</button>
+      </div>
       ${entry.exercises.map(ex => `<div class="hist-ex-row"><span class="hist-ex-name">${ex.name}</span><span class="hist-ex-stats">${ex.sets}/${ex.setsTotal} set · ${fmt(ex.weight)} kg</span></div>`).join('')}
     `;
     main.appendChild(card);
@@ -501,7 +522,9 @@ function renderProgramView(program){
       if(!confirm(`"${program.name}" programını silmek istediğinize emin misiniz?`)) return;
       cloudData.saved_programs = cloudData.saved_programs.filter(p => p.id !== program.id);
       await saveCloudData();
-      currentDay = 0; currentSubDay = 0;
+      // Silindikten sonra her ihtimale karşı Oluştur sekmesine at
+      currentDay = getProgramList().length + 1; 
+      currentSubDay = 0;
       renderTabs(); renderView();
   };
 
@@ -695,7 +718,15 @@ async function renderCommunity(){
   }
 
   main.innerHTML = `<div class="day-note">Topluluk programları yükleniyor...</div>`;
-  const { data, error } = await supabaseClient.from('programs').select('*, profiles(username)').eq('is_public', true).order('created_at', {ascending: false}).limit(30);
+  
+  // Güvenlik Duvarı Çökme Önleyici (Fallback) Eklendi
+  let { data, error } = await supabaseClient.from('programs').select('*, profiles(username)').eq('is_public', true).order('created_at', {ascending: false}).limit(30);
+  if (error) {
+      // İlişkisel (Join) sorgusu patlarsa sadece programları çek
+      const fallback = await supabaseClient.from('programs').select('*').eq('is_public', true).order('created_at', {ascending: false}).limit(30);
+      data = fallback.data;
+  }
+  
   communityListCache = data || []; 
 
   main.innerHTML = `<div class="day-note" style="margin-bottom:16px;">Diğer üyelerin paylaştığı antrenman programları.</div>`;
@@ -762,9 +793,10 @@ Object.values(EXERCISE_DB).forEach(list => { list.forEach(e => { if(!e.rest){ e.
 
 let builderOpenPicker = JSON.parse(sessionStorage.getItem('openPicker') || '{}');
 
-// --- OLUŞTURUCU (ALT SEKMELİ) ---
+// --- OLUŞTURUCU (ALT SEKMELİ YAPI VE BUG FİX) ---
 async function renderBuilder(){
   const main = document.getElementById('main');
+  main.innerHTML = `<div class="day-note">Kendi programını oluştur, en altta bir isim vererek kaydet — üst sekmelerde ayrı bir program olarak görünecek. İstediğin kadar farklı program kaydedebilirsin.</div>`;
   const prog = getCustomProgram();
   const analysisContainer = document.createElement('div');
 
@@ -790,12 +822,13 @@ async function renderBuilder(){
   });
   main.appendChild(stContainer);
 
+  // BUG FİX: Döngü tamamen kaldırıldı. SADECE O GÜN EKRANA BASILIYOR.
   const day = prog.days[currentSubDay];
   if(day) {
       const card = document.createElement('div'); card.className = 'day-card';
       const head = document.createElement('div'); head.style.display = 'flex'; head.style.justifyContent = 'space-between'; head.style.alignItems = 'center';
       head.innerHTML = `<input class="day-name-input" value="${day.name}" placeholder="Gün Adı (Örn: İtiş)" />`;
-      head.querySelector('.day-name-input').oninput = async (e) => { day.name = e.target.value; await saveCustomProgram(prog); };
+      head.querySelector('.day-name-input').oninput = async (e) => { day.name = e.target.value; await saveCustomProgram(prog); renderTabs(); };
       card.appendChild(head);
 
       day.exercises.forEach((ex, exIdx) => {
@@ -880,12 +913,12 @@ async function renderBuilder(){
     const newProgram = {
       id: cpUid(),
       name: progName,
-      days: prog.days.map(day => ({
+      days: prog.days.map(d => ({
         id: cpUid(),
-        shortLabel: day.name,
-        title: day.name,
+        shortLabel: d.name,
+        title: d.name,
         note: '',
-        exercises: day.exercises.map(ex => ({
+        exercises: d.exercises.map(ex => ({
           blok: MUSCLE_LABELS[ex.muscleKey] || '',
           name: ex.name,
           sr: `${ex.sets}x${ex.reps}`,
@@ -900,13 +933,14 @@ async function renderBuilder(){
     saveToast2.textContent = 'Kaydediliyor...';
     await saveCloudData();
 
+    // Özel program taslağını sıfırla
     cloudData.custom_program = { days: [ { id: cpUid(), name:"Gün 1", exercises: [] } ] };
     await saveCustomProgram(cloudData.custom_program);
 
     saveToast2.textContent = `"${progName}" kaydedildi ✓`;
     setTimeout(() => {
       const programs = getProgramList();
-      currentDay = programs.length - 1;
+      currentDay = programs.length - 1; // Yeni eklenen programa geç
       currentSubDay = 0;
       renderTabs(); renderView();
     }, 700);
@@ -940,7 +974,7 @@ function renderAnalysis(prog, container){
     <div class="svg-container">
       <div class="svg-box">
         <div class="anatomy-label-title">ÖN ANATOMİ</div>
-        <svg viewBox="0 0 400 380" width="100%" style="display:block;">
+        <svg viewBox="0 0 400 380" width="100%" style="display:block; height:auto;">
           <circle cx="200" cy="40" r="22" fill="var(--surface-2)"/>
           <rect x="193" y="60" width="14" height="20" fill="var(--surface-2)"/>
           <circle cx="150" cy="90" r="16" fill="${getColor(totals.omuz)}" class="human-shape"/>
@@ -968,7 +1002,7 @@ function renderAnalysis(prog, container){
 
       <div class="svg-box">
         <div class="anatomy-label-title">ARKA ANATOMİ</div>
-        <svg viewBox="0 0 400 380" width="100%" style="display:block;">
+        <svg viewBox="0 0 400 380" width="100%" style="display:block; height:auto;">
           <circle cx="200" cy="40" r="22" fill="var(--surface-2)"/>
           <rect x="193" y="60" width="14" height="20" fill="var(--surface-2)"/>
           <polygon points="165,80 235,80 220,170 180,170" fill="${getColor(totals.sirt)}" class="human-shape"/>

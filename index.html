@@ -189,7 +189,7 @@ const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_
 let currentUser = null;
 let currentUsername = "";
 
-let cloudData = { weights: {}, custom_program: null, saved_programs: [] };
+let cloudData = { weights: {}, custom_program: null, saved_programs: [], session_state: {} };
 
 const authScreen = document.getElementById('auth-screen');
 const appScreen = document.getElementById('app-screen');
@@ -244,10 +244,11 @@ supabaseClient.auth.onAuthStateChange(async (event, session) => {
         weights: uData.weights || {},
         custom_program: uData.custom_program || null,
         saved_programs: uData.saved_programs || [],
+        session_state: uData.session_state || {}
       };
     } else {
       await supabaseClient.from('user_data').insert([{ user_id: currentUser.id }]);
-      cloudData = { weights: {}, custom_program: null, saved_programs: [] };
+      cloudData = { weights: {}, custom_program: null, saved_programs: [], session_state: {} };
     }
 
     authScreen.style.display = 'none';
@@ -288,9 +289,29 @@ function getCustomProgram(){
   }
   return cloudData.custom_program;
 }
-function saveCustomProgram(prog){
+
+async function saveCustomProgram(prog) {
   cloudData.custom_program = prog;
-  if(currentUser) supabaseClient.from('user_data').update({ custom_program: prog }).eq('user_id', currentUser.id).then();
+  try {
+    const { error } = await supabaseClient.from('user_data')
+      .update({ custom_program: prog })
+      .eq('user_id', currentUser.id);
+    if (error) console.error('Özel program kaydedilemedi:', error);
+  } catch (err) { console.error('Özel program güncelleme hatası:', err); }
+}
+
+async function saveCloudData() {
+  try {
+    const { error } = await supabaseClient.from('user_data')
+      .update({
+        weights: cloudData.weights,
+        custom_program: cloudData.custom_program,
+        saved_programs: cloudData.saved_programs,
+        session_state: cloudData.session_state
+      })
+      .eq('user_id', currentUser.id);
+    if (error) console.error('Cloud veri güncelleme hatası:', error);
+  } catch (err) { console.error('Cloud güncelleme hatası:', err); }
 }
 
 function getTabLabels(){
@@ -332,40 +353,43 @@ function parseSetsTotal(sr){ const m = sr.match(/^(\d+)\s*x/i); return m ? parse
 function parseRestSeconds(rt){ const nums=[]; let m; const re=/(\d+(?:\.\d+)?)\s*(dk|sn)/gi; while((m=re.exec(rt))!==null){ nums.push(m[2].toLowerCase()==='dk'?parseFloat(m[1])*60:parseFloat(m[1])); } return nums.length?Math.round(nums.reduce((a,b)=>a+b,0)/nums.length):90; }
 function fmtTime(s){ s=Math.max(0,Math.round(s)); const m=Math.floor(s/60); return `${String(m).padStart(2,'0')}:${String(s%60).padStart(2,'0')}`; }
 
-function getSetsDone(dayId, idx){ try{ const raw = localStorage.getItem(`s:${dayId}:${idx}`); if(raw !== null) return parseInt(raw, 10); }catch(e){} return 0; }
-function setSetsDone(dayId, idx, value){ try{ localStorage.setItem(`s:${dayId}:${idx}`, String(value)); }catch(e){} }
+// --- Set durumlarını cloud'dan oku/yaz ---
+function getSetsDone(dayId, idx) {
+  const key = `${dayId}_${idx}`;
+  return cloudData.session_state[key] || 0;
+}
 
+async function setSetsDone(dayId, idx, value) {
+  const key = `${dayId}_${idx}`;
+  cloudData.session_state[key] = value;
+  await saveCloudData();
+}
+
+// --- Ağırlıkları cloud'dan oku/yaz ---
 function getWeight(dayId, idx, fallback){
   const key = `${dayId}_${idx}`;
   if(cloudData.weights && cloudData.weights[key] !== undefined) return cloudData.weights[key];
   return fallback;
 }
-function setWeight(dayId, idx, value){
+
+async function setWeight(dayId, idx, value){
   const key = `${dayId}_${idx}`;
   if(!cloudData.weights) cloudData.weights = {};
   cloudData.weights[key] = value;
-  if(currentUser) supabaseClient.from('user_data').update({ weights: cloudData.weights }).eq('user_id', currentUser.id).then();
+  await saveCloudData();
 }
 
+// --- Antrenman kaydını buluta ekle ---
 async function saveHistoryEntryToCloud(entry){
-
-    const { data, error } = await supabaseClient
-        .from("workouts")
-        .insert([
-            {
-                user_id: currentUser.id,
-                workout_data: entry
-            }
-        ]);
-
-    console.log("DATA:", data);
-    console.log("ERROR:", error);
-
-    if(error){
-        alert(error.message);
-    }
-
-    return {data,error};
+  const { error } = await supabaseClient
+    .from("workouts")
+    .insert([{ user_id: currentUser.id, workout_data: entry }]);
+  if(error) {
+    console.error('Antrenman kaydedilemedi:', error);
+    alert('Kayıt başarısız: ' + error.message);
+    return { data: null, error };
+  }
+  return { data: null, error: null };
 }
 
 async function renderHistory(){
@@ -417,7 +441,7 @@ function renderProgramView(program){
     titleRow.querySelector('.program-del').onclick = async () => {
       if(!confirm(`"${program.name}" programını silmek istediğinize emin misiniz?`)) return;
       cloudData.saved_programs = (cloudData.saved_programs || []).filter(p => p.id !== program.id);
-      if(currentUser) await supabaseClient.from('user_data').update({ saved_programs: cloudData.saved_programs }).eq('user_id', currentUser.id);
+      await saveCloudData();
       currentDay = 0;
       renderTabs(); renderView();
     };
@@ -466,10 +490,11 @@ function renderDaySection(day, main){
     card.querySelector('.link-btn').onclick = () => openImg(ex.name);
 
     const wNum = card.querySelector('.wnum'); let current = weight;
-    card.querySelector('.minus').onclick = () => { current = Math.max(0, current - STEP); wNum.textContent = fmt(current); setWeight(day.id, idx, current); };
-    card.querySelector('.plus').onclick = () => { current = current + STEP; wNum.textContent = fmt(current); setWeight(day.id, idx, current); };
+    card.querySelector('.minus').onclick = async () => { current = Math.max(0, current - STEP); wNum.textContent = fmt(current); await setWeight(day.id, idx, current); };
+    card.querySelector('.plus').onclick = async () => { current = current + STEP; wNum.textContent = fmt(current); await setWeight(day.id, idx, current); };
 
-    const setsTotal = parseSetsTotal(ex.sr); let setsDone = getSetsDone(day.id, idx);
+    const setsTotal = parseSetsTotal(ex.sr);
+    let setsDone = getSetsDone(day.id, idx);
     const setBtn = card.querySelector('.set-btn'); const dotsEl = card.querySelector('.dots'); const setLabelEl = card.querySelector('.set-label');
 
     function renderSets(){
@@ -477,8 +502,19 @@ function renderDaySection(day, main){
       const complete = setsDone >= setsTotal; setLabelEl.textContent = complete ? 'Tamam ✓' : `Set ${setsDone}/${setsTotal}`; setBtn.classList.toggle('complete', complete);
     }
     renderSets();
-    setBtn.onclick = () => { setsDone = setsDone >= setsTotal ? 0 : setsDone + 1; setSetsDone(day.id, idx, setsDone); renderSets(); };
-    card.querySelector('.set-reset').onclick = () => { setsDone = 0; setSetsDone(day.id, idx, setsDone); renderSets(); };
+
+    setBtn.onclick = async () => {
+      setsDone = setsDone >= setsTotal ? 0 : setsDone + 1;
+      await setSetsDone(day.id, idx, setsDone);
+      renderSets();
+    };
+
+    card.querySelector('.set-reset').onclick = async () => {
+      setsDone = 0;
+      await setSetsDone(day.id, idx, setsDone);
+      renderSets();
+    };
+
     dayState.push({ name: ex.name, setsTotal, getSetsDone: () => setsDone, getWeight: () => current });
 
     const restSeconds = parseRestSeconds(ex.rest); let timeLeft = restSeconds; let timerInterval = null; let running = false;
@@ -517,9 +553,18 @@ function renderDaySection(day, main){
     const entry = { dayLabel: day.title || day.shortLabel || day.name, dateStr: now.toLocaleDateString('tr-TR'), exercises: doneExercises };
 
     saveBtn.textContent = "Kaydediliyor...";
-    await saveHistoryEntryToCloud(entry);
+    const result = await saveHistoryEntryToCloud(entry);
+    if (result.error) {
+      toast.textContent = 'Kayıt başarısız!';
+      saveBtn.textContent = 'Tekrar Dene';
+      setTimeout(()=>{ toast.textContent=''; }, 3000);
+      return;
+    }
 
-    day.exercises.forEach((ex, idx) => setSetsDone(day.id, idx, 0));
+    // Set durumlarını sıfırla
+    for(let idx=0; idx<day.exercises.length; idx++){
+      await setSetsDone(day.id, idx, 0);
+    }
     toast.textContent = 'Buluta kaydedildi ✓';
     setTimeout(()=>{ toast.textContent=''; renderTabs(); renderView(); }, 1200);
   };
@@ -544,7 +589,7 @@ Object.values(EXERCISE_DB).forEach(list => { list.forEach(e => { if(!e.rest){ e.
 
 let builderOpenPicker = JSON.parse(sessionStorage.getItem('openPicker') || '{}');
 
-function renderBuilder(){
+async function renderBuilder(){
   const main = document.getElementById('main');
   main.innerHTML = `<div class="day-note">Kendi programını oluştur, en altta bir isim vererek kaydet — üst sekmelerde ayrı bir program olarak görünecek. İstediğin kadar farklı program kaydedebilirsin.</div>`;
   const prog = getCustomProgram();
@@ -557,16 +602,16 @@ function renderBuilder(){
       <button class="cs-minus">−</button><div class="count-num">${prog.days.length}</div><button class="cs-plus">+</button>
     </div>
   `;
-  countRow.querySelector('.cs-minus').onclick = () => { if(prog.days.length > 1){ prog.days.pop(); saveCustomProgram(prog); renderBuilder(); } };
-  countRow.querySelector('.cs-plus').onclick = () => { if(prog.days.length < 7){ prog.days.push({ id: cpUid(), name:`Gün ${prog.days.length+1}`, exercises: [] }); saveCustomProgram(prog); renderBuilder(); } };
+  countRow.querySelector('.cs-minus').onclick = async () => { if(prog.days.length > 1){ prog.days.pop(); await saveCustomProgram(prog); renderBuilder(); } };
+  countRow.querySelector('.cs-plus').onclick = async () => { if(prog.days.length < 7){ prog.days.push({ id: cpUid(), name:`Gün ${prog.days.length+1}`, exercises: [] }); await saveCustomProgram(prog); renderBuilder(); } };
   main.appendChild(countRow);
 
   prog.days.forEach((day) => {
     const card = document.createElement('div'); card.className = 'day-card';
     const head = document.createElement('div'); head.style.display = 'flex'; head.style.justifyContent = 'space-between'; head.style.alignItems = 'center';
     head.innerHTML = `<input class="day-name-input" value="${day.name}" /><button class="day-del">Günü Sil ✕</button>`;
-    head.querySelector('.day-name-input').oninput = (e) => { day.name = e.target.value; saveCustomProgram(prog); };
-    head.querySelector('.day-del').onclick = () => { if(prog.days.length <= 1){ return; } prog.days = prog.days.filter(d => d.id !== day.id); saveCustomProgram(prog); renderBuilder(); };
+    head.querySelector('.day-name-input').oninput = async (e) => { day.name = e.target.value; await saveCustomProgram(prog); };
+    head.querySelector('.day-del').onclick = async () => { if(prog.days.length <= 1){ return; } prog.days = prog.days.filter(d => d.id !== day.id); await saveCustomProgram(prog); renderBuilder(); };
     card.appendChild(head);
 
     day.exercises.forEach((ex, exIdx) => {
@@ -581,10 +626,10 @@ function renderBuilder(){
         </div>
       `;
       row.querySelector('.picker-ex-preview').onclick = () => openImg(ex.name);
-      row.querySelector('.sets-input').oninput = (e) => { ex.sets = parseFloat(e.target.value) || 0; saveCustomProgram(prog); renderAnalysis(prog, analysisContainer); };
-      row.querySelector('.reps-input').oninput = (e) => { ex.reps = e.target.value; saveCustomProgram(prog); };
-      row.querySelector('.rest-input').oninput = (e) => { ex.rest = e.target.value; saveCustomProgram(prog); };
-      row.querySelector('.ex-remove').onclick = () => { day.exercises.splice(exIdx, 1); saveCustomProgram(prog); renderBuilder(); };
+      row.querySelector('.sets-input').oninput = async (e) => { ex.sets = parseFloat(e.target.value) || 0; await saveCustomProgram(prog); renderAnalysis(prog, analysisContainer); };
+      row.querySelector('.reps-input').oninput = async (e) => { ex.reps = e.target.value; await saveCustomProgram(prog); };
+      row.querySelector('.rest-input').oninput = async (e) => { ex.rest = e.target.value; await saveCustomProgram(prog); };
+      row.querySelector('.ex-remove').onclick = async () => { day.exercises.splice(exIdx, 1); await saveCustomProgram(prog); renderBuilder(); };
       card.appendChild(row);
     });
 
@@ -617,9 +662,9 @@ function renderBuilder(){
             e.stopPropagation();
             openImg(dbEx.name);
           });
-          item.addEventListener('click', () => {
+          item.addEventListener('click', async () => {
             day.exercises.push({ name: dbEx.name, muscleKey, sets: 3, reps: dbEx.reps, rest: dbEx.rest });
-            saveCustomProgram(prog);
+            await saveCustomProgram(prog);
             renderBuilder();
           });
           list.appendChild(item);
@@ -683,10 +728,11 @@ function renderBuilder(){
     if(!cloudData.saved_programs) cloudData.saved_programs = [];
     cloudData.saved_programs.push(newProgram);
     saveToast2.textContent = 'Kaydediliyor...';
-    await supabaseClient.from('user_data').update({ saved_programs: cloudData.saved_programs }).eq('user_id', currentUser.id);
+    await saveCloudData();
 
+    // Özel programı sıfırla
     cloudData.custom_program = { days: [ { id: cpUid(), name:"Gün 1", exercises: [] } ] };
-    if(currentUser) supabaseClient.from('user_data').update({ custom_program: cloudData.custom_program }).eq('user_id', currentUser.id).then();
+    await saveCustomProgram(cloudData.custom_program);
 
     saveToast2.textContent = `"${progName}" kaydedildi ✓`;
     setTimeout(() => {

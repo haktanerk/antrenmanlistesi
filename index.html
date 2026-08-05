@@ -133,7 +133,7 @@
   .save-btn:active { transform:scale(0.98); }
   .save-toast{ text-align:center; color:var(--accent); font-size:13px; font-weight:600; margin-top:10px; height:18px; }
 
-  /* GEÇMİŞ KARTLARI */
+  /* GEÇMİŞ & TOPLULUK KARTLARI */
   .hist-empty{ text-align:center; color:var(--text-dim); font-size:14px; margin-top:40px; padding:0 20px; }
   .hist-card{ background:var(--surface); border:1px solid var(--line); border-radius:16px; padding:16px; margin-bottom:16px; box-shadow:0 4px 12px rgba(0,0,0,0.04); }
   .hist-head{ display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:12px; border-bottom:1px solid var(--surface-2); padding-bottom:10px;}
@@ -146,7 +146,6 @@
   .hist-ex-name{ color:var(--text); font-weight:500;}
   .hist-ex-stats{ font-family:'IBM Plex Mono', monospace; color:var(--accent); font-weight:600; font-size:13px; white-space:nowrap; margin-left:10px; }
   
-  /* TOPLULUK KARTLARI */
   .comm-card { background:var(--surface); border:1px solid var(--line); border-radius:16px; padding:16px; margin-bottom:16px; box-shadow:0 4px 12px rgba(0,0,0,0.04); }
   .comm-header-row { display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;}
   .comm-author { font-size:13px; color:var(--text-dim); font-weight:500;}
@@ -251,11 +250,28 @@
   .wm-card.next { transform: translateY(110%) scale(0.85); opacity:0.4; z-index:1; pointer-events:none; }
   .wm-card.hidden { opacity:0; pointer-events:none; z-index:0; }
 
+  /* Hareketi Atla Butonu */
+  .wm-skip-btn { display:flex; align-items:center; justify-content:center; width:100%; margin-top:20px; padding:12px; background:var(--surface-2); color:var(--text-dim); border:1px dashed var(--line); border-radius:12px; font-family:'Inter'; font-weight:600; font-size:13px; cursor:pointer; transition:0.2s; letter-spacing:0.5px; text-transform:uppercase; }
+  .wm-skip-btn:hover { border-color:var(--accent); color:var(--accent); }
+
   .wm-progress-container { padding: 24px 20px; background: var(--surface); border-top:1px solid var(--line); z-index:10;}
   .wm-progress-bar-bg { width:100%; height:12px; background:var(--surface-2); border-radius:6px; overflow:hidden; border:1px solid var(--line);}
-  .wm-progress-bar-fill { height:100%; background:var(--accent); width:0%; transition:width 0.4s ease; }
+  .wm-progress-bar-fill { height:100%; background:var(--accent); width:0%; transition:width 0.5s cubic-bezier(0.4, 0, 0.2, 1); }
   .wm-progress-text { text-align:center; font-size:14px; font-weight:700; color:var(--text); margin-top:10px; transition:0.2s;}
 
+  /* --- YENİ: UYGULAMA İÇİ GÖRSEL ARAMA PENCERESİ (MODAL) --- */
+  .ex-modal { position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(15,23,42,0.85); backdrop-filter:blur(6px); z-index:100000; display:none; align-items:center; justify-content:center; padding:20px; }
+  .ex-modal.active { display:flex; animation: fadeIn 0.3s ease; }
+  .ex-modal-content { width:100%; max-width:500px; height:85%; background:var(--bg); border-radius:20px; display:flex; flex-direction:column; overflow:hidden; box-shadow:0 10px 40px rgba(0,0,0,0.3); border:1px solid var(--line);}
+  .ex-modal-header { padding:16px 20px; background:var(--surface); display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid var(--line); }
+  .ex-modal-close { background:var(--surface-2); border:1px solid var(--line); color:var(--text); width:32px; height:32px; border-radius:8px; font-weight:bold; cursor:pointer; transition:0.2s; display:flex; align-items:center; justify-content:center;}
+  .ex-modal-close:hover { background:var(--warn); color:#fff; border-color:var(--warn);}
+  .ex-modal-body { flex:1; background:var(--surface-2); position:relative; }
+  .ex-modal-body iframe { width:100%; height:100%; border:none; background:#fff;}
+  .ex-modal-footer { padding:12px; background:var(--surface); text-align:center; border-top:1px solid var(--line);}
+  .ex-modal-btn { background:var(--surface-2); color:var(--text); border:1px solid var(--line); padding:10px 20px; border-radius:10px; font-size:13px; font-weight:600; cursor:pointer; font-family:'Inter'; transition:0.2s;}
+  .ex-modal-btn:hover { border-color:var(--accent); color:var(--accent); background:var(--accent-dim);}
+  @keyframes fadeIn { from{opacity:0; transform:scale(0.95);} to{opacity:1; transform:scale(1);} }
 </style>
 </head>
 <body>
@@ -318,6 +334,22 @@
     <div class="wm-progress-container">
         <div class="wm-progress-bar-bg"><div class="wm-progress-bar-fill" id="wm-progress-fill"></div></div>
         <div class="wm-progress-text" id="wm-progress-text">Antrenman İlerlemesi: %0</div>
+    </div>
+</div>
+
+<!-- GÖRSEL ARAMA PENCERESİ (MODAL) -->
+<div id="ex-modal" class="ex-modal">
+    <div class="ex-modal-content">
+        <div class="ex-modal-header">
+            <h3 id="ex-modal-title" style="margin:0; font-family:'Barlow Condensed'; font-size:20px; color:var(--accent);">Görsel Arama</h3>
+            <button class="ex-modal-close" onclick="closeImageModal()">✕</button>
+        </div>
+        <div class="ex-modal-body">
+            <iframe id="ex-modal-iframe" src="" frameborder="0"></iframe>
+        </div>
+        <div class="ex-modal-footer">
+            <button class="ex-modal-btn" onclick="openExternalImg()">Eğer Yüklenmezse Tarayıcıda Aç</button>
+        </div>
     </div>
 </div>
 
@@ -462,6 +494,7 @@ let wmCurrentDayObj = null;
 
 let currentImgQuery = '';
 
+// Telefon uyku modundan uyanınca global zamanlayıcıyı tazele
 document.addEventListener("visibilitychange", () => {
     if (!document.hidden && document.getElementById('workout-mode-screen').style.display === 'flex') {
         const s = Math.floor((Date.now() - wmGlobalStartTime) / 1000);
@@ -577,14 +610,23 @@ const STEP = 2.5;
 function fmt(w){ return (Number.isInteger(w) ? w : w.toFixed(1)); }
 function cpUid(){ return 'id' + Math.random().toString(36).slice(2,9) + Date.now().toString(36); }
 
-function openImg(name) {
-    const w = 600;
-    const h = 700;
-    const left = (screen.width / 2) - (w / 2);
-    const top = (screen.height / 2) - (h / 2);
-    
-    const url = "https://www.google.com/search?q=" + encodeURIComponent(name + " exercise form guide anatomy") + "&tbm=isch";
-    window.open(url, "Gorsel_Penceresi", `width=${w},height=${h},top=${top},left=${left},toolbar=no,location=no,status=no,menubar=no,scrollbars=yes,resizable=yes`);
+// --- YENİ GÖRSEL PENCERESİ (MODAL) ---
+// Çerez sorununu minimize eden coğrafya hilesi eklendi (&cc=us&setlang=en)
+function openImageModal(name) {
+    currentImgQuery = name;
+    document.getElementById('ex-modal-title').textContent = name;
+    document.getElementById('ex-modal-iframe').src = "https://www.bing.com/images/search?q=" + encodeURIComponent(name + " exercise form") + "&FORM=HDRSC2&cc=us&setlang=en";
+    document.getElementById('ex-modal').classList.add('active');
+}
+function closeImageModal() {
+    document.getElementById('ex-modal').classList.remove('active');
+    document.getElementById('ex-modal-iframe').src = ""; 
+}
+function openExternalImg() {
+    window.open("https://www.google.com/search?q=" + encodeURIComponent(currentImgQuery + " exercise form") + "&tbm=isch", '_blank');
+}
+function openImg(name) { 
+    openImageModal(name); 
 }
 
 function getSetsDone(dayId, idx) { const key = `${dayId}_${idx}`; return cloudData.session_state[key] || 0; }
@@ -876,7 +918,7 @@ function renderDaySection(day, main, isReadOnly){
 }
 
 // ==========================================
-// ODAKLI ANTRENMAN MODU SİSTEMİ (KATILANMIŞ KAYIT MANTIĞI)
+// ODAKLI ANTRENMAN MODU SİSTEMİ (ZAMAN BAZLI İLERLEME + ATLA BUTONU)
 // ==========================================
 
 function openWorkoutMode(dayObj) {
@@ -952,6 +994,8 @@ function buildWMCarousel() {
               <button class="timer-btn start" style="height:48px; font-size:15px; border-radius:12px;">Başlat</button>
               <button class="timer-btn reset" style="height:48px; font-size:16px;">↺</button>
           </div>
+          <!-- YENİ: MEVCUT HAREKETİ ATLA BUTONU -->
+          <button class="wm-skip-btn">↓ Mevcut Hareketi Atla</button>
         `;
 
         const wInput = card.querySelector('.wnum-input'); 
@@ -982,11 +1026,12 @@ function buildWMCarousel() {
         };
         renderWMSetUI();
 
+        // TIKLANDIĞI ANDA BARI DOLDURAN SİSTEM
         setBtn.onclick = async () => {
             if(ex.setsDone >= ex.setsTotal) return; 
             ex.setsDone++;
             renderWMSetUI();
-            updateWMProgress();
+            updateWMProgress(); // Anında yüzdelik güncellenir
             await setSetsDone(wmCurrentDayObj.id, ex.originalIdx, ex.setsDone);
 
             if(ex.setsDone >= ex.setsTotal) {
@@ -1007,6 +1052,16 @@ function buildWMCarousel() {
             updateWMProgress(); 
             await setSetsDone(wmCurrentDayObj.id, ex.originalIdx, 0);
         };
+        
+        // HAREKETİ ATLA İŞLEVİ
+        card.querySelector('.wm-skip-btn').onclick = () => {
+            if(wmActiveIndex < wmState.length - 1) {
+                wmActiveIndex++;
+                updateWMCarouselClasses();
+            } else {
+                finishWorkoutMode();
+            }
+        };
 
         const timerDisplay = card.querySelector('.timer-display'); 
         const timerStartBtn = card.querySelector('.timer-btn.start');
@@ -1018,6 +1073,7 @@ function buildWMCarousel() {
         };
         renderWMTimer();
 
+        // ARKA PLANDA DONMAYAN DİNLENME SAYACI
         timerStartBtn.onclick = () => {
             if(!ex.timerRunning){ 
                 if(ex.timeLeft <= 0) ex.timeLeft = ex.restSeconds; 
@@ -1073,15 +1129,23 @@ function updateWMCarouselClasses() {
     });
 }
 
+// ZAMAN BAZLI AKILLI İLERLEME YÜZDESİ
 function updateWMProgress() {
-    let total = 0;
-    let done = 0;
+    let totalSec = 0;
+    let doneSec = 0;
     wmState.forEach(ex => {
-        total += ex.setsTotal;
-        done += ex.setsDone;
+        // Toplam geçecek saniye: Her set 40sn + (Set-1) kadar dinlenme
+        let exTotal = (ex.setsTotal * 40) + (Math.max(0, ex.setsTotal - 1) * ex.restSeconds);
+        // O an biten saniye: Yapılan set * 40sn + Yapılan (Set-1) kadar dinlenme
+        let exDone = (ex.setsDone * 40) + (Math.max(0, ex.setsDone - 1) * ex.restSeconds);
+        
+        totalSec += exTotal;
+        doneSec += exDone;
     });
     
-    let perc = total > 0 ? Math.round((done / total) * 100) : 0;
+    let perc = totalSec > 0 ? Math.round((doneSec / totalSec) * 100) : 0;
+    if(perc > 100) perc = 100; // Güvenlik sınırı
+    
     document.getElementById('wm-progress-fill').style.width = perc + '%';
     document.getElementById('wm-progress-text').textContent = `Antrenman İlerlemesi: %${perc}`;
 }
@@ -1090,13 +1154,12 @@ async function finishWorkoutMode() {
     if(wmGlobalTimerInterval) clearInterval(wmGlobalTimerInterval);
     wmState.forEach(ex => { if(ex.timerInterval) clearInterval(ex.timerInterval); });
 
-    // YENİ: SADECE KULLANICININ YAPTIĞI KADAR SETİ ALIR (YAPMADIYSA ALMAZ)
     const doneExercises = wmState.map(s => ({
       name: s.name,
       sets: s.setsDone, 
       setsTotal: s.setsTotal,
       weight: s.weight
-    })).filter(s => s.sets > 0); // En az 1 set girilmiş hareketleri kaydet
+    })).filter(s => s.sets > 0); 
 
     if(doneExercises.length > 0){ 
         const now = new Date();
@@ -1106,7 +1169,6 @@ async function finishWorkoutMode() {
         for(let ex of wmState){ await setSetsDone(wmCurrentDayObj.id, ex.originalIdx, 0); }
         alert("Antrenman tamamlandı ve buluta kaydedildi! Tebrikler 💪");
     } else {
-        // HİÇ SET YAPILMAMIŞSA
         alert("Yapılmamış antrenman kaydedilmedi.");
         for(let ex of wmState){ await setSetsDone(wmCurrentDayObj.id, ex.originalIdx, 0); }
     }
@@ -1115,6 +1177,7 @@ async function finishWorkoutMode() {
     document.getElementById('app-screen').style.display = 'block';
     renderTabs(); renderView();
 }
+
 
 // --- TOPLULUK BÖLÜMÜ ---
 async function renderCommunity(){

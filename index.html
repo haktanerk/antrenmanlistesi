@@ -92,7 +92,6 @@
   .card{ background:var(--surface); border:1px solid var(--line); border-radius:16px; padding:16px; margin-bottom:12px; box-shadow:0 4px 12px rgba(0,0,0,0.04); transition:transform 0.2s; }
   .card.superset{ border-left:4px solid var(--accent); }
   .row-top{ display:flex; justify-content:space-between; align-items:flex-start; gap:10px; }
-  /* Taşan metinler için kelime kırma ayarı eklendi */
   .ex-name{ font-size:16px; font-weight:600; line-height:1.4; color:var(--text); word-break: break-word; }
   .meta{ display:flex; gap:16px; margin-top:8px; align-items:center; flex-wrap:wrap;}
   .meta-item{ font-family:'IBM Plex Mono', monospace; font-size:12px; color:var(--text-dim); }
@@ -136,7 +135,7 @@
   
   .save-toast{ text-align:center; color:var(--accent); font-size:13px; font-weight:600; margin-top:10px; height:18px; }
 
-  /* GEÇMİŞ & TOPLULUK KARTLARI */
+  /* GEÇMİŞ KARTLARI */
   .hist-empty{ text-align:center; color:var(--text-dim); font-size:14px; margin-top:40px; padding:0 20px; }
   .hist-card{ background:var(--surface); border:1px solid var(--line); border-radius:16px; padding:16px; margin-bottom:16px; box-shadow:0 4px 12px rgba(0,0,0,0.04); }
   .hist-head{ display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:12px; border-bottom:1px solid var(--surface-2); padding-bottom:10px;}
@@ -150,6 +149,7 @@
   .hist-ex-name{ color:var(--text); font-weight:500;}
   .hist-ex-stats{ font-family:'IBM Plex Mono', monospace; color:var(--accent); font-weight:600; font-size:13px; white-space:nowrap; margin-left:10px; }
   
+  /* TOPLULUK KARTLARI */
   .comm-card { background:var(--surface); border:1px solid var(--line); border-radius:16px; padding:16px; margin-bottom:16px; box-shadow:0 4px 12px rgba(0,0,0,0.04); }
   .comm-header-row { display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;}
   .comm-author { font-size:13px; color:var(--text-dim); font-weight:500;}
@@ -185,8 +185,14 @@
   .mini-input{ font-family:'IBM Plex Mono', monospace; font-size:14px; font-weight:600; border:1px solid var(--line); border-radius:8px; padding:8px 6px; width:52px; text-align:center; background:var(--surface); color:var(--text); outline:none;}
   .mini-input:focus { border-color:var(--accent); }
   .reps-input{ width:66px; }
-  .ex-remove{ border:1px solid var(--warn); background:transparent; color:var(--warn); border-radius:8px; font-size:12px; font-weight:600; cursor:pointer; padding:6px 12px; transition:0.2s;}
+  
+  /* YENİ: Taşıma ve Silme Butonları */
+  .added-ex-actions { display:flex; gap:6px; align-items:center; }
+  .move-btn { background:var(--surface-2); border:1px solid var(--line); color:var(--text-dim); border-radius:8px; font-size:16px; font-weight:bold; cursor:pointer; width:34px; height:32px; display:flex; align-items:center; justify-content:center; transition:0.2s; }
+  .move-btn:hover { background:var(--line); color:var(--text); border-color:var(--text-dim); }
+  .ex-remove { width:34px; height:32px; padding:0; display:flex; align-items:center; justify-content:center; border:1px solid var(--warn); background:transparent; color:var(--warn); border-radius:8px; font-size:14px; font-weight:600; cursor:pointer; transition:0.2s;}
   .ex-remove:hover { background:var(--warn); color:#fff; }
+
   .add-ex-btn{ display:block; width:100%; margin-top:16px; padding:16px; background:transparent; border:2px dashed var(--line); border-radius:14px; color:var(--text-dim); font-weight:700; font-size:14px; cursor:pointer; transition:0.2s; text-transform:uppercase; letter-spacing:0.5px;}
   .add-ex-btn:hover { border-color:var(--accent); color:var(--accent); background:var(--surface);}
 
@@ -211,6 +217,8 @@
   .save-name-btn{ background:var(--accent); color:var(--btn-text); border:none; border-radius:14px; padding:0 24px; font-weight:700; font-family:'Barlow Condensed', sans-serif; font-size:18px; letter-spacing:0.5px; text-transform:uppercase; cursor:pointer; white-space:nowrap; transition:0.2s; box-shadow:0 4px 12px rgba(13, 148, 136, 0.2);}
   .save-name-btn:active { transform:scale(0.96); }
   .save-name-btn:disabled { opacity:0.6; cursor:not-allowed; }
+  .clear-draft-btn { background:var(--surface-2); color:var(--text-dim); border:1px solid var(--line); border-radius:14px; padding:0 16px; font-weight:700; font-family:'Barlow Condensed', sans-serif; font-size:16px; text-transform:uppercase; cursor:pointer; transition:0.2s;}
+  .clear-draft-btn:hover { background:var(--line); color:var(--text); }
 
   /* GÖRSEL ANALİZ */
   .analysis-section{ margin-top:28px; margin-bottom:24px;}
@@ -252,12 +260,10 @@
       border: 1px solid var(--line); border-left:6px solid var(--accent);
   }
   .wm-card.active { transform: translateY(0) scale(1); opacity:1; z-index:3; pointer-events:auto; }
-  /* Çarpışma sorununu çözmek için -110%'dan -125%'e artırıldı */
   .wm-card.prev { transform: translateY(-125%) scale(0.85); opacity:0.4; z-index:1; pointer-events:none; }
   .wm-card.next { transform: translateY(125%) scale(0.85); opacity:0.4; z-index:1; pointer-events:none; }
   .wm-card.hidden { opacity:0; pointer-events:none; z-index:0; }
 
-  /* Hareketi Atla & Önceki Butonları */
   .wm-skip-btn { display:flex; align-items:center; justify-content:center; width:100%; margin-top:20px; padding:12px; background:var(--surface-2); color:var(--text-dim); border:1px dashed var(--line); border-radius:12px; font-family:'Inter'; font-weight:600; font-size:13px; cursor:pointer; transition:0.2s; letter-spacing:0.5px; text-transform:uppercase; }
   .wm-skip-btn:hover { border-color:var(--accent); color:var(--text); background:var(--line);}
   
@@ -269,7 +275,7 @@
   .wm-progress-bar-fill { height:100%; background:var(--accent); width:0%; transition:width 0.5s cubic-bezier(0.4, 0, 0.2, 1); }
   .wm-progress-text { text-align:center; font-size:14px; font-weight:700; color:var(--text); margin-top:10px; transition:0.2s;}
 
-  /* --- YENİ: UYGULAMA İÇİ GÖRSEL ARAMA PENCERESİ (MODAL) --- */
+  /* --- UYGULAMA İÇİ GÖRSEL ARAMA PENCERESİ (MODAL) --- */
   .ex-modal { position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(15,23,42,0.85); backdrop-filter:blur(6px); z-index:100000; display:none; align-items:center; justify-content:center; padding:20px; }
   .ex-modal.active { display:flex; animation: fadeIn 0.3s ease; }
   .ex-modal-content { width:100%; max-width:500px; height:85%; background:var(--bg); border-radius:20px; display:flex; flex-direction:column; overflow:hidden; box-shadow:0 10px 40px rgba(0,0,0,0.3); border:1px solid var(--line);}
@@ -504,7 +510,6 @@ let wmCurrentDayObj = null;
 
 let currentImgQuery = '';
 
-// Telefon uyku modundan uyanınca veya ekrana dönünce global zamanlayıcıyı tazele (Zaman kaymasını önler)
 document.addEventListener("visibilitychange", () => {
     if (!document.hidden && document.getElementById('workout-mode-screen').style.display === 'flex') {
         const s = Math.floor((Date.now() - wmGlobalStartTime) / 1000);
@@ -518,7 +523,7 @@ function getProgramList(){ return cloudData.saved_programs || []; }
 
 function getCustomProgram(){
   if(cloudData.custom_program && cloudData.custom_program.days) return cloudData.custom_program;
-  cloudData.custom_program = { days: [ { id: cpUid(), name:"Gün 1", exercises: [] } ] };
+  cloudData.custom_program = { name: "", editing_id: null, days: [ { id: cpUid(), name:"Gün 1", exercises: [] } ] };
   if(currentUser) saveCloudData();
   return cloudData.custom_program;
 }
@@ -581,7 +586,6 @@ function renderView(){
   else { renderCommunity(); }
 }
 
-// Zaman Algoritmaları
 function parseSetsTotal(sr){ 
     if(!sr) return 3;
     if(typeof sr === 'number') return sr;
@@ -621,7 +625,6 @@ const STEP = 2.5;
 function fmt(w){ return (Number.isInteger(w) ? w : w.toFixed(1)); }
 function cpUid(){ return 'id' + Math.random().toString(36).slice(2,9) + Date.now().toString(36); }
 
-// --- YENİ GÖRSEL PENCERESİ (MODAL) - GOOGLE GÖRSELLER ÇÖZÜMÜ ---
 function openImageModal(name) {
     currentImgQuery = name;
     document.getElementById('ex-modal-title').textContent = name;
@@ -700,7 +703,7 @@ function renderProgramView(program){
   headerDiv.innerHTML = `
     <div class="program-title">
         ${program.name} 
-        <span class="edit-btn" title="İsmi Düzenle">${pencilSvg}</span>
+        <span class="edit-btn" title="Programı Düzenle">${pencilSvg}</span>
     </div>
     <div class="program-controls">
         <button class="btn-share" id="share-prog-btn">Topluluğa Yolla</button>
@@ -709,11 +712,14 @@ function renderProgramView(program){
   `;
   main.appendChild(headerDiv);
 
+  // YENİ DÜZENLEME (EDİT) MANTIĞI
   headerDiv.querySelector('.edit-btn').onclick = async () => {
-      let newName = prompt("Programın yeni adını girin:", program.name);
-      if(newName && newName.trim() !== "") {
-          program.name = newName.trim();
+      if(confirm("Bu programı düzenlemek için 'Oluştur' (Editör) sekmesine yüklemek istiyor musunuz? (Mevcut taslağınızın üzerine yazılacaktır)")) {
+          cloudData.custom_program = JSON.parse(JSON.stringify(program));
+          cloudData.custom_program.editing_id = program.id; 
           await saveCloudData();
+          currentDay = getProgramList().length + 1; // Oluştur Sekmesi
+          currentSubDay = 0;
           renderTabs();
           renderView();
       }
@@ -999,7 +1005,6 @@ function buildWMCarousel() {
         if(!isNaN(parseFloat(ex.rest))) restValueForDisplay = ex.rest + " sn";
 
         card.innerHTML = `
-          <!-- YENİ: Önceki Harekete Dön Butonu (Sadece eksik set varsa JS ile görünür yapılır) -->
           <button class="wm-prev-btn" style="display:none;">↑ Eksİk Kalan Öncekİ Harekete Dön</button>
           
           <div class="row-top">
@@ -1087,7 +1092,6 @@ function buildWMCarousel() {
             await setSetsDone(wmCurrentDayObj.id, ex.originalIdx, 0);
         };
         
-        // Önceki Harekete Dön İşlevi
         card.querySelector('.wm-prev-btn').onclick = () => {
             if(wmActiveIndex > 0) {
                 wmActiveIndex--;
@@ -1165,12 +1169,10 @@ function updateWMCarouselClasses() {
         card.className = 'wm-card'; 
         
         const prevBtn = card.querySelector('.wm-prev-btn');
-        if(prevBtn) prevBtn.style.display = 'none'; // Varsayılan olarak gizle
+        if(prevBtn) prevBtn.style.display = 'none';
 
         if(i === wmActiveIndex) {
             card.classList.add('active');
-            
-            // Eğer aktif kart ilk kart DEĞİLSE ve BİR ÖNCEKİ kartta eksik set varsa butonu göster
             if (i > 0) {
                 let prevEx = wmState[i - 1];
                 if (prevEx.setsDone < prevEx.setsTotal) {
@@ -1518,10 +1520,20 @@ async function renderBuilder(){
         let safeRest = ex.rest || '90';
         if(typeof safeRest === 'string') safeRest = safeRest.replace(' sn', '').replace('sn', '').trim();
         
+        // YUKARI/AŞAĞI BUTONLARI İÇİN MANTIK
+        const isFirst = exIdx === 0;
+        const isLast = exIdx === day.exercises.length - 1;
+        const upBtnHtml = isFirst ? '' : `<button class="move-btn up-btn">↑</button>`;
+        const downBtnHtml = isLast ? '' : `<button class="move-btn down-btn">↓</button>`;
+
         row.innerHTML = `
           <div class="added-ex-top">
               <div><div class="added-ex-name">${ex.name}</div><div class="added-ex-muscle">${MUSCLE_LABELS[ex.muscleKey] || ''} <span class="ex-time-badge" style="color:var(--accent); font-weight:700; margin-left:8px;">Süre: ~${calcExTime(ex.sets, ex.rest)} dk</span></div></div>
-              <button class="ex-remove">Kaldır ✕</button>
+              <div class="added-ex-actions">
+                  ${upBtnHtml}
+                  ${downBtnHtml}
+                  <button class="ex-remove">✕</button>
+              </div>
           </div>
           <div class="added-ex-controls">
             <label class="muscle-sets-mini">Set <input type="number" min="1" max="10" class="mini-input sets-input" value="${ex.sets}"/></label>
@@ -1537,6 +1549,30 @@ async function renderBuilder(){
         row.querySelector('.rest-input').oninput = async (e) => { ex.rest = e.target.value ? e.target.value + ' sn' : '90 sn'; await saveCustomProgram(prog); updateTimesUI(); };
         
         row.querySelector('.ex-remove').onclick = async () => { day.exercises.splice(exIdx, 1); await saveCustomProgram(prog); renderBuilder(); };
+        
+        // YUKARI TAŞIMA İŞLEVİ
+        const upBtn = row.querySelector('.up-btn');
+        if(upBtn) {
+            upBtn.onclick = async () => {
+                const temp = day.exercises[exIdx];
+                day.exercises[exIdx] = day.exercises[exIdx - 1];
+                day.exercises[exIdx - 1] = temp;
+                await saveCustomProgram(prog);
+                renderBuilder();
+            };
+        }
+        // AŞAĞI TAŞIMA İŞLEVİ
+        const downBtn = row.querySelector('.down-btn');
+        if(downBtn) {
+            downBtn.onclick = async () => {
+                const temp = day.exercises[exIdx];
+                day.exercises[exIdx] = day.exercises[exIdx + 1];
+                day.exercises[exIdx + 1] = temp;
+                await saveCustomProgram(prog);
+                renderBuilder();
+            };
+        }
+
         card.appendChild(row);
       });
 
@@ -1586,13 +1622,48 @@ async function renderBuilder(){
   renderAnalysis(prog, analysisContainer);
 
   const saveRow = document.createElement('div'); saveRow.className = 'save-name-row';
+  
+  // DÜZENLEME Mİ YENİ Mİ KONTROLÜ
+  let isEditing = !!prog.editing_id;
+  let saveBtnText = isEditing ? 'Değişiklikleri Kaydet' : 'Listeme Ekle';
+
   saveRow.innerHTML = `
-    <input type="text" class="save-name-input" placeholder="Program İsmi (Örn: Hipertrofi)" />
-    <button class="save-name-btn">Listeme Ekle</button>
+    <input type="text" class="save-name-input" placeholder="Program İsmi (Örn: Hipertrofi)" value="${prog.name || ''}" />
   `;
+
+  const btnContainer = document.createElement('div');
+  btnContainer.style.display = 'flex';
+  btnContainer.style.gap = '8px';
+
+  const clearBtn = document.createElement('button');
+  clearBtn.className = 'clear-draft-btn';
+  clearBtn.textContent = 'Sıfırla';
+  clearBtn.title = 'Editörü tamamen temizler.';
+  clearBtn.onclick = async () => {
+      if(confirm('Taslağı tamamen silmek ve sıfırdan başlamak istediğinize emin misiniz?')) {
+          cloudData.custom_program = { name: "", editing_id: null, days: [ { id: cpUid(), name:"Gün 1", exercises: [] } ] };
+          await saveCloudData();
+          currentSubDay = 0;
+          renderBuilder();
+      }
+  };
+  btnContainer.appendChild(clearBtn);
+
+  const saveBtnNode = document.createElement('button');
+  saveBtnNode.className = 'save-name-btn';
+  saveBtnNode.textContent = saveBtnText;
+  btnContainer.appendChild(saveBtnNode);
+
+  saveRow.appendChild(btnContainer);
+
   const saveToast2 = document.createElement('div'); saveToast2.className = 'save-toast';
 
-  saveRow.querySelector('.save-name-btn').onclick = async () => {
+  saveRow.querySelector('.save-name-input').addEventListener('input', (e) => {
+      prog.name = e.target.value;
+      saveCustomProgram(prog);
+  });
+
+  saveBtnNode.onclick = async () => {
     const nameInput = saveRow.querySelector('.save-name-input');
     const progName = nameInput.value.trim();
     const hasAny = prog.days.some(d => d.exercises.length > 0);
@@ -1601,7 +1672,7 @@ async function renderBuilder(){
     if(!hasAny){ saveToast2.textContent = 'Kaydetmeden önce en az bir güne hareket ekleyin.'; setTimeout(()=>{ saveToast2.textContent=''; }, 2200); return; }
 
     const newProgram = {
-      id: cpUid(),
+      id: prog.editing_id || cpUid(), // Eski ID'yi koru ki üzerine yazsın
       name: progName,
       days: prog.days.map(d => ({
         id: cpUid(),
@@ -1621,17 +1692,35 @@ async function renderBuilder(){
     };
 
     if(!cloudData.saved_programs) cloudData.saved_programs = [];
-    cloudData.saved_programs.push(newProgram);
+
+    // EDİT MODUNDA ÜZERİNE YAZMA İŞLEMİ
+    if(prog.editing_id) {
+        const pIndex = cloudData.saved_programs.findIndex(p => p.id === prog.editing_id);
+        if(pIndex !== -1) {
+            cloudData.saved_programs[pIndex] = newProgram;
+        } else {
+            cloudData.saved_programs.push(newProgram);
+        }
+    } else {
+        cloudData.saved_programs.push(newProgram);
+    }
+
     saveToast2.textContent = 'Kaydediliyor...';
+    
+    // Kayıt bitince editör taslağını sıfırla
+    cloudData.custom_program = { name: "", editing_id: null, days: [ { id: cpUid(), name:"Gün 1", exercises: [] } ] };
     await saveCloudData();
 
-    cloudData.custom_program = { days: [ { id: cpUid(), name:"Gün 1", exercises: [] } ] };
-    await saveCustomProgram(cloudData.custom_program);
-
-    saveToast2.textContent = `"${progName}" kaydedildi ✓`;
+    saveToast2.textContent = `"${progName}" başarıyla kaydedildi ✓`;
     setTimeout(() => {
       const programs = getProgramList();
-      currentDay = programs.length - 1; 
+      if(prog.editing_id) {
+          // Eski programın yerine döndür
+          const idx = programs.findIndex(p => p.id === prog.editing_id);
+          currentDay = idx !== -1 ? idx : programs.length - 1;
+      } else {
+          currentDay = programs.length - 1; 
+      }
       currentSubDay = 0;
       renderTabs(); renderView();
     }, 700);

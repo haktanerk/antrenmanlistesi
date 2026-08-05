@@ -252,7 +252,7 @@
 
   /* Hareketi Atla Butonu */
   .wm-skip-btn { display:flex; align-items:center; justify-content:center; width:100%; margin-top:20px; padding:12px; background:var(--surface-2); color:var(--text-dim); border:1px dashed var(--line); border-radius:12px; font-family:'Inter'; font-weight:600; font-size:13px; cursor:pointer; transition:0.2s; letter-spacing:0.5px; text-transform:uppercase; }
-  .wm-skip-btn:hover { border-color:var(--accent); color:var(--accent); }
+  .wm-skip-btn:hover { border-color:var(--accent); color:var(--text); background:var(--line);}
 
   .wm-progress-container { padding: 24px 20px; background: var(--surface); border-top:1px solid var(--line); z-index:10;}
   .wm-progress-bar-bg { width:100%; height:12px; background:var(--surface-2); border-radius:6px; overflow:hidden; border:1px solid var(--line);}
@@ -494,7 +494,7 @@ let wmCurrentDayObj = null;
 
 let currentImgQuery = '';
 
-// Telefon uyku modundan uyanınca global zamanlayıcıyı tazele
+// Telefon uyku modundan uyanınca veya ekrana dönünce global zamanlayıcıyı tazele (Zaman kaymasını önler)
 document.addEventListener("visibilitychange", () => {
     if (!document.hidden && document.getElementById('workout-mode-screen').style.display === 'flex') {
         const s = Math.floor((Date.now() - wmGlobalStartTime) / 1000);
@@ -571,6 +571,7 @@ function renderView(){
   else { renderCommunity(); }
 }
 
+// Zaman Algoritmaları
 function parseSetsTotal(sr){ 
     if(!sr) return 3;
     if(typeof sr === 'number') return sr;
@@ -610,12 +611,13 @@ const STEP = 2.5;
 function fmt(w){ return (Number.isInteger(w) ? w : w.toFixed(1)); }
 function cpUid(){ return 'id' + Math.random().toString(36).slice(2,9) + Date.now().toString(36); }
 
-// --- YENİ GÖRSEL PENCERESİ (MODAL) ---
-// Çerez sorununu minimize eden coğrafya hilesi eklendi (&cc=us&setlang=en)
+// --- YENİ GÖRSEL PENCERESİ (MODAL) - GOOGLE GÖRSELLER ÇÖZÜMÜ ---
+// 'igu=1' Google'ın iframe içinde çalışmasına izin verir.
+// 'gl=us&hl=en' ise lokasyonu Amerika göstererek çerez sorma (GDPR) ekranını devredışı bırakır.
 function openImageModal(name) {
     currentImgQuery = name;
     document.getElementById('ex-modal-title').textContent = name;
-    document.getElementById('ex-modal-iframe').src = "https://www.bing.com/images/search?q=" + encodeURIComponent(name + " exercise form") + "&FORM=HDRSC2&cc=us&setlang=en";
+    document.getElementById('ex-modal-iframe').src = "https://www.google.com/search?igu=1&gl=us&hl=en&tbm=isch&q=" + encodeURIComponent(name + " exercise form anatomy");
     document.getElementById('ex-modal').classList.add('active');
 }
 function closeImageModal() {
@@ -623,7 +625,7 @@ function closeImageModal() {
     document.getElementById('ex-modal-iframe').src = ""; 
 }
 function openExternalImg() {
-    window.open("https://www.google.com/search?q=" + encodeURIComponent(currentImgQuery + " exercise form") + "&tbm=isch", '_blank');
+    window.open("https://www.google.com/search?q=" + encodeURIComponent(currentImgQuery + " exercise form anatomy") + "&tbm=isch", '_blank');
 }
 function openImg(name) { 
     openImageModal(name); 
@@ -888,15 +890,21 @@ function renderDaySection(day, main, isReadOnly){
   const saveBtn = document.createElement('button'); saveBtn.className = 'save-btn'; saveBtn.textContent = `Aşağıdan Elle Bitir & Kaydet`;
   const toast = document.createElement('div'); saveBtn.style.marginBottom = '4px'; toast.className = 'save-toast';
   
+  // YENİ ELLE KAYDETME SİSTEMİ (BOŞLARI SİL, YAPILANLARI AL)
   saveBtn.onclick = async () => {
     const doneExercises = dayState.map(s => ({
       name: s.name,
-      sets: s.getSetsDone() > 0 ? s.getSetsDone() : s.setsTotal,
+      sets: s.getSetsDone(), // Artık sadece "işaretlenen set" sayısını alıyor (Otomatik fullemiyor)
       setsTotal: s.setsTotal,
       weight: s.getWeight()
-    }));
+    })).filter(s => s.sets > 0); // 0 set yapılan hareketleri listeden at
 
-    if(doneExercises.length === 0){ toast.textContent = 'Kaydedilecek egzersiz bulunamadı.'; setTimeout(()=>{ toast.textContent=''; }, 2500); return; }
+    if(doneExercises.length === 0){ 
+        toast.textContent = 'Yapılmamış antrenman kaydedilmedi.'; 
+        setTimeout(()=>{ toast.textContent=''; }, 2500); 
+        return; 
+    }
+    
     const now = new Date();
     const entry = { dayLabel: day.title || day.shortLabel || day.name, dateStr: now.toLocaleDateString('tr-TR'), exercises: doneExercises };
 
@@ -994,7 +1002,6 @@ function buildWMCarousel() {
               <button class="timer-btn start" style="height:48px; font-size:15px; border-radius:12px;">Başlat</button>
               <button class="timer-btn reset" style="height:48px; font-size:16px;">↺</button>
           </div>
-          <!-- YENİ: MEVCUT HAREKETİ ATLA BUTONU -->
           <button class="wm-skip-btn">↓ Mevcut Hareketi Atla</button>
         `;
 
@@ -1026,12 +1033,11 @@ function buildWMCarousel() {
         };
         renderWMSetUI();
 
-        // TIKLANDIĞI ANDA BARI DOLDURAN SİSTEM
         setBtn.onclick = async () => {
             if(ex.setsDone >= ex.setsTotal) return; 
             ex.setsDone++;
             renderWMSetUI();
-            updateWMProgress(); // Anında yüzdelik güncellenir
+            updateWMProgress();
             await setSetsDone(wmCurrentDayObj.id, ex.originalIdx, ex.setsDone);
 
             if(ex.setsDone >= ex.setsTotal) {
@@ -1053,7 +1059,6 @@ function buildWMCarousel() {
             await setSetsDone(wmCurrentDayObj.id, ex.originalIdx, 0);
         };
         
-        // HAREKETİ ATLA İŞLEVİ
         card.querySelector('.wm-skip-btn').onclick = () => {
             if(wmActiveIndex < wmState.length - 1) {
                 wmActiveIndex++;
@@ -1073,7 +1078,6 @@ function buildWMCarousel() {
         };
         renderWMTimer();
 
-        // ARKA PLANDA DONMAYAN DİNLENME SAYACI
         timerStartBtn.onclick = () => {
             if(!ex.timerRunning){ 
                 if(ex.timeLeft <= 0) ex.timeLeft = ex.restSeconds; 
@@ -1129,14 +1133,11 @@ function updateWMCarouselClasses() {
     });
 }
 
-// ZAMAN BAZLI AKILLI İLERLEME YÜZDESİ
 function updateWMProgress() {
     let totalSec = 0;
     let doneSec = 0;
     wmState.forEach(ex => {
-        // Toplam geçecek saniye: Her set 40sn + (Set-1) kadar dinlenme
         let exTotal = (ex.setsTotal * 40) + (Math.max(0, ex.setsTotal - 1) * ex.restSeconds);
-        // O an biten saniye: Yapılan set * 40sn + Yapılan (Set-1) kadar dinlenme
         let exDone = (ex.setsDone * 40) + (Math.max(0, ex.setsDone - 1) * ex.restSeconds);
         
         totalSec += exTotal;
@@ -1144,7 +1145,7 @@ function updateWMProgress() {
     });
     
     let perc = totalSec > 0 ? Math.round((doneSec / totalSec) * 100) : 0;
-    if(perc > 100) perc = 100; // Güvenlik sınırı
+    if(perc > 100) perc = 100; 
     
     document.getElementById('wm-progress-fill').style.width = perc + '%';
     document.getElementById('wm-progress-text').textContent = `Antrenman İlerlemesi: %${perc}`;

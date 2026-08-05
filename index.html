@@ -5,27 +5,27 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>Antrenman Takip Pro</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700&family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@500;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700&family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@500;600;700&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
-  /* --- MODERN SLATE & TEAL THEME (Mavi/Yeşil/Gri Tonları) --- */
+  /* --- MODERN SLATE & TEAL THEME --- */
   :root{
-    --bg: #e2e8f0;          /* Zarif Gümüş Gri Arka Plan */
-    --surface: #ffffff;     /* Tertemiz Beyaz Kartlar */
-    --surface-2: #f1f5f9;   /* Açık Gri (İkincil zeminler) */
-    --line: #cbd5e1;        /* Yumuşak Gri Çizgiler */
-    --text: #0f172a;        /* Çok Koyu Lacivert/Gri Metin */
-    --text-dim: #64748b;    /* Okunaklı Gri Metin */
+    --bg: #e2e8f0;          
+    --surface: #ffffff;     
+    --surface-2: #f1f5f9;   
+    --line: #cbd5e1;        
+    --text: #0f172a;        
+    --text-dim: #64748b;    
     
-    --accent: #0d9488;      /* Okyanus Mavisi / Zümrüt Yeşili Karışımı (Teal) */
-    --accent-dim: #ccfbf1;  /* Açık Su Yeşili */
-    --btn-text: #ffffff;    /* Renkli butonların üzerindeki beyaz metin */
+    --accent: #0d9488;      
+    --accent-dim: #ccfbf1;  
+    --btn-text: #ffffff;    
     
-    --warn: #ef4444;        /* Hata/Silme Kırmızı */
-    --status-zero: #cbd5e1; /* Analiz: Boş (Gri) */
-    --status-low: #f87171;  /* Analiz: Düşük (Somon) */
-    --status-ok: #10b981;   /* Analiz: İyi (Zümrüt Yeşili) */
-    --status-high: #0284c7; /* Analiz: Yoğun (Derin Mavi) */
+    --warn: #ef4444;        
+    --status-zero: #cbd5e1; 
+    --status-low: #f87171;  
+    --status-ok: #10b981;   
+    --status-high: #0284c7; 
   }
   
   *{box-sizing:border-box; -webkit-tap-highlight-color:transparent;}
@@ -70,6 +70,7 @@
   .sub-tab.active { background:var(--accent); color:var(--btn-text); border-color:var(--accent); box-shadow:0 2px 6px rgba(13, 148, 136, 0.25);}
 
   .program-header { display:flex; justify-content:space-between; align-items:flex-end; margin:6px 2px 16px 2px; }
+  
   .program-title{ font-family:'Barlow Condensed', sans-serif; font-size:26px; font-weight:700; color:var(--text); text-transform:uppercase; letter-spacing:0.5px; display:flex; align-items:center; gap:8px;}
   .program-title .edit-btn { font-size:16px; cursor:pointer; color:var(--text-dim); transition:0.2s; display:flex; align-items:center; justify-content:center; border:1px solid transparent; border-radius:6px; padding:4px;}
   .program-title .edit-btn:hover { color:var(--accent); border-color:var(--line); background:var(--surface); }
@@ -79,6 +80,10 @@
   .program-controls .btn-share { color:var(--btn-text); border-color:var(--accent); background:var(--accent); }
   .program-controls .btn-share:active { transform:scale(0.95); }
   .program-controls .btn-del:hover { background:var(--warn); color:#fff; border-color:var(--warn);}
+
+  /* ANTRENMANI BAŞLAT BUTONU */
+  .start-workout-btn { display:flex; align-items:center; justify-content:center; width:100%; margin-bottom:20px; padding:16px; background:var(--text); color:var(--surface); border:none; border-radius:16px; font-family:'Barlow Condensed', sans-serif; font-weight:700; font-size:18px; letter-spacing:1px; text-transform:uppercase; cursor:pointer; transition:0.2s; box-shadow:0 4px 12px rgba(0,0,0,0.15);}
+  .start-workout-btn:active { transform:scale(0.98); }
 
   .day-section-title { font-family:'Barlow Condensed', sans-serif; font-size:18px; font-weight:700; color:var(--text); text-transform:uppercase; margin:8px 2px 12px 2px; padding-bottom:8px; border-bottom:2px solid var(--line); display:flex; justify-content:space-between; align-items:center;}
 
@@ -114,7 +119,7 @@
   .set-reset{ width:46px; height:46px; border-radius:12px; border:1px solid var(--line); background:var(--surface-2); color:var(--text-dim); font-size:16px; font-weight:bold; cursor:pointer; transition:0.2s;}
   .set-reset:hover { color:var(--text); background:var(--line);}
   
-  .timer-row{ display:flex; align-items:center; gap:8px; margin-top:10px; background:var(--surface-2); border:1px solid var(--line); border-radius:12px; padding:6px 8px; }
+  .timer-row{ display:flex; align-items:center; gap:8px; margin-top:4px; background:var(--surface-2); border:1px solid var(--line); border-radius:12px; padding:6px 8px; }
   .timer-display{ font-family:'IBM Plex Mono', monospace; font-size:20px; font-weight:600; width:70px; text-align:center; letter-spacing:0.5px; color:var(--text);}
   .timer-display.running{ color:var(--accent); text-shadow:0 0 8px rgba(13, 148, 136, 0.25);}
   .timer-display.done{ color:var(--warn); }
@@ -128,7 +133,7 @@
   .save-btn:active { transform:scale(0.98); }
   .save-toast{ text-align:center; color:var(--accent); font-size:13px; font-weight:600; margin-top:10px; height:18px; }
 
-  /* GEÇMİŞ KARTLARI */
+  /* GEÇMİŞ & TOPLULUK KARTLARI */
   .hist-empty{ text-align:center; color:var(--text-dim); font-size:14px; margin-top:40px; padding:0 20px; }
   .hist-card{ background:var(--surface); border:1px solid var(--line); border-radius:16px; padding:16px; margin-bottom:16px; box-shadow:0 4px 12px rgba(0,0,0,0.04); }
   .hist-head{ display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:12px; border-bottom:1px solid var(--surface-2); padding-bottom:10px;}
@@ -141,7 +146,6 @@
   .hist-ex-name{ color:var(--text); font-weight:500;}
   .hist-ex-stats{ font-family:'IBM Plex Mono', monospace; color:var(--accent); font-weight:600; font-size:13px; white-space:nowrap; margin-left:10px; }
   
-  /* TOPLULUK KARTLARI */
   .comm-card { background:var(--surface); border:1px solid var(--line); border-radius:16px; padding:16px; margin-bottom:16px; box-shadow:0 4px 12px rgba(0,0,0,0.04); }
   .comm-header-row { display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;}
   .comm-author { font-size:13px; color:var(--text-dim); font-weight:500;}
@@ -166,10 +170,8 @@
   
   .day-name-input{ font-family:'Barlow Condensed', sans-serif; font-weight:700; font-size:22px; color:var(--accent); border:none; background:transparent; width:100%; text-transform:uppercase; letter-spacing:0.5px; padding:6px 0; outline:none; transition:0.2s;}
   .day-name-input::placeholder { color:var(--line); }
-  
   .day-card{ margin-bottom:20px;}
   .day-card-head { display:flex; justify-content:space-between; align-items:center; border-bottom:2px solid var(--accent); margin-bottom:16px; padding-bottom:4px;}
-
   .added-ex-row{ border:1px solid var(--line); border-radius:14px; padding:14px; margin-bottom:12px; background:var(--surface); display:flex; flex-direction:column; gap:10px; box-shadow:0 2px 6px rgba(0,0,0,0.02);}
   .added-ex-top{ display:flex; justify-content:space-between; align-items:flex-start; gap:8px; }
   .added-ex-name{ font-size:15px; font-weight:700; line-height:1.3; color:var(--text);}
@@ -217,6 +219,55 @@
   .svg-line { stroke-width: 1.5; stroke-dasharray: 3 3; stroke: var(--line); }
   
   footer{ text-align:center; color:var(--text-dim); font-size:12px; margin-top:32px; padding:0 20px 20px 20px; font-weight:500;}
+
+  /* --- ODAKLI ANTRENMAN MODU --- */
+  #workout-mode-screen {
+      position: fixed; top:0; left:0; width:100%; height:100%;
+      background: var(--bg); z-index: 9999; display:flex; flex-direction:column;
+      overflow: hidden; touch-action: none;
+  }
+  .wm-top {
+      display:flex; justify-content:space-between; align-items:center;
+      padding: 16px 20px; background: var(--surface); border-bottom:1px solid var(--line);
+      box-shadow: 0 4px 12px rgba(0,0,0,0.05); z-index:10;
+  }
+  .wm-global-timer-container { display:flex; align-items:center; gap:8px;}
+  .wm-global-timer { font-family: 'IBM Plex Mono', monospace; font-size: 24px; font-weight:700; color:var(--accent); letter-spacing:1px;}
+  .wm-global-label { font-size:11px; color:var(--text-dim); text-transform:uppercase; font-weight:600;}
+  .wm-end-btn { background: var(--warn); color:#fff; border:none; border-radius:10px; padding:12px 18px; font-weight:700; font-size:14px; cursor:pointer; text-transform:uppercase; letter-spacing:0.5px; transition:0.2s;}
+  .wm-end-btn:active { transform:scale(0.95);}
+
+  .wm-carousel { flex:1; position:relative; overflow:hidden; display:flex; align-items:center; justify-content:center; }
+  .wm-card {
+      position: absolute; width: 92%; max-width: 450px;
+      background: var(--surface); border-radius:20px; padding:24px;
+      box-shadow: 0 10px 40px rgba(0,0,0,0.1);
+      transition: transform 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94), opacity 0.5s ease;
+      border: 1px solid var(--line); border-left:6px solid var(--accent);
+  }
+  .wm-card.active { transform: translateY(0) scale(1); opacity:1; z-index:3; pointer-events:auto; }
+  .wm-card.prev { transform: translateY(-110%) scale(0.85); opacity:0.4; z-index:1; pointer-events:none; }
+  .wm-card.next { transform: translateY(110%) scale(0.85); opacity:0.4; z-index:1; pointer-events:none; }
+  .wm-card.hidden { opacity:0; pointer-events:none; z-index:0; }
+
+  .wm-progress-container { padding: 24px 20px; background: var(--surface); border-top:1px solid var(--line); z-index:10;}
+  .wm-progress-bar-bg { width:100%; height:12px; background:var(--surface-2); border-radius:6px; overflow:hidden; border:1px solid var(--line);}
+  .wm-progress-bar-fill { height:100%; background:var(--accent); width:0%; transition:width 0.4s ease; }
+  .wm-progress-text { text-align:center; font-size:14px; font-weight:700; color:var(--text); margin-top:10px; transition:0.2s;}
+
+  /* --- YENİ: UYGULAMA İÇİ GÖRSEL ARAMA PENCERESİ (MODAL) --- */
+  .ex-modal { position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(15,23,42,0.85); backdrop-filter:blur(6px); z-index:100000; display:none; align-items:center; justify-content:center; padding:20px; }
+  .ex-modal.active { display:flex; animation: fadeIn 0.3s ease; }
+  .ex-modal-content { width:100%; max-width:500px; height:85%; background:var(--bg); border-radius:20px; display:flex; flex-direction:column; overflow:hidden; box-shadow:0 10px 40px rgba(0,0,0,0.3); border:1px solid var(--line);}
+  .ex-modal-header { padding:16px 20px; background:var(--surface); display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid var(--line); }
+  .ex-modal-close { background:var(--surface-2); border:1px solid var(--line); color:var(--text); width:32px; height:32px; border-radius:8px; font-weight:bold; cursor:pointer; transition:0.2s; display:flex; align-items:center; justify-content:center;}
+  .ex-modal-close:hover { background:var(--warn); color:#fff; border-color:var(--warn);}
+  .ex-modal-body { flex:1; background:var(--surface-2); position:relative; }
+  .ex-modal-body iframe { width:100%; height:100%; border:none; background:#fff;}
+  .ex-modal-footer { padding:12px; background:var(--surface); text-align:center; border-top:1px solid var(--line);}
+  .ex-modal-btn { background:var(--surface-2); color:var(--text); border:1px solid var(--line); padding:10px 20px; border-radius:10px; font-size:13px; font-weight:600; cursor:pointer; font-family:'Inter'; transition:0.2s;}
+  .ex-modal-btn:hover { border-color:var(--accent); color:var(--accent); background:var(--accent-dim);}
+  @keyframes fadeIn { from{opacity:0; transform:scale(0.95);} to{opacity:1; transform:scale(1);} }
 </style>
 </head>
 <body>
@@ -262,6 +313,40 @@
   </header>
   <main id="main"></main>
   <footer>Tüm antrenman verileriniz şifrelenmiş %100 bulut altyapısında saklanır.</footer>
+</div>
+
+<!-- ODAKLI ANTRENMAN EKRANI -->
+<div id="workout-mode-screen" style="display: none;">
+    <div class="wm-top">
+        <div class="wm-global-timer-container">
+            <div class="wm-global-label">Toplam Süre</div>
+            <div class="wm-global-timer" id="wm-global-timer">00:00</div>
+        </div>
+        <button class="wm-end-btn" onclick="finishWorkoutMode()">Bitir & Kaydet</button>
+    </div>
+    <div class="wm-carousel" id="wm-carousel-container">
+        <!-- Kartlar Buraya Gelecek -->
+    </div>
+    <div class="wm-progress-container">
+        <div class="wm-progress-bar-bg"><div class="wm-progress-bar-fill" id="wm-progress-fill"></div></div>
+        <div class="wm-progress-text" id="wm-progress-text">Antrenman İlerlemesi: %0</div>
+    </div>
+</div>
+
+<!-- GÖRSEL ARAMA PENCERESİ (MODAL) -->
+<div id="ex-modal" class="ex-modal">
+    <div class="ex-modal-content">
+        <div class="ex-modal-header">
+            <h3 id="ex-modal-title" style="margin:0; font-family:'Barlow Condensed'; font-size:20px; color:var(--accent);">Görsel Arama</h3>
+            <button class="ex-modal-close" onclick="closeImageModal()">✕</button>
+        </div>
+        <div class="ex-modal-body">
+            <iframe id="ex-modal-iframe" src="" frameborder="0"></iframe>
+        </div>
+        <div class="ex-modal-footer">
+            <button class="ex-modal-btn" onclick="openExternalImg()">Eğer Yüklenmezse Tarayıcıda Aç</button>
+        </div>
+    </div>
 </div>
 
 <script>
@@ -397,6 +482,22 @@ let currentSubDay = 0;
 let communityListCache = []; 
 let viewingCommunityProgram = null; 
 
+let wmActiveIndex = 0;
+let wmState = [];
+let wmGlobalTimerInterval = null;
+let wmGlobalStartTime = 0;
+let wmCurrentDayObj = null;
+
+let currentImgQuery = '';
+
+// Telefon uyku modundan uyanınca veya ekrana dönünce global zamanlayıcıyı tazele
+document.addEventListener("visibilitychange", () => {
+    if (!document.hidden && document.getElementById('workout-mode-screen').style.display === 'flex') {
+        const s = Math.floor((Date.now() - wmGlobalStartTime) / 1000);
+        document.getElementById('wm-global-timer').textContent = fmtTime(s);
+    }
+});
+
 function initApp() { renderTabs(); renderView(); }
 
 function getProgramList(){ return cloudData.saved_programs || []; }
@@ -478,7 +579,14 @@ function parseRestSeconds(rt){
     while((m=re.exec(rt))!==null){ nums.push(m[2].toLowerCase()==='dk'?parseFloat(m[1])*60:parseFloat(m[1])); } 
     return nums.length?Math.round(nums.reduce((a,b)=>a+b,0)/nums.length):90; 
 }
-function fmtTime(s){ s=Math.max(0,Math.round(s)); const m=Math.floor(s/60); return `${String(m).padStart(2,'0')}:${String(s%60).padStart(2,'0')}`; }
+function fmtTime(s){ 
+    s=Math.max(0,Math.round(s)); 
+    const h = Math.floor(s/3600);
+    const m=Math.floor((s%3600)/60); 
+    const sec = s%60;
+    if (h > 0) return `${String(h).padStart(2,'0')}:${String(m).padStart(2,'0')}:${String(sec).padStart(2,'0')}`;
+    return `${String(m).padStart(2,'0')}:${String(sec).padStart(2,'0')}`; 
+}
 
 function calcExTime(setsInput, restInput) {
     let sets = parseSetsTotal(setsInput);
@@ -498,8 +606,25 @@ function calcDayTime(dayObj) {
 const STEP = 2.5;
 function fmt(w){ return (Number.isInteger(w) ? w : w.toFixed(1)); }
 function cpUid(){ return 'id' + Math.random().toString(36).slice(2,9) + Date.now().toString(36); }
-function exImgLink(name){ return "https://www.google.com/search?q=" + encodeURIComponent(name + " form guide") + "&tbm=isch"; }
-function openImg(name){ window.open(exImgLink(name), '_blank', 'noopener,noreferrer'); }
+
+// --- YENİ GÖRSEL PENCERESİ (MODAL) ---
+function openImageModal(name) {
+    currentImgQuery = name;
+    document.getElementById('ex-modal-title').textContent = name;
+    // Her yerde Bing görseller ile uygulama içi arama çalışır
+    document.getElementById('ex-modal-iframe').src = "https://www.bing.com/images/search?q=" + encodeURIComponent(name + " exercise form") + "&FORM=HDRSC2";
+    document.getElementById('ex-modal').classList.add('active');
+}
+function closeImageModal() {
+    document.getElementById('ex-modal').classList.remove('active');
+    document.getElementById('ex-modal-iframe').src = ""; 
+}
+function openExternalImg() {
+    window.open("https://www.google.com/search?q=" + encodeURIComponent(currentImgQuery + " exercise form") + "&tbm=isch", '_blank');
+}
+function openImg(name) { 
+    openImageModal(name); // Tüm görsel butonları buraya yönlendirildi.
+}
 
 function getSetsDone(dayId, idx) { const key = `${dayId}_${idx}`; return cloudData.session_state[key] || 0; }
 async function setSetsDone(dayId, idx, value) { const key = `${dayId}_${idx}`; cloudData.session_state[key] = value; await saveCloudData(); }
@@ -552,10 +677,12 @@ function renderProgramView(program){
   const headerDiv = document.createElement('div');
   headerDiv.className = 'program-header';
   
+  const pencilSvg = `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 3a2.828 2.828 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z"></path></svg>`;
+  
   headerDiv.innerHTML = `
     <div class="program-title">
         ${program.name} 
-        <span class="edit-btn" title="İsmi Düzenle">✏️</span>
+        <span class="edit-btn" title="İsmi Düzenle">${pencilSvg}</span>
     </div>
     <div class="program-controls">
         <button class="btn-share" id="share-prog-btn">Topluluğa Yolla</button>
@@ -609,8 +736,15 @@ function renderProgramView(program){
   }
 }
 
-// --- GÜN İÇERİĞİNİ BASAN FONKSİYON ---
 function renderDaySection(day, main, isReadOnly){
+  if(!isReadOnly && day.exercises && day.exercises.length > 0) {
+      const startBtn = document.createElement('button');
+      startBtn.className = 'start-workout-btn';
+      startBtn.innerHTML = '▶ Antrenmanı Başlat';
+      startBtn.onclick = () => openWorkoutMode(day);
+      main.appendChild(startBtn);
+  }
+
   const dayTitleDiv = document.createElement('div');
   dayTitleDiv.className = 'day-section-title';
   dayTitleDiv.innerHTML = `<span>${day.title || day.shortLabel || day.name || 'Antrenman'}</span> <span style="font-size:14px; color:var(--accent); font-family:'IBM Plex Mono'; font-weight:600;">⏱ ~${calcDayTime(day)} dk</span>`;
@@ -666,6 +800,7 @@ function renderDaySection(day, main, isReadOnly){
         <button class="plus">+</button>
       </div>
       <div class="sets-row"><button class="set-btn"><span class="dots"></span><span class="set-label"></span></button><button class="set-reset">↺</button></div>
+      <div style="font-size:11px; color:var(--text-dim); text-transform:uppercase; letter-spacing:1px; margin-top:16px; margin-bottom:0px; font-weight:700; text-align:center;">Dinlenme Sayacı</div>
       <div class="timer-row"><div class="timer-display">00:00</div><button class="timer-btn start">Başlat</button><button class="timer-btn reset">↺</button></div>
     `;
 
@@ -715,14 +850,31 @@ function renderDaySection(day, main, isReadOnly){
     function renderTimer(){ timerDisplay.textContent = fmtTime(timeLeft); timerDisplay.classList.toggle('running', running); timerDisplay.classList.toggle('done', timeLeft <= 0); }
     renderTimer();
 
-    function tick(){
-      timeLeft -= 1;
-      if(timeLeft <= 0){ timeLeft = 0; clearInterval(timerInterval); running = false; timerStartBtn.textContent = 'Başlat'; timerStartBtn.className = 'timer-btn start'; }
-      renderTimer();
-    }
     timerStartBtn.onclick = () => {
-      if(!running){ if(timeLeft <= 0) timeLeft = restSeconds; running = true; timerStartBtn.textContent = 'Durdur'; timerStartBtn.className = 'timer-btn pause'; timerInterval = setInterval(tick, 1000); }
-      else { running = false; clearInterval(timerInterval); timerStartBtn.textContent = 'Devam'; timerStartBtn.className = 'timer-btn start'; }
+      if(!running){ 
+          if(timeLeft <= 0) timeLeft = restSeconds; 
+          running = true; 
+          timerStartBtn.textContent = 'Durdur'; 
+          timerStartBtn.className = 'timer-btn pause'; 
+          
+          let targetEndTime = Date.now() + (timeLeft * 1000);
+          timerInterval = setInterval(() => {
+              timeLeft = Math.max(0, Math.ceil((targetEndTime - Date.now()) / 1000));
+              if(timeLeft <= 0){ 
+                  timeLeft = 0; 
+                  clearInterval(timerInterval); 
+                  running = false; 
+                  timerStartBtn.textContent = 'Başlat'; 
+                  timerStartBtn.className = 'timer-btn start'; 
+              }
+              renderTimer();
+          }, 1000); 
+      } else { 
+          running = false; 
+          clearInterval(timerInterval); 
+          timerStartBtn.textContent = 'Devam'; 
+          timerStartBtn.className = 'timer-btn start'; 
+      }
       renderTimer();
     };
     card.querySelector('.timer-btn.reset').onclick = () => { running = false; clearInterval(timerInterval); timeLeft = restSeconds; timerStartBtn.textContent = 'Sıfırla'; timerStartBtn.className = 'timer-btn start'; renderTimer(); };
@@ -732,7 +884,7 @@ function renderDaySection(day, main, isReadOnly){
 
   if(isReadOnly) return;
 
-  const saveBtn = document.createElement('button'); saveBtn.className = 'save-btn'; saveBtn.textContent = `"${day.title || day.shortLabel || day.name}" Antrenmanını Bitir`;
+  const saveBtn = document.createElement('button'); saveBtn.className = 'save-btn'; saveBtn.textContent = `Aşağıdan Elle Bitir & Kaydet`;
   const toast = document.createElement('div'); saveBtn.style.marginBottom = '4px'; toast.className = 'save-toast';
   
   saveBtn.onclick = async () => {
@@ -763,6 +915,245 @@ function renderDaySection(day, main, isReadOnly){
   };
   main.appendChild(saveBtn); main.appendChild(toast);
 }
+
+// ==========================================
+// YENİ: ODAKLI ANTRENMAN MODU SİSTEMİ
+// ==========================================
+
+function openWorkoutMode(dayObj) {
+    wmCurrentDayObj = dayObj;
+    wmActiveIndex = 0;
+    
+    wmState = dayObj.exercises.map((ex, idx) => {
+        return {
+            originalIdx: idx,
+            name: ex.name,
+            sr: ex.sr || (ex.sets+'x'+ex.reps),
+            rest: ex.rest,
+            setsTotal: parseSetsTotal(ex.sr || ex.sets),
+            setsDone: getSetsDone(dayObj.id, idx), 
+            weight: getWeight(dayObj.id, idx, ex.start || 0),
+            restSeconds: parseRestSeconds(ex.rest),
+            timeLeft: parseRestSeconds(ex.rest),
+            timerRunning: false,
+            timerInterval: null
+        };
+    });
+
+    document.getElementById('app-screen').style.display = 'none';
+    document.getElementById('workout-mode-screen').style.display = 'flex';
+    
+    // Uygulama kapansa da çalışan kesin saat
+    wmGlobalStartTime = Date.now();
+    if(wmGlobalTimerInterval) clearInterval(wmGlobalTimerInterval);
+    wmGlobalTimerInterval = setInterval(() => {
+        const s = Math.floor((Date.now() - wmGlobalStartTime) / 1000);
+        document.getElementById('wm-global-timer').textContent = fmtTime(s);
+    }, 1000);
+
+    buildWMCarousel();
+    updateWMProgress();
+}
+
+function buildWMCarousel() {
+    const container = document.getElementById('wm-carousel-container');
+    container.innerHTML = '';
+
+    wmState.forEach((ex, i) => {
+        const card = document.createElement('div');
+        card.className = 'wm-card';
+        card.id = 'wm-card-' + i;
+
+        card.innerHTML = `
+          <div class="row-top">
+            <div class="ex-name" style="font-size:20px;">${ex.name}</div>
+            <button class="link-btn" onclick="openImg('${ex.name}')">Görsel</button>
+          </div>
+          <div class="meta" style="margin-top:12px; margin-bottom:20px;">
+              <div class="meta-item" style="font-size:14px;">Set: <b style="font-size:16px;">${ex.sr}</b></div>
+              <div class="meta-item" style="font-size:14px;">Dinlenme: <b>${ex.rest}</b></div>
+          </div>
+          <div class="stepper" style="padding:8px; border-radius:16px;">
+            <button class="minus" style="width:60px; height:50px;">−</button>
+            <div class="weight-display">
+              <input type="number" inputmode="decimal" class="wnum-input" style="font-size:28px; width:80px;" value="${fmt(ex.weight)}" step="0.5" min="0"/>
+              <span class="weight-unit" style="font-size:16px;">kg</span>
+            </div>
+            <button class="plus" style="width:60px; height:50px;">+</button>
+          </div>
+          <div class="sets-row" style="margin-top:20px;">
+              <button class="set-btn" style="height:60px; font-size:16px; border-radius:16px;">
+                  <span class="dots" style="gap:8px;"></span><span class="set-label"></span>
+              </button>
+              <button class="set-reset" style="height:60px; width:60px; border-radius:16px;">↺</button>
+          </div>
+          <div style="font-size:12px; color:var(--text-dim); text-transform:uppercase; letter-spacing:1.5px; margin-top:24px; margin-bottom:6px; font-weight:700; text-align:center;">Dinlenme Sayacı</div>
+          <div class="timer-row" style="padding:10px; border-radius:16px;">
+              <div class="timer-display" style="font-size:28px; width:90px;">00:00</div>
+              <button class="timer-btn start" style="height:48px; font-size:15px; border-radius:12px;">Başlat</button>
+              <button class="timer-btn reset" style="height:48px; font-size:16px;">↺</button>
+          </div>
+        `;
+
+        const wInput = card.querySelector('.wnum-input'); 
+        const updateWeight = async (newVal) => {
+            ex.weight = Math.max(0, parseFloat(newVal) || 0);
+            wInput.value = fmt(ex.weight);
+            await setWeight(wmCurrentDayObj.id, ex.originalIdx, ex.weight);
+        };
+        card.querySelector('.minus').onclick = () => updateWeight(ex.weight - STEP);
+        card.querySelector('.plus').onclick = () => updateWeight(ex.weight + STEP);
+        wInput.addEventListener('change', (e) => updateWeight(e.target.value));
+
+        const setBtn = card.querySelector('.set-btn'); 
+        const dotsEl = card.querySelector('.dots'); 
+        const setLabelEl = card.querySelector('.set-label');
+
+        const renderWMSetUI = () => {
+            dotsEl.innerHTML = ''; 
+            for(let j=0; j<ex.setsTotal; j++){ 
+                const d = document.createElement('span'); 
+                d.className = 'set-dot' + (j < ex.setsDone ? ' filled' : ''); 
+                d.style.width = '14px'; d.style.height = '14px';
+                dotsEl.appendChild(d); 
+            }
+            const complete = ex.setsDone >= ex.setsTotal; 
+            setLabelEl.textContent = complete ? 'Tamamlandı ✓' : `Set ${ex.setsDone}/${ex.setsTotal}`; 
+            setBtn.classList.toggle('complete', complete);
+        };
+        renderWMSetUI();
+
+        // TIKLANDIĞI ANDA BARI DOLDURAN SİSTEM
+        setBtn.onclick = async () => {
+            if(ex.setsDone >= ex.setsTotal) return; 
+            ex.setsDone++;
+            renderWMSetUI();
+            updateWMProgress(); // Anında güncelle
+            await setSetsDone(wmCurrentDayObj.id, ex.originalIdx, ex.setsDone);
+
+            if(ex.setsDone >= ex.setsTotal) {
+                setTimeout(() => {
+                    if(wmActiveIndex < wmState.length - 1) {
+                        wmActiveIndex++;
+                        updateWMCarouselClasses();
+                    } else {
+                        finishWorkoutMode();
+                    }
+                }, 800); 
+            }
+        };
+
+        card.querySelector('.set-reset').onclick = async () => {
+            ex.setsDone = 0;
+            renderWMSetUI();
+            updateWMProgress(); // Anında güncelle
+            await setSetsDone(wmCurrentDayObj.id, ex.originalIdx, 0);
+        };
+
+        const timerDisplay = card.querySelector('.timer-display'); 
+        const timerStartBtn = card.querySelector('.timer-btn.start');
+
+        const renderWMTimer = () => { 
+            timerDisplay.textContent = fmtTime(ex.timeLeft); 
+            timerDisplay.classList.toggle('running', ex.timerRunning); 
+            timerDisplay.classList.toggle('done', ex.timeLeft <= 0); 
+        };
+        renderWMTimer();
+
+        // ARKA PLANDA DONMAYAN DİNLENME SAYACI
+        timerStartBtn.onclick = () => {
+            if(!ex.timerRunning){ 
+                if(ex.timeLeft <= 0) ex.timeLeft = ex.restSeconds; 
+                ex.timerRunning = true; 
+                timerStartBtn.textContent = 'Durdur'; 
+                timerStartBtn.className = 'timer-btn pause'; 
+                
+                ex.targetEndTime = Date.now() + (ex.timeLeft * 1000);
+                ex.timerInterval = setInterval(() => {
+                    ex.timeLeft = Math.max(0, Math.ceil((ex.targetEndTime - Date.now()) / 1000));
+                    if(ex.timeLeft <= 0){ 
+                        ex.timeLeft = 0; 
+                        clearInterval(ex.timerInterval); 
+                        ex.timerRunning = false; 
+                        timerStartBtn.textContent = 'Başlat'; 
+                        timerStartBtn.className = 'timer-btn start'; 
+                    }
+                    renderWMTimer();
+                }, 1000); 
+            } else { 
+                ex.timerRunning = false; 
+                clearInterval(ex.timerInterval); 
+                ex.timeLeft = Math.max(0, Math.ceil((ex.targetEndTime - Date.now()) / 1000));
+                timerStartBtn.textContent = 'Devam'; 
+                timerStartBtn.className = 'timer-btn start'; 
+            }
+            renderWMTimer();
+        };
+        
+        card.querySelector('.timer-btn.reset').onclick = () => { 
+            ex.timerRunning = false; 
+            clearInterval(ex.timerInterval); 
+            ex.timeLeft = ex.restSeconds; 
+            timerStartBtn.textContent = 'Sıfırla'; 
+            timerStartBtn.className = 'timer-btn start'; 
+            renderWMTimer(); 
+        };
+
+        container.appendChild(card);
+    });
+
+    updateWMCarouselClasses();
+}
+
+function updateWMCarouselClasses() {
+    wmState.forEach((ex, i) => {
+        const card = document.getElementById('wm-card-' + i);
+        if(!card) return;
+        card.className = 'wm-card'; 
+        if(i === wmActiveIndex) card.classList.add('active');
+        else if(i < wmActiveIndex) card.classList.add('prev');
+        else if(i > wmActiveIndex) card.classList.add('next');
+    });
+}
+
+function updateWMProgress() {
+    let total = 0;
+    let done = 0;
+    wmState.forEach(ex => {
+        total += ex.setsTotal;
+        done += ex.setsDone;
+    });
+    
+    let perc = total > 0 ? Math.round((done / total) * 100) : 0;
+    document.getElementById('wm-progress-fill').style.width = perc + '%';
+    document.getElementById('wm-progress-text').textContent = `Antrenman İlerlemesi: %${perc}`;
+}
+
+async function finishWorkoutMode() {
+    if(wmGlobalTimerInterval) clearInterval(wmGlobalTimerInterval);
+    wmState.forEach(ex => { if(ex.timerInterval) clearInterval(ex.timerInterval); });
+
+    const doneExercises = wmState.map(s => ({
+      name: s.name,
+      sets: s.setsDone > 0 ? s.setsDone : s.setsTotal, 
+      setsTotal: s.setsTotal,
+      weight: s.weight
+    })).filter(s => s.sets > 0); 
+
+    if(doneExercises.length > 0){ 
+        const now = new Date();
+        const entry = { dayLabel: wmCurrentDayObj.title || wmCurrentDayObj.name, dateStr: now.toLocaleDateString('tr-TR'), exercises: doneExercises };
+        await saveHistoryEntryToCloud(entry);
+        
+        for(let ex of wmState){ await setSetsDone(wmCurrentDayObj.id, ex.originalIdx, 0); }
+        alert("Antrenman tamamlandı ve buluta kaydedildi! Tebrikler 💪");
+    }
+
+    document.getElementById('workout-mode-screen').style.display = 'none';
+    document.getElementById('app-screen').style.display = 'block';
+    renderTabs(); renderView();
+}
+
 
 // --- TOPLULUK BÖLÜMÜ ---
 async function renderCommunity(){
@@ -872,8 +1263,7 @@ async function cloneCommunityProgram(programId) {
     renderTabs(); renderView();
 }
 
-
-// --- KAPSAMLI HAREKET VERİTABANI (YÜZLERCE YENİ HAREKET EKLENDİ) ---
+// --- KAPSAMLI HAREKET VERİTABANI ---
 const MUSCLE_LABELS = { gogus: "Göğüs", sirt: "Sırt", omuz: "Omuz", biceps: "Biceps", triceps: "Triceps", quad: "Ön Bacak", hamstring: "Arka Bacak", kalca: "Kalça", baldir: "Baldır", karin: "Karın" };
 const EXERCISE_DB = {
   gogus: [
@@ -978,7 +1368,7 @@ const EXERCISE_DB = {
 
 let builderOpenPicker = JSON.parse(sessionStorage.getItem('openPicker') || '{}');
 
-// --- OLUŞTURUCU (ALT SEKMELİ YAPI) ---
+// --- OLUŞTURUCU YAPI ---
 async function renderBuilder(){
   const main = document.getElementById('main');
   main.innerHTML = `<div class="day-note" style="margin-bottom:20px;">Özel programınızı oluşturun. Aşağıdan gün sayısını seçip hareketleri ekleyebilirsiniz.</div>`;
@@ -1151,7 +1541,6 @@ async function renderBuilder(){
   main.appendChild(saveToast2);
 }
 
-// --- AKILLI GÖRSEL HACİM ANALİZİ ---
 function renderAnalysis(prog, container){
   container.className = 'analysis-section';
   const totals = {}; Object.keys(MUSCLE_LABELS).forEach(k => totals[k] = 0);

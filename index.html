@@ -131,6 +131,8 @@
   
   .save-btn{ display:block; width:100%; margin-top:24px; padding:16px; background:var(--surface-2); color:var(--text-dim); border:1px solid var(--line); border-radius:16px; font-family:'Barlow Condensed', sans-serif; font-weight:700; font-size:16px; letter-spacing:1px; text-transform:uppercase; cursor:pointer; transition:0.2s;}
   .save-btn:active { transform:scale(0.98); }
+  .save-btn:disabled { opacity:0.6; cursor:not-allowed; }
+  
   .save-toast{ text-align:center; color:var(--accent); font-size:13px; font-weight:600; margin-top:10px; height:18px; }
 
   /* GEÇMİŞ & TOPLULUK KARTLARI */
@@ -206,6 +208,7 @@
   .save-name-input:focus { border-color:var(--accent); box-shadow:0 0 0 3px rgba(13, 148, 136, 0.15);}
   .save-name-btn{ background:var(--accent); color:var(--btn-text); border:none; border-radius:14px; padding:0 24px; font-weight:700; font-family:'Barlow Condensed', sans-serif; font-size:18px; letter-spacing:0.5px; text-transform:uppercase; cursor:pointer; white-space:nowrap; transition:0.2s; box-shadow:0 4px 12px rgba(13, 148, 136, 0.2);}
   .save-name-btn:active { transform:scale(0.96); }
+  .save-name-btn:disabled { opacity:0.6; cursor:not-allowed; }
 
   /* GÖRSEL ANALİZ */
   .analysis-section{ margin-top:28px; margin-bottom:24px;}
@@ -236,6 +239,7 @@
   .wm-global-label { font-size:11px; color:var(--text-dim); text-transform:uppercase; font-weight:600;}
   .wm-end-btn { background: var(--warn); color:#fff; border:none; border-radius:10px; padding:12px 18px; font-weight:700; font-size:14px; cursor:pointer; text-transform:uppercase; letter-spacing:0.5px; transition:0.2s;}
   .wm-end-btn:active { transform:scale(0.95);}
+  .wm-end-btn:disabled { opacity:0.6; cursor:not-allowed;}
 
   .wm-carousel { flex:1; position:relative; overflow:hidden; display:flex; align-items:center; justify-content:center; }
   .wm-card {
@@ -326,7 +330,7 @@
             <div class="wm-global-label">Toplam Süre</div>
             <div class="wm-global-timer" id="wm-global-timer">00:00</div>
         </div>
-        <button class="wm-end-btn" onclick="finishWorkoutMode()">Bitir & Kaydet</button>
+        <button class="wm-end-btn" id="wm-end-btn" onclick="finishWorkoutMode()">Bitir & Kaydet</button>
     </div>
     <div class="wm-carousel" id="wm-carousel-container">
         <!-- Kartlar Buraya Gelecek -->
@@ -892,16 +896,20 @@ function renderDaySection(day, main, isReadOnly){
   
   // YENİ ELLE KAYDETME SİSTEMİ (BOŞLARI SİL, YAPILANLARI AL)
   saveBtn.onclick = async () => {
+    if(saveBtn.disabled) return;
+    saveBtn.disabled = true;
+
     const doneExercises = dayState.map(s => ({
       name: s.name,
-      sets: s.getSetsDone(), // Artık sadece "işaretlenen set" sayısını alıyor (Otomatik fullemiyor)
+      sets: s.getSetsDone(), // Sadece işaretlenen seti alır
       setsTotal: s.setsTotal,
       weight: s.getWeight()
-    })).filter(s => s.sets > 0); // 0 set yapılan hareketleri listeden at
+    })).filter(s => s.sets > 0); // Hiç yapılmayan hareketleri atla
 
     if(doneExercises.length === 0){ 
         toast.textContent = 'Yapılmamış antrenman kaydedilmedi.'; 
         setTimeout(()=>{ toast.textContent=''; }, 2500); 
+        saveBtn.disabled = false;
         return; 
     }
     
@@ -913,20 +921,23 @@ function renderDaySection(day, main, isReadOnly){
     
     if (result.error) {
       toast.textContent = 'Kayıt başarısız!';
-      saveBtn.textContent = 'Tekrar Dene';
+      saveBtn.textContent = 'Aşağıdan Elle Bitir & Kaydet';
+      saveBtn.disabled = false;
       setTimeout(()=>{ toast.textContent=''; }, 3000);
       return;
     }
 
     for(let idx=0; idx<day.exercises.length; idx++){ await setSetsDone(day.id, idx, 0); }
     toast.textContent = 'Buluta başarıyla kaydedildi ✓';
+    saveBtn.textContent = 'Aşağıdan Elle Bitir & Kaydet';
+    saveBtn.disabled = false;
     setTimeout(()=>{ toast.textContent=''; renderTabs(); renderView(); }, 1200);
   };
   main.appendChild(saveBtn); main.appendChild(toast);
 }
 
 // ==========================================
-// ODAKLI ANTRENMAN MODU SİSTEMİ (ZAMAN BAZLI İLERLEME + ATLA BUTONU)
+// ODAKLI ANTRENMAN MODU SİSTEMİ 
 // ==========================================
 
 function openWorkoutMode(dayObj) {
@@ -1037,7 +1048,7 @@ function buildWMCarousel() {
             if(ex.setsDone >= ex.setsTotal) return; 
             ex.setsDone++;
             renderWMSetUI();
-            updateWMProgress();
+            updateWMProgress(); 
             await setSetsDone(wmCurrentDayObj.id, ex.originalIdx, ex.setsDone);
 
             if(ex.setsDone >= ex.setsTotal) {
@@ -1133,12 +1144,16 @@ function updateWMCarouselClasses() {
     });
 }
 
+// ZAMAN BAZLI KUSURSUZ İLERLEME YÜZDESİ
 function updateWMProgress() {
     let totalSec = 0;
     let doneSec = 0;
     wmState.forEach(ex => {
+        // Her hareketin saniyesi saniyesine total ağırlığı hesaplanır
         let exTotal = (ex.setsTotal * 40) + (Math.max(0, ex.setsTotal - 1) * ex.restSeconds);
-        let exDone = (ex.setsDone * 40) + (Math.max(0, ex.setsDone - 1) * ex.restSeconds);
+        // Yapılan set, o hareketin toplam süresinin yüzde kaçıysa o kadar saniye eklenir
+        // Bu sayede çubuk 1 set bitince "dinlenmeyi de bitirmiş gibi" fırlamaz, mantıklı ilerler.
+        let exDone = (ex.setsDone / ex.setsTotal) * exTotal;
         
         totalSec += exTotal;
         doneSec += exDone;
@@ -1152,6 +1167,12 @@ function updateWMProgress() {
 }
 
 async function finishWorkoutMode() {
+    const btn = document.getElementById('wm-end-btn');
+    if(btn.disabled) return; // Çift tıklama (Spam) koruması
+    btn.disabled = true;
+    let origText = btn.textContent;
+    btn.textContent = "Kaydediliyor...";
+
     if(wmGlobalTimerInterval) clearInterval(wmGlobalTimerInterval);
     wmState.forEach(ex => { if(ex.timerInterval) clearInterval(ex.timerInterval); });
 
@@ -1176,9 +1197,12 @@ async function finishWorkoutMode() {
 
     document.getElementById('workout-mode-screen').style.display = 'none';
     document.getElementById('app-screen').style.display = 'block';
+    
+    btn.disabled = false;
+    btn.textContent = origText;
+    
     renderTabs(); renderView();
 }
-
 
 // --- TOPLULUK BÖLÜMÜ ---
 async function renderCommunity(){

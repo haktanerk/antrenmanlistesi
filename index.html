@@ -186,7 +186,6 @@
   .mini-input:focus { border-color:var(--accent); }
   .reps-input{ width:66px; }
   
-  /* YENİ: Taşıma ve Silme Butonları */
   .added-ex-actions { display:flex; gap:6px; align-items:center; }
   .move-btn { background:var(--surface-2); border:1px solid var(--line); color:var(--text-dim); border-radius:8px; font-size:16px; font-weight:bold; cursor:pointer; width:34px; height:32px; display:flex; align-items:center; justify-content:center; transition:0.2s; }
   .move-btn:hover { background:var(--line); color:var(--text); border-color:var(--text-dim); }
@@ -211,13 +210,14 @@
   .picker-ex-preview:hover { border-color:var(--accent); color:var(--accent); background:var(--surface);}
   .picker-close{ display:block; width:100%; text-align:center; padding:16px; font-size:13px; font-weight:700; color:var(--text); background:var(--surface-2); border:none; border-top:1px solid var(--line); cursor:pointer; text-transform:uppercase; letter-spacing:0.5px;}
 
-  .save-name-row{ display:flex; gap:10px; margin-top:28px; padding-top:24px; border-top:2px solid var(--line);}
-  .save-name-input{ flex:1; padding:16px; border:1px solid var(--line); border-radius:14px; font-family:'Inter'; font-size:15px; font-weight:500; background:var(--surface); color:var(--text); outline:none;}
+  /* YENİ: Mobilde Sığması İçin Güncellenmiş Kaydet Satırı */
+  .save-name-row{ display:flex; flex-direction:column; gap:12px; margin-top:28px; padding-top:24px; border-top:2px solid var(--line);}
+  .save-name-input{ width:100%; padding:14px; border:1px solid var(--line); border-radius:14px; font-family:'Inter'; font-size:15px; font-weight:500; background:var(--surface); color:var(--text); outline:none;}
   .save-name-input:focus { border-color:var(--accent); box-shadow:0 0 0 3px rgba(13, 148, 136, 0.15);}
-  .save-name-btn{ background:var(--accent); color:var(--btn-text); border:none; border-radius:14px; padding:0 24px; font-weight:700; font-family:'Barlow Condensed', sans-serif; font-size:18px; letter-spacing:0.5px; text-transform:uppercase; cursor:pointer; white-space:nowrap; transition:0.2s; box-shadow:0 4px 12px rgba(13, 148, 136, 0.2);}
+  .save-name-btn{ background:var(--accent); color:var(--btn-text); border:none; border-radius:14px; padding:14px 16px; font-weight:700; font-family:'Barlow Condensed', sans-serif; font-size:17px; letter-spacing:0.5px; text-transform:uppercase; cursor:pointer; text-align:center; transition:0.2s; box-shadow:0 4px 12px rgba(13, 148, 136, 0.2);}
   .save-name-btn:active { transform:scale(0.96); }
   .save-name-btn:disabled { opacity:0.6; cursor:not-allowed; }
-  .clear-draft-btn { background:var(--surface-2); color:var(--text-dim); border:1px solid var(--line); border-radius:14px; padding:0 16px; font-weight:700; font-family:'Barlow Condensed', sans-serif; font-size:16px; text-transform:uppercase; cursor:pointer; transition:0.2s;}
+  .clear-draft-btn { background:var(--surface-2); color:var(--text-dim); border:1px solid var(--line); border-radius:14px; padding:14px 16px; font-weight:700; font-family:'Barlow Condensed', sans-serif; font-size:16px; text-transform:uppercase; cursor:pointer; transition:0.2s;}
   .clear-draft-btn:hover { background:var(--line); color:var(--text); }
 
   /* GÖRSEL ANALİZ */
@@ -712,13 +712,12 @@ function renderProgramView(program){
   `;
   main.appendChild(headerDiv);
 
-  // YENİ DÜZENLEME (EDİT) MANTIĞI
   headerDiv.querySelector('.edit-btn').onclick = async () => {
       if(confirm("Bu programı düzenlemek için 'Oluştur' (Editör) sekmesine yüklemek istiyor musunuz? (Mevcut taslağınızın üzerine yazılacaktır)")) {
           cloudData.custom_program = JSON.parse(JSON.stringify(program));
           cloudData.custom_program.editing_id = program.id; 
           await saveCloudData();
-          currentDay = getProgramList().length + 1; // Oluştur Sekmesi
+          currentDay = getProgramList().length + 1; 
           currentSubDay = 0;
           renderTabs();
           renderView();
@@ -1520,7 +1519,13 @@ async function renderBuilder(){
         let safeRest = ex.rest || '90';
         if(typeof safeRest === 'string') safeRest = safeRest.replace(' sn', '').replace('sn', '').trim();
         
-        // YUKARI/AŞAĞI BUTONLARI İÇİN MANTIK
+        let safeReps = ex.reps;
+        if (safeReps === undefined && ex.sr) {
+            let parts = String(ex.sr).split('x');
+            safeReps = parts.length > 1 ? parts[1].trim() : '';
+        }
+        if (safeReps === undefined) safeReps = '';
+
         const isFirst = exIdx === 0;
         const isLast = exIdx === day.exercises.length - 1;
         const upBtnHtml = isFirst ? '' : `<button class="move-btn up-btn">↑</button>`;
@@ -1537,7 +1542,7 @@ async function renderBuilder(){
           </div>
           <div class="added-ex-controls">
             <label class="muscle-sets-mini">Set <input type="number" min="1" max="10" class="mini-input sets-input" value="${ex.sets}"/></label>
-            <label class="muscle-sets-mini">Tekrar <input type="text" class="mini-input reps-input" value="${ex.reps}"/></label>
+            <label class="muscle-sets-mini">Tekrar <input type="text" class="mini-input reps-input" value="${safeReps}"/></label>
             <label class="muscle-sets-mini">Dinlenme(sn) <input type="number" class="mini-input rest-input" value="${safeRest}"/></label>
             <button class="picker-ex-preview">Görsel</button>
           </div>
@@ -1550,7 +1555,6 @@ async function renderBuilder(){
         
         row.querySelector('.ex-remove').onclick = async () => { day.exercises.splice(exIdx, 1); await saveCustomProgram(prog); renderBuilder(); };
         
-        // YUKARI TAŞIMA İŞLEVİ
         const upBtn = row.querySelector('.up-btn');
         if(upBtn) {
             upBtn.onclick = async () => {
@@ -1561,7 +1565,7 @@ async function renderBuilder(){
                 renderBuilder();
             };
         }
-        // AŞAĞI TAŞIMA İŞLEVİ
+        
         const downBtn = row.querySelector('.down-btn');
         if(downBtn) {
             downBtn.onclick = async () => {
@@ -1623,7 +1627,6 @@ async function renderBuilder(){
 
   const saveRow = document.createElement('div'); saveRow.className = 'save-name-row';
   
-  // DÜZENLEME Mİ YENİ Mİ KONTROLÜ
   let isEditing = !!prog.editing_id;
   let saveBtnText = isEditing ? 'Değişiklikleri Kaydet' : 'Listeme Ekle';
 
@@ -1634,11 +1637,13 @@ async function renderBuilder(){
   const btnContainer = document.createElement('div');
   btnContainer.style.display = 'flex';
   btnContainer.style.gap = '8px';
+  btnContainer.style.width = '100%';
 
   const clearBtn = document.createElement('button');
   clearBtn.className = 'clear-draft-btn';
   clearBtn.textContent = 'Sıfırla';
   clearBtn.title = 'Editörü tamamen temizler.';
+  clearBtn.style.flex = '0.3';
   clearBtn.onclick = async () => {
       if(confirm('Taslağı tamamen silmek ve sıfırdan başlamak istediğinize emin misiniz?')) {
           cloudData.custom_program = { name: "", editing_id: null, days: [ { id: cpUid(), name:"Gün 1", exercises: [] } ] };
@@ -1652,6 +1657,7 @@ async function renderBuilder(){
   const saveBtnNode = document.createElement('button');
   saveBtnNode.className = 'save-name-btn';
   saveBtnNode.textContent = saveBtnText;
+  saveBtnNode.style.flex = '1';
   btnContainer.appendChild(saveBtnNode);
 
   saveRow.appendChild(btnContainer);
@@ -1672,7 +1678,7 @@ async function renderBuilder(){
     if(!hasAny){ saveToast2.textContent = 'Kaydetmeden önce en az bir güne hareket ekleyin.'; setTimeout(()=>{ saveToast2.textContent=''; }, 2200); return; }
 
     const newProgram = {
-      id: prog.editing_id || cpUid(), // Eski ID'yi koru ki üzerine yazsın
+      id: prog.editing_id || cpUid(), 
       name: progName,
       days: prog.days.map(d => ({
         id: cpUid(),
@@ -1684,6 +1690,7 @@ async function renderBuilder(){
           name: ex.name,
           sr: `${ex.sets}x${ex.reps}`,
           sets: ex.sets, 
+          reps: ex.reps,
           muscleKey: ex.muscleKey,
           rest: ex.rest || '90 sn',
           start: 0,
@@ -1693,7 +1700,6 @@ async function renderBuilder(){
 
     if(!cloudData.saved_programs) cloudData.saved_programs = [];
 
-    // EDİT MODUNDA ÜZERİNE YAZMA İŞLEMİ
     if(prog.editing_id) {
         const pIndex = cloudData.saved_programs.findIndex(p => p.id === prog.editing_id);
         if(pIndex !== -1) {
@@ -1707,7 +1713,6 @@ async function renderBuilder(){
 
     saveToast2.textContent = 'Kaydediliyor...';
     
-    // Kayıt bitince editör taslağını sıfırla
     cloudData.custom_program = { name: "", editing_id: null, days: [ { id: cpUid(), name:"Gün 1", exercises: [] } ] };
     await saveCloudData();
 
@@ -1715,7 +1720,6 @@ async function renderBuilder(){
     setTimeout(() => {
       const programs = getProgramList();
       if(prog.editing_id) {
-          // Eski programın yerine döndür
           const idx = programs.findIndex(p => p.id === prog.editing_id);
           currentDay = idx !== -1 ? idx : programs.length - 1;
       } else {

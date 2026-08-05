@@ -1161,12 +1161,15 @@ function updateWMCarouselClasses() {
     });
 }
 
-// ZAMAN BAZLI AKILLI İLERLEME YÜZDESİ
+// ZAMAN BAZLI KUSURSUZ İLERLEME YÜZDESİ
 function updateWMProgress() {
     let totalSec = 0;
     let doneSec = 0;
     wmState.forEach(ex => {
+        // Her hareketin saniyesi saniyesine total ağırlığı hesaplanır
         let exTotal = (ex.setsTotal * 40) + (Math.max(0, ex.setsTotal - 1) * ex.restSeconds);
+        // Yapılan set, o hareketin toplam süresinin yüzde kaçıysa o kadar saniye eklenir
+        // Bu sayede çubuk 1 set bitince "dinlenmeyi de bitirmiş gibi" fırlamaz, mantıklı ilerler.
         let exDone = (ex.setsDone / ex.setsTotal) * exTotal;
         
         totalSec += exTotal;
@@ -1182,7 +1185,7 @@ function updateWMProgress() {
 
 async function finishWorkoutMode() {
     const btn = document.getElementById('wm-end-btn');
-    if(btn.disabled) return; 
+    if(btn.disabled) return; // Çift tıklama (Spam) koruması
     btn.disabled = true;
     let origText = btn.textContent;
     btn.textContent = "Kaydediliyor...";
@@ -1216,6 +1219,7 @@ async function finishWorkoutMode() {
         for(let ex of wmState){ await setSetsDone(wmCurrentDayObj.id, ex.originalIdx, 0); }
         alert("Antrenman tamamlandı ve buluta kaydedildi! Tebrikler 💪");
     } else {
+        // HİÇ SET YAPILMAMIŞSA
         alert("Yapılmamış antrenman kaydedilmedi.");
         for(let ex of wmState){ await setSetsDone(wmCurrentDayObj.id, ex.originalIdx, 0); }
     }
@@ -1228,7 +1232,6 @@ async function finishWorkoutMode() {
     
     renderTabs(); renderView();
 }
-
 
 // --- TOPLULUK BÖLÜMÜ ---
 async function renderCommunity(){
@@ -1338,287 +1341,31 @@ async function cloneCommunityProgram(programId) {
     renderTabs(); renderView();
 }
 
-// --- KAPSAMLI HAREKET VERİTABANI ---
-const MUSCLE_LABELS = { gogus: "Göğüs", sirt: "Sırt", omuz: "Omuz", biceps: "Biceps", triceps: "Triceps", quad: "Ön Bacak", hamstring: "Arka Bacak", kalca: "Kalça", baldir: "Baldır", karin: "Karın" };
-const EXERCISE_DB = {
-  gogus: [
-      {name:"Barbell Bench Press", reps:"6-10", type:"compound"}, {name:"Incline Barbell Bench Press", reps:"6-10", type:"compound"}, {name:"Decline Barbell Bench Press", reps:"6-10", type:"compound"},
-      {name:"Dumbbell Bench Press", reps:"8-12", type:"compound"}, {name:"Incline Dumbbell Press", reps:"8-12", type:"compound"}, {name:"Decline Dumbbell Press", reps:"8-12", type:"compound"},
-      {name:"Smith Machine Bench Press", reps:"8-12", type:"compound"}, {name:"Smith Machine Incline Press", reps:"8-12", type:"compound"}, {name:"Machine Chest Press", reps:"8-12", type:"compound"},
-      {name:"Incline Machine Press", reps:"8-12", type:"compound"}, {name:"Pec Deck / Machine Fly", reps:"10-15", type:"izolasyon"}, {name:"Dumbbell Fly", reps:"10-15", type:"izolasyon"},
-      {name:"Incline Dumbbell Fly", reps:"10-15", type:"izolasyon"}, {name:"Cable Crossover (High to Low)", reps:"12-15", type:"izolasyon"}, {name:"Cable Crossover (Mid)", reps:"12-15", type:"izolasyon"},
-      {name:"Cable Crossover (Low to High)", reps:"12-15", type:"izolasyon"}, {name:"Dips (Chest Focus)", reps:"8-12", type:"compound"}, {name:"Weighted Dips", reps:"6-10", type:"compound"},
-      {name:"Push-up", reps:"10-20", type:"compound"}, {name:"Weighted Push-up", reps:"8-12", type:"compound"}, {name:"Deficit Push-up", reps:"10-15", type:"compound"},
-      {name:"Dumbbell Pullover (Chest)", reps:"10-15", type:"izolasyon"}, {name:"Hex Press", reps:"10-15", type:"izolasyon"}, {name:"Guillotine Press", reps:"6-10", type:"compound"},
-      {name:"Floor Press (Barbell)", reps:"6-10", type:"compound"}, {name:"Floor Press (Dumbbell)", reps:"8-12", type:"compound"}, {name:"Landmine Chest Press", reps:"8-12", type:"compound"},
-      {name:"Svend Press", reps:"12-15", type:"izolasyon"}, {name:"Single-Arm Cable Fly", reps:"12-15", type:"izolasyon"}, {name:"Plate Press", reps:"12-15", type:"izolasyon"}
-  ],
-  sirt: [
-      {name:"Deadlift (Conventional)", reps:"4-6", type:"compound"}, {name:"Sumo Deadlift", reps:"4-6", type:"compound"}, {name:"Rack Pull", reps:"5-8", type:"compound"},
-      {name:"Barbell Row (Overhand)", reps:"6-10", type:"compound"}, {name:"Barbell Row (Underhand/Yates)", reps:"6-10", type:"compound"}, {name:"Pendlay Row", reps:"6-10", type:"compound"},
-      {name:"T-Bar Row (Barbell)", reps:"8-10", type:"compound"}, {name:"T-Bar Row (Machine)", reps:"8-10", type:"compound"}, {name:"Seated Cable Row (Close Grip)", reps:"10-12", type:"compound"},
-      {name:"Seated Cable Row (Wide Grip)", reps:"10-12", type:"compound"}, {name:"Lat Pulldown (Wide Grip)", reps:"8-12", type:"compound"}, {name:"Lat Pulldown (Close Grip/V-Bar)", reps:"8-12", type:"compound"},
-      {name:"Lat Pulldown (Underhand)", reps:"8-12", type:"compound"}, {name:"Lat Pulldown (Neutral Grip)", reps:"8-12", type:"compound"}, {name:"Single-Arm Lat Pulldown", reps:"10-12", type:"compound"},
-      {name:"Pull-up", reps:"6-10", type:"compound"}, {name:"Weighted Pull-up", reps:"5-8", type:"compound"}, {name:"Chin-up", reps:"6-10", type:"compound"},
-      {name:"One-Arm Dumbbell Row", reps:"8-12", type:"compound"}, {name:"Kroc Row", reps:"10-15", type:"compound"}, {name:"Meadows Row", reps:"8-12", type:"compound"},
-      {name:"Chest-Supported Dumbbell Row", reps:"8-12", type:"compound"}, {name:"Machine Row (High)", reps:"10-12", type:"compound"}, {name:"Machine Row (Low)", reps:"10-12", type:"compound"},
-      {name:"Seal Row", reps:"8-12", type:"compound"}, {name:"Inverted Row (Bodyweight)", reps:"10-15", type:"compound"}, {name:"Straight-Arm Lat Pulldown", reps:"12-15", type:"izolasyon"},
-      {name:"Cable Pullover", reps:"12-15", type:"izolasyon"}, {name:"Dumbbell Pullover (Lat Focus)", reps:"10-15", type:"izolasyon"}, {name:"Barbell Shrugs", reps:"10-15", type:"izolasyon"},
-      {name:"Dumbbell Shrugs", reps:"10-15", type:"izolasyon"}, {name:"Trap Bar Shrugs", reps:"10-15", type:"izolasyon"}, {name:"Hyperextension (Back Extension)", reps:"12-15", type:"izolasyon"},
-      {name:"Good Morning", reps:"8-12", type:"compound"}
-  ],
-  omuz: [
-      {name:"Overhead Press (Barbell)", reps:"6-10", type:"compound"}, {name:"Seated Barbell Press", reps:"6-10", type:"compound"}, {name:"Dumbbell Shoulder Press", reps:"8-12", type:"compound"},
-      {name:"Arnold Press", reps:"8-12", type:"compound"}, {name:"Smith Machine Shoulder Press", reps:"8-12", type:"compound"}, {name:"Machine Shoulder Press", reps:"8-12", type:"compound"},
-      {name:"Push Press", reps:"5-8", type:"compound"}, {name:"Bradford Press", reps:"8-12", type:"compound"}, {name:"Landmine Shoulder Press", reps:"8-12", type:"compound"},
-      {name:"Lateral Raise (Dumbbell)", reps:"12-15", type:"izolasyon"}, {name:"Lateral Raise (Cable)", reps:"12-15", type:"izolasyon"}, {name:"Machine Lateral Raise", reps:"12-15", type:"izolasyon"},
-      {name:"Egyptian Lateral Raise (Cable)", reps:"12-15", type:"izolasyon"}, {name:"Lean-Away Lateral Raise", reps:"12-15", type:"izolasyon"}, {name:"Front Raise (Dumbbell)", reps:"12-15", type:"izolasyon"},
-      {name:"Front Raise (Barbell)", reps:"12-15", type:"izolasyon"}, {name:"Front Raise (Cable)", reps:"12-15", type:"izolasyon"}, {name:"Plate Front Raise", reps:"12-15", type:"izolasyon"},
-      {name:"Rear Delt Fly (Dumbbell)", reps:"12-15", type:"izolasyon"}, {name:"Rear Delt Cable Pull", reps:"12-15", type:"izolasyon"}, {name:"Reverse Pec Deck (Machine)", reps:"12-15", type:"izolasyon"},
-      {name:"Face Pull (Cable)", reps:"12-15", type:"izolasyon"}, {name:"Upright Row (Barbell)", reps:"10-12", type:"compound"}, {name:"Upright Row (Dumbbell)", reps:"10-12", type:"compound"},
-      {name:"Upright Row (Cable)", reps:"10-12", type:"compound"}, {name:"Cuban Press", reps:"10-12", type:"compound"}, {name:"Y-Raise", reps:"12-15", type:"izolasyon"},
-      {name:"Pike Push-up", reps:"8-15", type:"compound"}, {name:"Handstand Push-up", reps:"5-10", type:"compound"}
-  ],
-  biceps: [
-      {name:"Barbell Curl", reps:"8-12", type:"izolasyon"}, {name:"EZ Bar Curl", reps:"8-12", type:"izolasyon"}, {name:"Dumbbell Curl (Alternating)", reps:"8-12", type:"izolasyon"},
-      {name:"Dumbbell Curl (Supinated)", reps:"8-12", type:"izolasyon"}, {name:"Incline Dumbbell Curl", reps:"10-12", type:"izolasyon"}, {name:"Hammer Curl (Dumbbell)", reps:"8-12", type:"izolasyon"},
-      {name:"Hammer Curl (Cable Rope)", reps:"10-15", type:"izolasyon"}, {name:"Cross-Body Hammer Curl", reps:"8-12", type:"izolasyon"}, {name:"Preacher Curl (EZ Bar)", reps:"10-12", type:"izolasyon"},
-      {name:"Preacher Curl (Dumbbell)", reps:"10-12", type:"izolasyon"}, {name:"Preacher Curl (Machine)", reps:"10-12", type:"izolasyon"}, {name:"Concentration Curl", reps:"10-15", type:"izolasyon"},
-      {name:"Cable Curl (Straight Bar)", reps:"10-15", type:"izolasyon"}, {name:"Single-Arm Cable Curl", reps:"10-15", type:"izolasyon"}, {name:"Spider Curl", reps:"10-12", type:"izolasyon"},
-      {name:"Zottman Curl", reps:"10-12", type:"izolasyon"}, {name:"Reverse Curl (Barbell/EZ)", reps:"10-15", type:"izolasyon"}, {name:"Drag Curl", reps:"8-12", type:"izolasyon"},
-      {name:"Bayesian Cable Curl", reps:"10-15", type:"izolasyon"}, {name:"21s Curl", reps:"21", type:"izolasyon"}, {name:"High Cable Curl (Crucifix)", reps:"10-15", type:"izolasyon"},
-      {name:"Waiter Curl", reps:"10-15", type:"izolasyon"}
-  ],
-  triceps: [
-      {name:"Triceps Pushdown (Straight Bar)", reps:"10-15", type:"izolasyon"}, {name:"Triceps Pushdown (V-Bar)", reps:"10-15", type:"izolasyon"}, {name:"Triceps Pushdown (Rope)", reps:"10-15", type:"izolasyon"},
-      {name:"Reverse Grip Pushdown", reps:"10-15", type:"izolasyon"}, {name:"Skull Crusher (EZ Bar)", reps:"8-12", type:"izolasyon"}, {name:"Skull Crusher (Dumbbell)", reps:"8-12", type:"izolasyon"},
-      {name:"Overhead Triceps Extension (Dumbbell)", reps:"10-12", type:"izolasyon"}, {name:"Overhead Triceps Extension (Cable Rope)", reps:"10-15", type:"izolasyon"}, {name:"Single-Arm Overhead Extension", reps:"10-12", type:"izolasyon"},
-      {name:"French Press", reps:"8-12", type:"izolasyon"}, {name:"Close-Grip Bench Press", reps:"6-10", type:"compound"}, {name:"JM Press", reps:"8-12", type:"compound"},
-      {name:"Tate Press", reps:"10-12", type:"izolasyon"}, {name:"Dips (Triceps Focus)", reps:"8-12", type:"compound"}, {name:"Weighted Triceps Dips", reps:"6-10", type:"compound"},
-      {name:"Bench Dips", reps:"10-15", type:"izolasyon"}, {name:"Diamond Push-up", reps:"10-15", type:"compound"}, {name:"Triceps Kickback (Dumbbell)", reps:"12-15", type:"izolasyon"},
-      {name:"Triceps Kickback (Cable)", reps:"12-15", type:"izolasyon"}, {name:"Machine Triceps Extension", reps:"10-15", type:"izolasyon"}, {name:"Triceps Dip Machine", reps:"10-15", type:"compound"}
-  ],
-  quad: [
-      {name:"Back Squat (High Bar)", reps:"6-10", type:"compound"}, {name:"Back Squat (Low Bar)", reps:"5-8", type:"compound"}, {name:"Front Squat", reps:"6-10", type:"compound"},
-      {name:"Box Squat", reps:"5-8", type:"compound"}, {name:"Pause Squat", reps:"6-8", type:"compound"}, {name:"Leg Press", reps:"8-12", type:"compound"},
-      {name:"Hack Squat", reps:"8-12", type:"compound"}, {name:"Pendulum Squat", reps:"8-12", type:"compound"}, {name:"Bulgarian Split Squat", reps:"8-12", type:"compound"},
-      {name:"Walking Lunge", reps:"10-12", type:"compound"}, {name:"Forward Lunge", reps:"10-12", type:"compound"}, {name:"Reverse Lunge", reps:"10-12", type:"compound"},
-      {name:"Deficit Lunge", reps:"10-12", type:"compound"}, {name:"Leg Extension", reps:"12-15", type:"izolasyon"}, {name:"Goblet Squat", reps:"10-12", type:"compound"},
-      {name:"Zercher Squat", reps:"6-10", type:"compound"}, {name:"Belt Squat", reps:"8-12", type:"compound"}, {name:"Sissy Squat", reps:"10-15", type:"izolasyon"},
-      {name:"Pistol Squat", reps:"6-10", type:"compound"}, {name:"Step-up", reps:"10-12", type:"compound"}, {name:"Cyclist Squat", reps:"10-12", type:"compound"},
-      {name:"Smith Machine Squat", reps:"8-12", type:"compound"}, {name:"V-Squat Machine", reps:"8-12", type:"compound"}
-  ],
-  hamstring: [
-      {name:"Romanian Deadlift (Barbell)", reps:"8-10", type:"compound"}, {name:"Romanian Deadlift (Dumbbell)", reps:"8-10", type:"compound"}, {name:"Trap Bar RDL", reps:"8-10", type:"compound"},
-      {name:"Stiff-Leg Deadlift", reps:"8-10", type:"compound"}, {name:"Single-Leg RDL", reps:"8-10", type:"compound"}, {name:"B-Stance RDL", reps:"8-12", type:"compound"},
-      {name:"Seated Leg Curl", reps:"10-15", type:"izolasyon"}, {name:"Lying Leg Curl", reps:"10-15", type:"izolasyon"}, {name:"Standing Single-Leg Curl", reps:"10-15", type:"izolasyon"},
-      {name:"Glute-Ham Raise (GHR)", reps:"8-12", type:"compound"}, {name:"Nordic Hamstring Curl", reps:"6-10", type:"izolasyon"}, {name:"Cable Pull-Through", reps:"10-15", type:"compound"},
-      {name:"Reverse Hyper", reps:"10-15", type:"izolasyon"}, {name:"Kettlebell Swing", reps:"12-20", type:"compound"}
-  ],
-  kalca: [
-      {name:"Hip Thrust (Barbell)", reps:"8-12", type:"compound"}, {name:"Hip Thrust (Machine)", reps:"8-12", type:"compound"}, {name:"Single-Leg Hip Thrust", reps:"10-12", type:"compound"},
-      {name:"Glute Bridge", reps:"10-15", type:"compound"}, {name:"Frog Pump", reps:"15-20", type:"izolasyon"}, {name:"Cable Kickback (Glute)", reps:"12-15", type:"izolasyon"},
-      {name:"Hip Abductor Machine", reps:"12-15", type:"izolasyon"}, {name:"Banded Lateral Walk", reps:"12-15", type:"izolasyon"}, {name:"Cable Hip Abduction", reps:"12-15", type:"izolasyon"},
-      {name:"Clamshell", reps:"15-20", type:"izolasyon"}, {name:"Step-up (High Box)", reps:"10-12", type:"compound"}, {name:"Deficit Reverse Lunge", reps:"10-12", type:"compound"},
-      {name:"Curtsy Lunge", reps:"10-12", type:"compound"}, {name:"Sumo Deadlift", reps:"6-10", type:"compound"}, {name:"Glute Focus Back Extension", reps:"12-15", type:"izolasyon"}
-  ],
-  baldir: [
-      {name:"Standing Calf Raise (Machine)", reps:"12-20", type:"izolasyon"}, {name:"Standing Calf Raise (Dumbbell)", reps:"12-20", type:"izolasyon"}, {name:"Standing Calf Raise (Barbell)", reps:"12-20", type:"izolasyon"},
-      {name:"Standing Calf Raise (Smith Machine)", reps:"12-20", type:"izolasyon"}, {name:"Seated Calf Raise (Machine)", reps:"12-20", type:"izolasyon"}, {name:"Donkey Calf Raise", reps:"12-20", type:"izolasyon"},
-      {name:"Leg Press Calf Raise", reps:"12-20", type:"izolasyon"}, {name:"Single-Leg Calf Raise", reps:"12-15", type:"izolasyon"}, {name:"Tibialis Raise", reps:"15-20", type:"izolasyon"},
-      {name:"Jump Rope Calf Pump", reps:"30-60 sn", type:"izolasyon"}
-  ],
-  karin: [
-      {name:"Cable Crunch", reps:"12-15", type:"core"}, {name:"Weighted Cable Crunch", reps:"12-15", type:"core"}, {name:"Hanging Leg Raise", reps:"10-15", type:"core"},
-      {name:"Hanging Knee Raise", reps:"10-15", type:"core"}, {name:"Captain's Chair Leg Raise", reps:"10-15", type:"core"}, {name:"Machine Crunch", reps:"12-15", type:"core"},
-      {name:"Ab Wheel Rollout", reps:"8-12", type:"core"}, {name:"Stability Ball Rollout", reps:"10-12", type:"core"}, {name:"Plank", reps:"60 sn", type:"core"},
-      {name:"Weighted Plank", reps:"45-60 sn", type:"core"}, {name:"Side Plank", reps:"30-45 sn", type:"core"}, {name:"Russian Twist", reps:"12-15", type:"core"},
-      {name:"Cable Woodchopper", reps:"12", type:"core"}, {name:"Pallof Press", reps:"10-12", type:"core"}, {name:"Reverse Crunch", reps:"12-15", type:"core"},
-      {name:"Sit-up", reps:"15-20", type:"core"}, {name:"Decline Sit-up", reps:"12-15", type:"core"}, {name:"V-Up", reps:"12-15", type:"core"},
-      {name:"Bicycle Crunch", reps:"15-20", type:"core"}, {name:"Toes-to-Bar", reps:"8-12", type:"core"}, {name:"Dead Bug", reps:"10-12", type:"core"},
-      {name:"Knee-up", reps:"15-20", type:"core"}, {name:"Ab Coaster Machine", reps:"12-15", type:"core"}, {name:"Landmine Twist", reps:"12/taraf", type:"core"},
-      {name:"Dragon Flag", reps:"5-10", type:"core"}
-  ]
-};
-
-let builderOpenPicker = JSON.parse(sessionStorage.getItem('openPicker') || '{}');
-
-// --- OLUŞTURUCU YAPI ---
-async function renderBuilder(){
-  const main = document.getElementById('main');
-  main.innerHTML = `<div class="day-note" style="margin-bottom:20px;">Özel programınızı oluşturun. Aşağıdan gün sayısını seçip hareketleri ekleyebilirsiniz.</div>`;
-  const prog = getCustomProgram();
-  const analysisContainer = document.createElement('div');
-
-  const countRow = document.createElement('div'); countRow.className = 'count-row';
-  countRow.innerHTML = `
-    <div class="count-label">Program Gün Sayısı</div>
-    <div class="count-stepper">
-      <button class="cs-minus">−</button><div class="count-num">${prog.days.length}</div><button class="cs-plus">+</button>
-    </div>
-  `;
-  countRow.querySelector('.cs-minus').onclick = async () => { if(prog.days.length > 1){ prog.days.pop(); await saveCustomProgram(prog); currentSubDay = Math.max(0, currentSubDay - 1); renderBuilder(); } };
-  countRow.querySelector('.cs-plus').onclick = async () => { if(prog.days.length < 7){ prog.days.push({ id: cpUid(), name:`Gün ${prog.days.length+1}`, exercises: [] }); await saveCustomProgram(prog); currentSubDay = prog.days.length - 1; renderBuilder(); } };
-  main.appendChild(countRow);
-
-  const stContainer = document.createElement('div');
-  stContainer.className = 'sub-tabs-container';
-  prog.days.forEach((d, i) => {
-     const st = document.createElement('div');
-     st.className = 'sub-tab' + (i === currentSubDay ? ' active' : '');
-     st.textContent = d.name || `Gün ${i+1}`;
-     st.onclick = () => { currentSubDay = i; renderBuilder(); };
-     stContainer.appendChild(st);
+// YENİ: Akıllı Satır Kırma Sistemi
+function makeLabel(x, y, align, key, sets) {
+  const color = getTextColor(sets); 
+  const anchor = align === 'left' ? 'end' : 'start';
+  const words = MUSCLE_LABELS[key].split(' ');
+  
+  let tspanHTML = '';
+  let currentDy = -8; // İlk satır y eksenini merkezlemek için yukarı kaydırılır
+  
+  // Kas adındaki her kelimeyi ayrı bir satıra yaz
+  words.forEach((word) => {
+      tspanHTML += `<tspan x="${x}" dy="${currentDy}">${word}</tspan>`;
+      currentDy = 14; // Sonraki satırlar için boşluk
   });
-  main.appendChild(stContainer);
+  
+  // Set bilgisini ve durumu ayrı satırlara ekle
+  tspanHTML += `<tspan x="${x}" dy="14">${Math.round(sets*10)/10} Set</tspan>`;
+  tspanHTML += `<tspan x="${x}" dy="14" class="svg-subtext">(${statWord(sets)})</tspan>`;
 
-  const day = prog.days[currentSubDay];
-  if(day) {
-      const card = document.createElement('div'); card.className = 'day-card';
-      
-      const head = document.createElement('div'); head.className = 'day-card-head';
-      head.innerHTML = `
-          <input class="day-name-input" value="${day.name}" placeholder="Gün Adı (Örn: İtiş)" />
-          <div class="day-time-badge" style="font-family:'IBM Plex Mono'; font-weight:700; color:var(--accent); font-size:16px; white-space:nowrap; margin-left:12px;">⏱ ~${calcDayTime(day)} dk</div>
-      `;
-      head.querySelector('.day-name-input').oninput = async (e) => { day.name = e.target.value; await saveCustomProgram(prog); renderTabs(); };
-      card.appendChild(head);
-
-      const updateTimesUI = () => {
-          head.querySelector('.day-time-badge').textContent = `⏱ ~${calcDayTime(day)} dk`;
-          card.querySelectorAll('.ex-time-badge').forEach((el, i) => {
-              el.textContent = `Süre: ~${calcExTime(day.exercises[i].sets, day.exercises[i].rest)} dk`;
-          });
-      };
-
-      day.exercises.forEach((ex, exIdx) => {
-        const row = document.createElement('div'); row.className = 'added-ex-row';
-        
-        let safeRest = ex.rest || '90';
-        if(typeof safeRest === 'string') safeRest = safeRest.replace(' sn', '').replace('sn', '').trim();
-        
-        row.innerHTML = `
-          <div class="added-ex-top">
-              <div><div class="added-ex-name">${ex.name}</div><div class="added-ex-muscle">${MUSCLE_LABELS[ex.muscleKey] || ''} <span class="ex-time-badge" style="color:var(--accent); font-weight:700; margin-left:8px;">Süre: ~${calcExTime(ex.sets, ex.rest)} dk</span></div></div>
-              <button class="ex-remove">Kaldır ✕</button>
-          </div>
-          <div class="added-ex-controls">
-            <label class="muscle-sets-mini">Set <input type="number" min="1" max="10" class="mini-input sets-input" value="${ex.sets}"/></label>
-            <label class="muscle-sets-mini">Tekrar <input type="text" class="mini-input reps-input" value="${ex.reps}"/></label>
-            <label class="muscle-sets-mini">Dinlenme(sn) <input type="number" class="mini-input rest-input" value="${safeRest}"/></label>
-            <button class="picker-ex-preview">Görsel</button>
-          </div>
-        `;
-        row.querySelector('.picker-ex-preview').onclick = () => openImg(ex.name);
-        
-        row.querySelector('.sets-input').oninput = async (e) => { ex.sets = parseFloat(e.target.value) || 0; await saveCustomProgram(prog); renderAnalysis(prog, analysisContainer); updateTimesUI(); };
-        row.querySelector('.reps-input').oninput = async (e) => { ex.reps = e.target.value; await saveCustomProgram(prog); };
-        row.querySelector('.rest-input').oninput = async (e) => { ex.rest = e.target.value ? e.target.value + ' sn' : '90 sn'; await saveCustomProgram(prog); updateTimesUI(); };
-        
-        row.querySelector('.ex-remove').onclick = async () => { day.exercises.splice(exIdx, 1); await saveCustomProgram(prog); renderBuilder(); };
-        card.appendChild(row);
-      });
-
-      const addBtn = document.createElement('button'); addBtn.className = 'add-ex-btn'; addBtn.textContent = builderOpenPicker[day.id] ? '− Menüyü Kapat' : '+ Bu Güne Egzersiz Ekle';
-      addBtn.onclick = () => {
-        builderOpenPicker[day.id] = !builderOpenPicker[day.id];
-        sessionStorage.setItem('openPicker', JSON.stringify(builderOpenPicker));
-        renderBuilder();
-      };
-      card.appendChild(addBtn);
-
-      if(builderOpenPicker[day.id]){
-        const picker = document.createElement('div'); picker.className = 'picker';
-        Object.keys(EXERCISE_DB).forEach(muscleKey => {
-          const groupKey = `group_${day.id}`;
-          const groupHead = document.createElement('div'); groupHead.className = 'picker-group-head';
-          groupHead.innerHTML = `<span>${MUSCLE_LABELS[muscleKey]}</span><span class="picker-group-count">${EXERCISE_DB[muscleKey].length} hareket</span>`;
-          groupHead.onclick = () => {
-            builderOpenPicker[groupKey] = (builderOpenPicker[groupKey] === muscleKey) ? null : muscleKey;
-            sessionStorage.setItem('openPicker', JSON.stringify(builderOpenPicker));
-            renderBuilder();
-          };
-          picker.appendChild(groupHead);
-
-          const list = document.createElement('div'); list.className = 'picker-ex-list' + (builderOpenPicker[groupKey] === muscleKey ? ' open' : '');
-          EXERCISE_DB[muscleKey].forEach(dbEx => {
-            const item = document.createElement('div'); item.className = 'picker-ex-item';
-            item.innerHTML = `<span>${dbEx.name}</span><div style="display:flex; gap:10px; align-items:center;"><button class="picker-ex-preview">Görsel</button><span class="picker-ex-reps">${dbEx.reps}</span></div>`;
-            item.querySelector('.picker-ex-preview').addEventListener('click', (e) => { e.stopPropagation(); openImg(dbEx.name); });
-            item.addEventListener('click', async () => {
-              day.exercises.push({ name: dbEx.name, muscleKey: muscleKey, sets: 3, reps: dbEx.reps, rest: dbEx.rest || '90 sn' });
-              await saveCustomProgram(prog);
-              renderBuilder();
-            });
-            list.appendChild(item);
-          });
-          picker.appendChild(list);
-        });
-        const closeBtn = document.createElement('button'); closeBtn.className = 'picker-close'; closeBtn.textContent = 'Kapat';
-        closeBtn.onclick = () => { builderOpenPicker[day.id] = false; sessionStorage.setItem('openPicker', JSON.stringify(builderOpenPicker)); renderBuilder(); };
-        picker.appendChild(closeBtn); card.appendChild(picker);
-      }
-      main.appendChild(card);
-  }
-
-  main.appendChild(analysisContainer);
-  renderAnalysis(prog, analysisContainer);
-
-  const saveRow = document.createElement('div'); saveRow.className = 'save-name-row';
-  saveRow.innerHTML = `
-    <input type="text" class="save-name-input" placeholder="Program İsmi (Örn: Hipertrofi)" />
-    <button class="save-name-btn">Listeme Ekle</button>
-  `;
-  const saveToast2 = document.createElement('div'); saveToast2.className = 'save-toast';
-
-  saveRow.querySelector('.save-name-btn').onclick = async () => {
-    const nameInput = saveRow.querySelector('.save-name-input');
-    const progName = nameInput.value.trim();
-    const hasAny = prog.days.some(d => d.exercises.length > 0);
-
-    if(!progName){ saveToast2.textContent = 'Lütfen programa bir isim verin.'; setTimeout(()=>{ saveToast2.textContent=''; }, 2200); return; }
-    if(!hasAny){ saveToast2.textContent = 'Kaydetmeden önce en az bir güne hareket ekleyin.'; setTimeout(()=>{ saveToast2.textContent=''; }, 2200); return; }
-
-    const newProgram = {
-      id: cpUid(),
-      name: progName,
-      days: prog.days.map(d => ({
-        id: cpUid(),
-        shortLabel: d.name,
-        title: d.name,
-        note: '',
-        exercises: d.exercises.map(ex => ({
-          blok: MUSCLE_LABELS[ex.muscleKey] || '',
-          name: ex.name,
-          sr: `${ex.sets}x${ex.reps}`,
-          sets: ex.sets, 
-          muscleKey: ex.muscleKey,
-          rest: ex.rest || '90 sn',
-          start: 0,
-        })),
-      })),
-    };
-
-    if(!cloudData.saved_programs) cloudData.saved_programs = [];
-    cloudData.saved_programs.push(newProgram);
-    saveToast2.textContent = 'Kaydediliyor...';
-    await saveCloudData();
-
-    cloudData.custom_program = { days: [ { id: cpUid(), name:"Gün 1", exercises: [] } ] };
-    await saveCustomProgram(cloudData.custom_program);
-
-    saveToast2.textContent = `"${progName}" kaydedildi ✓`;
-    setTimeout(() => {
-      const programs = getProgramList();
-      currentDay = programs.length - 1; 
-      currentSubDay = 0;
-      renderTabs(); renderView();
-    }, 700);
-  };
-
-  main.appendChild(saveRow);
-  main.appendChild(saveToast2);
+  return `<text x="${x}" y="${y}" text-anchor="${anchor}" class="svg-text" fill="${color}">${tspanHTML}</text>`;
 }
+
+const getTextColor = (s) => { if(s<=0) return 'var(--text-dim)'; if(s<10) return 'var(--status-low)'; if(s<=20) return 'var(--status-ok)'; return 'var(--status-high)'; };
+const getColor = (s) => { if(s<=0) return 'var(--status-zero)'; if(s<10) return 'var(--status-low)'; if(s<=20) return 'var(--status-ok)'; return 'var(--status-high)'; };
+const statWord = (s) => { if(s<=0) return 'Çalışılmadı'; if(s<10) return 'Yetersiz'; if(s<=20) return 'İdeal'; return 'Yüksek'; };
 
 function renderAnalysis(prog, container){
   container.className = 'analysis-section';
@@ -1646,19 +1393,6 @@ function renderAnalysis(prog, container){
       });
   });
 
-  const getColor = (s) => { if(s<=0) return 'var(--status-zero)'; if(s<10) return 'var(--status-low)'; if(s<=20) return 'var(--status-ok)'; return 'var(--status-high)'; };
-  const getTextColor = (s) => s<=0 ? 'var(--text-dim)' : getColor(s);
-  const statWord = (s) => { if(s<=0) return 'Çalışılmadı'; if(s<10) return 'Yetersiz'; if(s<=20) return 'İdeal'; return 'Yüksek'; };
-
-  const makeLabel = (x, y, align, key, sets) => {
-    const color = getTextColor(sets); const anchor = align === 'left' ? 'end' : 'start';
-    return `
-      <text x="${x}" y="${y}" text-anchor="${anchor}" class="svg-text" fill="${color}">
-        <tspan x="${x}" dy="0">${MUSCLE_LABELS[key]}: ${Math.round(sets*10)/10} Set</tspan>
-        <tspan x="${x}" dy="14" class="svg-subtext">(${statWord(sets)})</tspan>
-      </text>`;
-  };
-
   container.innerHTML = `
     <div class="analysis-title">Hacim Analizi (Tüm Program)</div>
     <div class="svg-container">
@@ -1674,14 +1408,19 @@ function renderAnalysis(prog, container){
           <rect x="130" y="110" width="18" height="45" rx="9" fill="${getColor(totals.biceps)}" class="human-shape"/>
           <rect x="252" y="110" width="18" height="45" rx="9" fill="${getColor(totals.biceps)}" class="human-shape"/>
           <rect x="170" y="120" width="60" height="60" rx="8" fill="${getColor(totals.karin)}" class="human-shape"/>
-          <rect x="165" y="190" width="30" height="85" rx="12" fill="${getColor(totals.quad)}" class="human-shape"/>
-          <rect x="205" y="190" width="30" height="85" rx="12" fill="${getColor(totals.quad)}" class="human-shape"/>
+          
+          <!-- YENİ EŞİTLENMİŞ BÖLÜM: Ön Bacak / Quads -->
+          <rect x="165" y="190" width="30" height="100" rx="12" fill="${getColor(totals.quad)}" class="human-shape"/>
+          <rect x="205" y="190" width="30" height="100" rx="12" fill="${getColor(totals.quad)}" class="human-shape"/>
+          <!-- Alt Bacak (Shins/Calves) - Nötr Renk -->
+          <rect x="168" y="300" width="24" height="50" rx="10" fill="var(--surface-2)" class="human-shape"/>
+          <rect x="208" y="300" width="24" height="50" rx="10" fill="var(--surface-2)" class="human-shape"/>
 
           <path d="M 165 95 L 95 80" stroke="${getTextColor(totals.gogus)}" class="svg-line"/>
           ${makeLabel(90, 75, 'left', 'gogus', totals.gogus)}
           <path d="M 170 150 L 95 150" stroke="${getTextColor(totals.karin)}" class="svg-line"/>
           ${makeLabel(90, 145, 'left', 'karin', totals.karin)}
-          <path d="M 165 230 L 95 240" stroke="${getTextColor(totals.quad)}" class="svg-line"/>
+          <path d="M 165 240 L 95 240" stroke="${getTextColor(totals.quad)}" class="svg-line"/>
           ${makeLabel(90, 235, 'left', 'quad', totals.quad)}
           <path d="M 250 90 L 305 80" stroke="${getTextColor(totals.omuz)}" class="svg-line"/>
           ${makeLabel(310, 75, 'right', 'omuz', totals.omuz)}

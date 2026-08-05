@@ -141,6 +141,7 @@
   .hist-head{ display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:12px; border-bottom:1px solid var(--surface-2); padding-bottom:10px;}
   .hist-day{ font-family:'Barlow Condensed', sans-serif; font-weight:700; font-size:18px; color:var(--accent); text-transform:uppercase; letter-spacing:0.5px;}
   .hist-datetime{ font-size:11.5px; color:var(--text-dim); font-family:'IBM Plex Mono', monospace; margin-top:4px; }
+  .hist-duration{ font-size:12px; color:var(--accent); font-weight:700; font-family:'IBM Plex Mono', monospace;}
   .hist-del{ border:1px solid var(--line); background:var(--surface-2); color:var(--warn); border-radius:8px; font-size:12px; font-weight:600; cursor:pointer; padding:6px 10px; transition:0.2s;}
   .hist-del:hover { background:var(--warn); color:#fff; border-color:var(--warn);}
   .hist-ex-row{ display:flex; justify-content:space-between; align-items:center; font-size:13.5px; padding:8px 0; border-top:1px dashed var(--line); }
@@ -585,7 +586,7 @@ function parseSetsTotal(sr){
 function parseRestSeconds(rt){ 
     const nums=[]; let m; const re=/(\d+(?:\.\d+)?)\s*(dk|sn)/gi; 
     while((m=re.exec(rt))!==null){ nums.push(m[2].toLowerCase()==='dk'?parseFloat(m[1])*60:parseFloat(m[1])); } 
-    return nums.length?Math.round(nums.reduce((a,b)=>a+b,0)/nums.length):90; 
+    return nums.length?Math.round(nums.reduce((a,b)=>a+b,0)/nums.length):parseFloat(rt) || 90; 
 }
 function fmtTime(s){ 
     s=Math.max(0,Math.round(s)); 
@@ -667,10 +668,16 @@ async function renderHistory(){
     const dt = new Date(row.created_at);
     const dateStr = dt.toLocaleDateString('tr-TR') + " " + dt.toLocaleTimeString('tr-TR', {hour:'2-digit', minute:'2-digit'});
     
+    // Geçmişte toplam süreyi göster (varsa)
+    const durationStr = entry.duration ? `<span class="hist-duration">⏱ ${entry.duration}</span>` : '';
+
     const card = document.createElement('div'); card.className = 'hist-card';
     card.innerHTML = `
       <div class="hist-head">
-          <div><div class="hist-day">${(entry.dayLabel || 'Antrenman').split('—')[0].trim()}</div><div class="hist-datetime">${dateStr}</div></div>
+          <div>
+            <div class="hist-day">${(entry.dayLabel || 'Antrenman').split('—')[0].trim()} ${durationStr}</div>
+            <div class="hist-datetime">${dateStr}</div>
+          </div>
           <button class="hist-del" onclick="deleteHistory('${row.id}')">Sil ✕</button>
       </div>
       ${entry.exercises.map(ex => `<div class="hist-ex-row"><span class="hist-ex-name">${ex.name}</span><span class="hist-ex-stats">${ex.sets}/${ex.setsTotal} SET <span style="color:var(--line);">|</span> ${fmt(ex.weight)} KG</span></div>`).join('')}
@@ -790,6 +797,10 @@ function renderDaySection(day, main, isReadOnly){
         continue;
     }
 
+    // List Görünümü
+    let restValueForDisplay = ex.rest;
+    if(!isNaN(parseFloat(ex.rest))) restValueForDisplay = ex.rest + " sn";
+
     card.innerHTML = `
       <div class="row-top">
         <div class="ex-name">${ex.name}</div>
@@ -797,7 +808,7 @@ function renderDaySection(day, main, isReadOnly){
       </div>
       <div class="meta">
           <div class="meta-item">Set: <b>${ex.sr || (ex.sets+'x'+ex.reps)}</b></div>
-          <div class="meta-item">Dinlenme: <b>${ex.rest}</b></div>
+          <div class="meta-item">Dinlenme: <b>${restValueForDisplay}</b></div>
           <div class="meta-item" style="color:var(--accent);">Süre: <b>~${exMin} dk</b></div>
       </div>
       <div class="stepper">
@@ -894,7 +905,7 @@ function renderDaySection(day, main, isReadOnly){
   const saveBtn = document.createElement('button'); saveBtn.className = 'save-btn'; saveBtn.textContent = `Aşağıdan Elle Bitir & Kaydet`;
   const toast = document.createElement('div'); saveBtn.style.marginBottom = '4px'; toast.className = 'save-toast';
   
-  // YENİ ELLE KAYDETME SİSTEMİ (BOŞLARI SİL, YAPILANLARI AL)
+  // YENİ ELLE KAYDETME SİSTEMİ
   saveBtn.onclick = async () => {
     if(saveBtn.disabled) return;
     saveBtn.disabled = true;
@@ -984,6 +995,9 @@ function buildWMCarousel() {
         card.className = 'wm-card';
         card.id = 'wm-card-' + i;
 
+        let restValueForDisplay = ex.rest;
+        if(!isNaN(parseFloat(ex.rest))) restValueForDisplay = ex.rest + " sn";
+
         card.innerHTML = `
           <div class="row-top">
             <div class="ex-name" style="font-size:20px;">${ex.name}</div>
@@ -991,7 +1005,7 @@ function buildWMCarousel() {
           </div>
           <div class="meta" style="margin-top:12px; margin-bottom:20px;">
               <div class="meta-item" style="font-size:14px;">Set: <b style="font-size:16px;">${ex.sr}</b></div>
-              <div class="meta-item" style="font-size:14px;">Dinlenme: <b>${ex.rest}</b></div>
+              <div class="meta-item" style="font-size:14px;">Dinlenme: <b>${restValueForDisplay}</b></div>
           </div>
           <div class="stepper" style="padding:8px; border-radius:16px;">
             <button class="minus" style="width:60px; height:50px;">−</button>
@@ -1044,11 +1058,12 @@ function buildWMCarousel() {
         };
         renderWMSetUI();
 
+        // TIKLANDIĞI ANDA BARI DOLDURAN SİSTEM
         setBtn.onclick = async () => {
             if(ex.setsDone >= ex.setsTotal) return; 
             ex.setsDone++;
             renderWMSetUI();
-            updateWMProgress(); 
+            updateWMProgress(); // Anında yüzdelik güncellenir
             await setSetsDone(wmCurrentDayObj.id, ex.originalIdx, ex.setsDone);
 
             if(ex.setsDone >= ex.setsTotal) {
@@ -1070,6 +1085,7 @@ function buildWMCarousel() {
             await setSetsDone(wmCurrentDayObj.id, ex.originalIdx, 0);
         };
         
+        // HAREKETİ ATLA İŞLEVİ
         card.querySelector('.wm-skip-btn').onclick = () => {
             if(wmActiveIndex < wmState.length - 1) {
                 wmActiveIndex++;
@@ -1089,6 +1105,7 @@ function buildWMCarousel() {
         };
         renderWMTimer();
 
+        // ARKA PLANDA DONMAYAN DİNLENME SAYACI
         timerStartBtn.onclick = () => {
             if(!ex.timerRunning){ 
                 if(ex.timeLeft <= 0) ex.timeLeft = ex.restSeconds; 
@@ -1144,15 +1161,12 @@ function updateWMCarouselClasses() {
     });
 }
 
-// ZAMAN BAZLI KUSURSUZ İLERLEME YÜZDESİ
+// ZAMAN BAZLI AKILLI İLERLEME YÜZDESİ
 function updateWMProgress() {
     let totalSec = 0;
     let doneSec = 0;
     wmState.forEach(ex => {
-        // Her hareketin saniyesi saniyesine total ağırlığı hesaplanır
         let exTotal = (ex.setsTotal * 40) + (Math.max(0, ex.setsTotal - 1) * ex.restSeconds);
-        // Yapılan set, o hareketin toplam süresinin yüzde kaçıysa o kadar saniye eklenir
-        // Bu sayede çubuk 1 set bitince "dinlenmeyi de bitirmiş gibi" fırlamaz, mantıklı ilerler.
         let exDone = (ex.setsDone / ex.setsTotal) * exTotal;
         
         totalSec += exTotal;
@@ -1168,12 +1182,18 @@ function updateWMProgress() {
 
 async function finishWorkoutMode() {
     const btn = document.getElementById('wm-end-btn');
-    if(btn.disabled) return; // Çift tıklama (Spam) koruması
+    if(btn.disabled) return; 
     btn.disabled = true;
     let origText = btn.textContent;
     btn.textContent = "Kaydediliyor...";
 
-    if(wmGlobalTimerInterval) clearInterval(wmGlobalTimerInterval);
+    let finalDuration = "00:00";
+    if(wmGlobalTimerInterval) {
+        clearInterval(wmGlobalTimerInterval);
+        const s = Math.floor((Date.now() - wmGlobalStartTime) / 1000);
+        finalDuration = fmtTime(s);
+    }
+    
     wmState.forEach(ex => { if(ex.timerInterval) clearInterval(ex.timerInterval); });
 
     const doneExercises = wmState.map(s => ({
@@ -1185,7 +1205,12 @@ async function finishWorkoutMode() {
 
     if(doneExercises.length > 0){ 
         const now = new Date();
-        const entry = { dayLabel: wmCurrentDayObj.title || wmCurrentDayObj.name, dateStr: now.toLocaleDateString('tr-TR'), exercises: doneExercises };
+        const entry = { 
+            dayLabel: wmCurrentDayObj.title || wmCurrentDayObj.name, 
+            dateStr: now.toLocaleDateString('tr-TR'), 
+            exercises: doneExercises,
+            duration: finalDuration // Toplam süreyi kaydet
+        };
         await saveHistoryEntryToCloud(entry);
         
         for(let ex of wmState){ await setSetsDone(wmCurrentDayObj.id, ex.originalIdx, 0); }
@@ -1203,6 +1228,7 @@ async function finishWorkoutMode() {
     
     renderTabs(); renderView();
 }
+
 
 // --- TOPLULUK BÖLÜMÜ ---
 async function renderCommunity(){
@@ -1467,6 +1493,10 @@ async function renderBuilder(){
 
       day.exercises.forEach((ex, exIdx) => {
         const row = document.createElement('div'); row.className = 'added-ex-row';
+        
+        let safeRest = ex.rest || '90';
+        if(typeof safeRest === 'string') safeRest = safeRest.replace(' sn', '').replace('sn', '').trim();
+        
         row.innerHTML = `
           <div class="added-ex-top">
               <div><div class="added-ex-name">${ex.name}</div><div class="added-ex-muscle">${MUSCLE_LABELS[ex.muscleKey] || ''} <span class="ex-time-badge" style="color:var(--accent); font-weight:700; margin-left:8px;">Süre: ~${calcExTime(ex.sets, ex.rest)} dk</span></div></div>
@@ -1475,7 +1505,7 @@ async function renderBuilder(){
           <div class="added-ex-controls">
             <label class="muscle-sets-mini">Set <input type="number" min="1" max="10" class="mini-input sets-input" value="${ex.sets}"/></label>
             <label class="muscle-sets-mini">Tekrar <input type="text" class="mini-input reps-input" value="${ex.reps}"/></label>
-            <label class="muscle-sets-mini">Dinlenme <input type="text" class="mini-input rest-input" value="${ex.rest || '90 sn'}"/></label>
+            <label class="muscle-sets-mini">Dinlenme(sn) <input type="number" class="mini-input rest-input" value="${safeRest}"/></label>
             <button class="picker-ex-preview">Görsel</button>
           </div>
         `;
@@ -1483,7 +1513,7 @@ async function renderBuilder(){
         
         row.querySelector('.sets-input').oninput = async (e) => { ex.sets = parseFloat(e.target.value) || 0; await saveCustomProgram(prog); renderAnalysis(prog, analysisContainer); updateTimesUI(); };
         row.querySelector('.reps-input').oninput = async (e) => { ex.reps = e.target.value; await saveCustomProgram(prog); };
-        row.querySelector('.rest-input').oninput = async (e) => { ex.rest = e.target.value; await saveCustomProgram(prog); updateTimesUI(); };
+        row.querySelector('.rest-input').oninput = async (e) => { ex.rest = e.target.value ? e.target.value + ' sn' : '90 sn'; await saveCustomProgram(prog); updateTimesUI(); };
         
         row.querySelector('.ex-remove').onclick = async () => { day.exercises.splice(exIdx, 1); await saveCustomProgram(prog); renderBuilder(); };
         card.appendChild(row);
@@ -1516,7 +1546,7 @@ async function renderBuilder(){
             item.innerHTML = `<span>${dbEx.name}</span><div style="display:flex; gap:10px; align-items:center;"><button class="picker-ex-preview">Görsel</button><span class="picker-ex-reps">${dbEx.reps}</span></div>`;
             item.querySelector('.picker-ex-preview').addEventListener('click', (e) => { e.stopPropagation(); openImg(dbEx.name); });
             item.addEventListener('click', async () => {
-              day.exercises.push({ name: dbEx.name, muscleKey: muscleKey, sets: 3, reps: dbEx.reps, rest: dbEx.rest });
+              day.exercises.push({ name: dbEx.name, muscleKey: muscleKey, sets: 3, reps: dbEx.reps, rest: dbEx.rest || '90 sn' });
               await saveCustomProgram(prog);
               renderBuilder();
             });

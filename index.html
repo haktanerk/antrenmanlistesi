@@ -312,7 +312,6 @@
       <input type="email" id="login-email" class="auth-input" placeholder="E-posta Adresiniz" />
       <input type="password" id="login-password" class="auth-input" placeholder="Şifreniz" />
       
-      <!-- YENİ EKLENEN BENİ HATIRLA VE ŞİFREMİ UNUTTUM KISMI -->
       <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:14px; font-size:13px; color:var(--text-dim); padding: 0 4px;">
           <label style="display:flex; align-items:center; gap:6px; cursor:pointer;">
               <input type="checkbox" id="remember-me" style="margin:0; width:16px; height:16px; accent-color:var(--accent);" /> Beni Hatırla
@@ -332,6 +331,9 @@
     </div>
 
     <div id="auth-msg"></div>
+    
+    <!-- YENİ: İŞLEM SONRASI GİRİŞ EKRANINA DÖN BUTONU -->
+    <button id="back-to-login-btn" class="auth-btn-primary" style="display:none; margin-top:14px; background:var(--text);" onclick="resetAuthUI()">← Giriş Ekranına Dön</button>
   </div>
 </div>
 
@@ -405,6 +407,7 @@ function showMsg(text, isError = false) {
 
 function switchAuth(mode) {
   authMsg.textContent = '';
+  document.getElementById('back-to-login-btn').style.display = 'none';
   if(mode === 'login') {
     document.getElementById('tab-login').classList.add('active');
     document.getElementById('tab-signup').classList.remove('active');
@@ -418,7 +421,12 @@ function switchAuth(mode) {
   }
 }
 
-// YENİ EKLENEN BENİ HATIRLA ÇAĞRISI
+// Yeni: Ekranı temizleyip ana girişe atan fonksiyon
+function resetAuthUI() {
+    document.getElementById('back-to-login-btn').style.display = 'none';
+    switchAuth('login');
+}
+
 document.addEventListener('DOMContentLoaded', () => {
     const savedEmail = localStorage.getItem('rememberedEmail');
     if(savedEmail) {
@@ -442,10 +450,11 @@ async function signUp() {
   if (error) { 
     showMsg('Kayıt Hatası: ' + error.message, true); 
   } else {
-    showMsg('Kayıt başarılı! Otomatik giriş yapılıyor...');
+    showMsg('Kayıt başarılı! Lütfen gelen onay mailine tıklayın (Spam kutusuna düşebilir).', false);
+    document.getElementById('signup-form').style.display = 'none';
+    document.getElementById('back-to-login-btn').style.display = 'block'; // Girişe dön butonu görünür
     if(data.user) {
       await supabaseClient.from('profiles').upsert([{ id: data.user.id, username: username, email: email }]);
-      await supabaseClient.auth.signInWithPassword({ email: email, password: password });
     }
   }
 }
@@ -457,7 +466,6 @@ async function signIn() {
   
   if (!email || !password) return showMsg('Lütfen e-posta ve şifrenizi girin.', true);
 
-  // Beni Hatırla Mantığı
   if (remember) {
       localStorage.setItem('rememberedEmail', email);
   } else {
@@ -470,7 +478,6 @@ async function signIn() {
   if (error) showMsg('Hatalı e-posta veya şifre.', true);
 }
 
-// YENİ EKLENEN ŞİFRE SIFIRLAMA (FORGOT PASSWORD) MANTIĞI
 async function resetPassword() {
     const email = document.getElementById('login-email').value.trim();
     if (!email) {
@@ -486,14 +493,15 @@ async function resetPassword() {
     if (error) {
         showMsg('Hata: ' + error.message, true);
     } else {
-        showMsg('Şifre sıfırlama bağlantısı e-posta adresine gönderildi!', false);
+        showMsg('Şifre sıfırlama bağlantısı gönderildi! Lütfen e-postanızı kontrol edin.', false);
+        document.getElementById('login-form').style.display = 'none';
+        document.getElementById('back-to-login-btn').style.display = 'block'; // Girişe dön butonu görünür
     }
 }
 
 async function signOut() { 
   await supabaseClient.auth.signOut(); 
   
-  // ÇIKIŞ YAPINCA EKRANI TEMİZLEME (YENİ)
   document.getElementById('login-password').value = '';
   if (!document.getElementById('remember-me').checked) {
       document.getElementById('login-email').value = '';
@@ -503,6 +511,7 @@ async function signOut() {
   document.getElementById('signup-password').value = '';
   document.getElementById('signup-password-confirm').value = '';
   authMsg.textContent = ''; 
+  document.getElementById('back-to-login-btn').style.display = 'none';
 }
 
 let hasInitialized = false;

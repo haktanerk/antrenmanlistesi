@@ -210,7 +210,7 @@
   .picker-ex-preview:hover { border-color:var(--accent); color:var(--accent); background:var(--surface);}
   .picker-close{ display:block; width:100%; text-align:center; padding:16px; font-size:13px; font-weight:700; color:var(--text); background:var(--surface-2); border:none; border-top:1px solid var(--line); cursor:pointer; text-transform:uppercase; letter-spacing:0.5px;}
 
-  /* YENİ: MOBİL İÇİN DİKEY (ALT ALTA) HİZALANMIŞ BUTONLAR */
+  /* DİKEY (ALT ALTA) HİZALANMIŞ BUTONLAR */
   .save-name-row{ display:flex; flex-direction:column; gap:12px; margin-top:28px; padding-top:24px; border-top:2px solid var(--line);}
   .save-name-input{ width:100%; padding:14px; border:1px solid var(--line); border-radius:14px; font-family:'Inter'; font-size:15px; font-weight:500; background:var(--surface); color:var(--text); outline:none;}
   .save-name-input:focus { border-color:var(--accent); box-shadow:0 0 0 3px rgba(13, 148, 136, 0.15);}
@@ -330,9 +330,15 @@
       <button class="auth-btn-primary" onclick="signUp()">Hesap Oluştur</button>
     </div>
 
+    <!-- YENİ: ŞİFRE SIFIRLAMA FORMU (SADECE LİNKE TIKLANINCA GÖZÜKÜR) -->
+    <div id="update-password-form" style="display:none;">
+      <div style="font-size:14px; margin-bottom:12px; font-weight:600; text-align:center; color:var(--accent);">Lütfen yeni şifrenizi belirleyin.</div>
+      <input type="password" id="new-password" class="auth-input" placeholder="Yeni Şifre (En az 6 karakter)" />
+      <button class="auth-btn-primary" onclick="updatePassword()">Şifreyi Güncelle</button>
+    </div>
+
     <div id="auth-msg"></div>
     
-    <!-- YENİ: İŞLEM SONRASI GİRİŞ EKRANINA DÖN BUTONU -->
     <button id="back-to-login-btn" class="auth-btn-primary" style="display:none; margin-top:14px; background:var(--text);" onclick="resetAuthUI()">← Giriş Ekranına Dön</button>
   </div>
 </div>
@@ -421,7 +427,6 @@ function switchAuth(mode) {
   }
 }
 
-// Yeni: Ekranı temizleyip ana girişe atan fonksiyon
 function resetAuthUI() {
     document.getElementById('back-to-login-btn').style.display = 'none';
     switchAuth('login');
@@ -450,11 +455,10 @@ async function signUp() {
   if (error) { 
     showMsg('Kayıt Hatası: ' + error.message, true); 
   } else {
-    showMsg('Kayıt başarılı! Lütfen gelen onay mailine tıklayın (Spam kutusuna düşebilir).', false);
-    document.getElementById('signup-form').style.display = 'none';
-    document.getElementById('back-to-login-btn').style.display = 'block'; // Girişe dön butonu görünür
+    showMsg('Kayıt başarılı! Otomatik giriş yapılıyor...', false);
     if(data.user) {
       await supabaseClient.from('profiles').upsert([{ id: data.user.id, username: username, email: email }]);
+      await supabaseClient.auth.signInWithPassword({ email: email, password: password });
     }
   }
 }
@@ -495,8 +499,25 @@ async function resetPassword() {
     } else {
         showMsg('Şifre sıfırlama bağlantısı gönderildi! Lütfen e-postanızı kontrol edin.', false);
         document.getElementById('login-form').style.display = 'none';
-        document.getElementById('back-to-login-btn').style.display = 'block'; // Girişe dön butonu görünür
+        document.getElementById('back-to-login-btn').style.display = 'block'; 
     }
+}
+
+// YENİ EKLENEN ŞİFREYİ GÜNCELLEME İŞLEMİ
+async function updatePassword() {
+  const newPassword = document.getElementById('new-password').value;
+  if (!newPassword || newPassword.length < 6) return showMsg('Şifre en az 6 karakter olmalıdır.', true);
+  
+  authMsg.textContent = 'Şifreniz güncelleniyor...';
+  const { error } = await supabaseClient.auth.updateUser({ password: newPassword });
+  
+  if (error) {
+    showMsg('Hata: ' + error.message, true);
+  } else {
+    showMsg('Şifreniz başarıyla güncellendi! Yönlendiriliyorsunuz...', false);
+    document.getElementById('update-password-form').style.display = 'none';
+    document.querySelector('.auth-tabs-container').style.display = 'flex';
+  }
 }
 
 async function signOut() { 
@@ -517,6 +538,19 @@ async function signOut() {
 let hasInitialized = false;
 
 supabaseClient.auth.onAuthStateChange(async (event, session) => {
+  // ŞİFRE SIFIRLAMA LİNKİNE TIKLANINCA EKRANI YAKALA
+  if (event === 'PASSWORD_RECOVERY') {
+      authScreen.style.display = 'block';
+      appScreen.style.display = 'none';
+      document.querySelector('.auth-tabs-container').style.display = 'none';
+      document.getElementById('login-form').style.display = 'none';
+      document.getElementById('signup-form').style.display = 'none';
+      document.getElementById('back-to-login-btn').style.display = 'none';
+      document.getElementById('update-password-form').style.display = 'block';
+      showMsg('Şifre sıfırlama modundasınız.', false);
+      return;
+  }
+
   if (session && session.user) {
     currentUser = session.user;
 

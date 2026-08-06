@@ -255,7 +255,7 @@
   .wm-end-btn:active { transform:scale(0.95);}
   .wm-end-btn:disabled { opacity:0.6; cursor:not-allowed;}
 
-  /* GPU İVMESİ VE EŞİT MESAFELİ ŞERİT ALTYAPISI (OPTİMİZE) */
+  /* YENİ GPU/BATARYA OPTİMİZASYONLU ŞERİT MANTIĞI */
   .wm-carousel { 
       flex:1; 
       position:relative; 
@@ -268,43 +268,42 @@
       display: flex;
       flex-direction: column;
       align-items: center;
-      gap: 40px; /* KARTLAR ARASI SABİT VE EŞİT MESAFE */
-      transition: transform 0.5s cubic-bezier(0.22, 1, 0.36, 1); /* DAHA PÜRÜZSÜZ ANİMASYON */
+      gap: 40px; 
+      /* Pili koruyan ve 60fps sağlayan GPU ivmesi */
+      transition: transform 0.5s cubic-bezier(0.22, 1, 0.36, 1);
+      will-change: transform;
+      transform: translate3d(0, 0, 0); 
       padding: 50vh 0; 
-      will-change: transform; /* GPU HIZLANDIRMASI */
   }
   
   .wm-card {
       width: 92%; max-width: 450px;
       background: var(--surface); border-radius:20px; padding:24px;
-      box-shadow: 0 2px 10px rgba(0,0,0,0.06); /* HALE OLUŞUMU ENGELLENDİ */
+      box-shadow: 0 2px 10px rgba(0,0,0,0.06); 
+      /* Yalnızca GPU'nun işleyeceği parametrelere izin verildi */
       transition: transform 0.4s cubic-bezier(0.22, 1, 0.36, 1); 
+      will-change: transform;
       border: 1px solid var(--line); border-left:6px solid var(--accent);
       flex-shrink: 0;
-      will-change: transform; /* GPU HIZLANDIRMASI */
   }
   
-  .wm-card.active { transform: scale(1); pointer-events:auto; opacity: 1; }
-  .wm-card.prev { transform: scale(0.92); pointer-events:none; opacity: 1; }
-  .wm-card.next { transform: scale(0.92); pointer-events:none; opacity: 1; }
+  .wm-card.active { transform: translate3d(0,0,0) scale(1); pointer-events:auto; opacity: 1; }
+  .wm-card.prev { transform: translate3d(0,0,0) scale(0.92); pointer-events:none; opacity: 1; }
+  .wm-card.next { transform: transform: translate3d(0,0,0) scale(0.92); pointer-events:none; opacity: 1; }
 
-  /* ÖNCEKİ HAREKETE DÖN BUTONU OPTİMİZASYONU (PÜRÜZSÜZ YÜKSEKLİK) */
+  /* KART BOYUNU SABİT TUTAN YENİ BUTON MANTIĞI (TAKILMALARI ÖNLER) */
   .wm-prev-btn { 
       display:flex; align-items:center; justify-content:center; width:100%; 
       background:var(--surface-2); color:var(--text-dim); border:1px dashed var(--line); border-radius:12px; 
       font-family:'Inter'; font-weight:600; font-size:12px; cursor:pointer; 
       letter-spacing:0.5px; text-transform:uppercase; 
-      
-      /* Pürüzsüz animasyon için max-height tekniği */
-      transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
-      max-height: 0; opacity: 0; padding-top: 0; padding-bottom: 0; margin-bottom: 0; border-width: 0; overflow: hidden;
+      /* Yükseklik hep sabit, kart boyu oynamaz, sadece görünmez olur */
+      height: 36px; margin-bottom: 16px; opacity: 0; pointer-events: none;
+      transition: opacity 0.3s ease;
   }
   .wm-prev-btn:hover { border-color:var(--accent); color:var(--text); background:var(--line);}
   
-  /* Buton açıldığında */
-  .wm-prev-btn.show {
-      max-height: 50px; opacity: 1; padding-top: 10px; padding-bottom: 10px; margin-bottom: 16px; border-width: 1px;
-  }
+  .wm-prev-btn.show { opacity: 1; pointer-events: auto; }
 
   .wm-skip-btn { display:flex; align-items:center; justify-content:center; width:100%; margin-top:20px; padding:12px; background:var(--surface-2); color:var(--text-dim); border:1px dashed var(--line); border-radius:12px; font-family:'Inter'; font-weight:600; font-size:13px; cursor:pointer; transition:0.2s; letter-spacing:0.5px; text-transform:uppercase; }
   .wm-skip-btn:hover { border-color:var(--accent); color:var(--text); background:var(--line);}
@@ -654,20 +653,14 @@ let wmState = [];
 let wmGlobalTimerInterval = null;
 let wmGlobalStartTime = 0;
 let wmCurrentDayObj = null;
-
 let currentImgQuery = '';
 
-document.addEventListener("visibilitychange", () => {
-    if (!document.hidden && document.getElementById('workout-mode-screen').style.display === 'flex') {
-        const s = Math.floor((Date.now() - wmGlobalStartTime) / 1000);
-        document.getElementById('wm-global-timer').textContent = fmtTime(s);
-    }
-});
-
-// YENİ: Ekran boyutu değiştiğinde şeridi anında hizala (Mobil klavye açılma vs. durumları)
+// YENİ: Performans için ResizeObserver yerine hafif debounce
+let resizeTimeout;
 window.addEventListener('resize', () => {
     if(document.getElementById('workout-mode-screen').style.display === 'flex') {
-        alignWMTrack();
+        clearTimeout(resizeTimeout);
+        resizeTimeout = setTimeout(alignWMTrack, 100);
     }
 });
 
@@ -682,7 +675,7 @@ function getCustomProgram(){
   return cloudData.custom_program;
 }
 
-// YENİ: BULUT OPTİMİZASYONU (%50 DAHA AZ SORGULAMA)
+// YENİ: Batarya optimizasyonlu (tekil işlem) UPSERT
 async function saveCloudData() {
   try {
     const payload = {
@@ -1102,10 +1095,8 @@ function renderDaySection(day, main, isReadOnly){
 }
 
 // ==========================================
-// ODAKLI ANTRENMAN MODU SİSTEMİ (RESIZEOBSERVER İLE)
+// ODAKLI ANTRENMAN MODU SİSTEMİ (BATARYA/GPU OPTİMİZASYONLU)
 // ==========================================
-
-let wmTrackObserver = null;
 
 function openWorkoutMode(dayObj) {
     wmCurrentDayObj = dayObj;
@@ -1310,16 +1301,10 @@ function buildWMCarousel() {
         container.appendChild(card);
     });
 
-    if(wmTrackObserver) wmTrackObserver.disconnect();
-    wmTrackObserver = new ResizeObserver(() => {
-        requestAnimationFrame(alignWMTrack);
-    });
-    wmTrackObserver.observe(container);
-
     updateWMCarouselClasses();
 }
 
-// YENİ: Anında Merkezleme Formülü
+// GPU İVMESİYLE ÇALIŞAN (BATARYA DOSTU) MERKEZLEME FORMÜLÜ
 function alignWMTrack() {
     const track = document.getElementById('wm-track');
     const container = document.getElementById('wm-carousel-container');
@@ -1329,7 +1314,9 @@ function alignWMTrack() {
         const containerCenter = container.offsetHeight / 2;
         const cardCenter = activeCard.offsetTop + (activeCard.offsetHeight / 2);
         const shift = containerCenter - cardCenter;
-        track.style.transform = `translateY(${shift}px)`;
+        
+        // Pili koruyan ve 60fps donanım ivmesi sağlayan 3D translate
+        track.style.transform = `translate3d(0, ${shift}px, 0)`;
     }
 }
 
@@ -1420,7 +1407,6 @@ async function finishWorkoutMode() {
         for(let ex of wmState){ await setSetsDone(wmCurrentDayObj.id, ex.originalIdx, 0); }
     }
 
-    if(wmTrackObserver) wmTrackObserver.disconnect();
     document.getElementById('workout-mode-screen').style.display = 'none';
     document.getElementById('app-screen').style.display = 'block';
     

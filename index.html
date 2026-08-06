@@ -330,7 +330,7 @@
       <button class="auth-btn-primary" onclick="signUp()">Hesap Oluştur</button>
     </div>
 
-    <!-- YENİ: ŞİFRE SIFIRLAMA FORMU (SADECE LİNKE TIKLANINCA GÖZÜKÜR) -->
+    <!-- ŞİFRE SIFIRLAMA FORMU (SADECE LİNKE TIKLANINCA GÖZÜKÜR) -->
     <div id="update-password-form" style="display:none;">
       <div style="font-size:14px; margin-bottom:12px; font-weight:600; text-align:center; color:var(--accent);">Lütfen yeni şifrenizi belirleyin.</div>
       <input type="password" id="new-password" class="auth-input" placeholder="Yeni Şifre (En az 6 karakter)" />
@@ -503,7 +503,7 @@ async function resetPassword() {
     }
 }
 
-// YENİ EKLENEN ŞİFREYİ GÜNCELLEME İŞLEMİ
+// ŞİFREYİ GÜNCELLEME İŞLEMİ
 async function updatePassword() {
   const newPassword = document.getElementById('new-password').value;
   if (!newPassword || newPassword.length < 6) return showMsg('Şifre en az 6 karakter olmalıdır.', true);
@@ -514,9 +514,11 @@ async function updatePassword() {
   if (error) {
     showMsg('Hata: ' + error.message, true);
   } else {
-    showMsg('Şifreniz başarıyla güncellendi! Yönlendiriliyorsunuz...', false);
-    document.getElementById('update-password-form').style.display = 'none';
-    document.querySelector('.auth-tabs-container').style.display = 'flex';
+    showMsg('Şifreniz başarıyla güncellendi! Sayfa yenileniyor...', false);
+    setTimeout(() => {
+        // URL'i temizle ve yenile
+        window.location.href = window.location.pathname; 
+    }, 1500);
   }
 }
 
@@ -537,9 +539,13 @@ async function signOut() {
 
 let hasInitialized = false;
 
+// YENİ: URL'de 'recovery' varsa sistemi baştan kilitler.
+let isRecoveryMode = window.location.hash.includes('type=recovery') || window.location.search.includes('type=recovery');
+
 supabaseClient.auth.onAuthStateChange(async (event, session) => {
-  // ŞİFRE SIFIRLAMA LİNKİNE TIKLANINCA EKRANI YAKALA
-  if (event === 'PASSWORD_RECOVERY') {
+  // ŞİFRE SIFIRLAMA EKRANINI YAKALA VE KİLİTLE
+  if (event === 'PASSWORD_RECOVERY' || isRecoveryMode) {
+      isRecoveryMode = true; // Supabase'in uygulamaya atlamasını yasaklar
       authScreen.style.display = 'block';
       appScreen.style.display = 'none';
       document.querySelector('.auth-tabs-container').style.display = 'none';
@@ -547,11 +553,12 @@ supabaseClient.auth.onAuthStateChange(async (event, session) => {
       document.getElementById('signup-form').style.display = 'none';
       document.getElementById('back-to-login-btn').style.display = 'none';
       document.getElementById('update-password-form').style.display = 'block';
-      showMsg('Şifre sıfırlama modundasınız.', false);
+      showMsg('Lütfen yeni şifrenizi belirleyip kaydedin.', false);
       return;
   }
 
-  if (session && session.user) {
+  // EĞER SIFIRLAMA MODUNDAYSA UYGULAMAYA GİRMESİNİ ENGELLE
+  if (session && session.user && !isRecoveryMode) {
     currentUser = session.user;
 
     if (hasInitialized) return;
@@ -592,7 +599,7 @@ supabaseClient.auth.onAuthStateChange(async (event, session) => {
     }
     
     initApp();
-  } else {
+  } else if (!isRecoveryMode) {
     currentUser = null;
     hasInitialized = false;
     authScreen.style.display = 'block';

@@ -210,11 +210,12 @@
   .picker-ex-preview:hover { border-color:var(--accent); color:var(--accent); background:var(--surface);}
   .picker-close{ display:block; width:100%; text-align:center; padding:16px; font-size:13px; font-weight:700; color:var(--text); background:var(--surface-2); border:none; border-top:1px solid var(--line); cursor:pointer; text-transform:uppercase; letter-spacing:0.5px;}
 
+  /* YENİ: MOBİL İÇİN DİKEY (ALT ALTA) HİZALANMIŞ BUTONLAR */
   .save-name-row{ display:flex; flex-direction:column; gap:12px; margin-top:28px; padding-top:24px; border-top:2px solid var(--line);}
   .save-name-input{ width:100%; padding:14px; border:1px solid var(--line); border-radius:14px; font-family:'Inter'; font-size:15px; font-weight:500; background:var(--surface); color:var(--text); outline:none;}
   .save-name-input:focus { border-color:var(--accent); box-shadow:0 0 0 3px rgba(13, 148, 136, 0.15);}
   
-  .editor-btn-container { display:flex; flex-direction:column; gap:10px; width:100%; }
+  .editor-btn-container { display:flex; flex-direction:column; gap:10px; width:100%; } 
   
   .save-name-btn{ width:100%; background:var(--accent); color:var(--btn-text); border:none; border-radius:14px; padding:14px 16px; font-weight:700; font-family:'Barlow Condensed', sans-serif; font-size:17px; letter-spacing:0.5px; text-transform:uppercase; cursor:pointer; text-align:center; transition:0.2s; box-shadow:0 4px 12px rgba(13, 148, 136, 0.2);}
   .save-name-btn:active { transform:scale(0.96); }
@@ -310,6 +311,15 @@
     <div id="login-form">
       <input type="email" id="login-email" class="auth-input" placeholder="E-posta Adresiniz" />
       <input type="password" id="login-password" class="auth-input" placeholder="Şifreniz" />
+      
+      <!-- YENİ EKLENEN BENİ HATIRLA VE ŞİFREMİ UNUTTUM KISMI -->
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:14px; font-size:13px; color:var(--text-dim); padding: 0 4px;">
+          <label style="display:flex; align-items:center; gap:6px; cursor:pointer;">
+              <input type="checkbox" id="remember-me" style="margin:0; width:16px; height:16px; accent-color:var(--accent);" /> Beni Hatırla
+          </label>
+          <span style="color:var(--accent); cursor:pointer; font-weight:600; text-decoration:underline;" onclick="resetPassword()">Şifremi Unuttum</span>
+      </div>
+
       <button class="auth-btn-primary" onclick="signIn()">Giriş Yap</button>
     </div>
 
@@ -408,6 +418,15 @@ function switchAuth(mode) {
   }
 }
 
+// YENİ EKLENEN BENİ HATIRLA ÇAĞRISI
+document.addEventListener('DOMContentLoaded', () => {
+    const savedEmail = localStorage.getItem('rememberedEmail');
+    if(savedEmail) {
+        document.getElementById('login-email').value = savedEmail;
+        document.getElementById('remember-me').checked = true;
+    }
+});
+
 async function signUp() {
   const username = document.getElementById('signup-username').value.trim();
   const email = document.getElementById('signup-email').value.trim();
@@ -434,8 +453,16 @@ async function signUp() {
 async function signIn() {
   const email = document.getElementById('login-email').value.trim();
   const password = document.getElementById('login-password').value;
+  const remember = document.getElementById('remember-me').checked;
   
   if (!email || !password) return showMsg('Lütfen e-posta ve şifrenizi girin.', true);
+
+  // Beni Hatırla Mantığı
+  if (remember) {
+      localStorage.setItem('rememberedEmail', email);
+  } else {
+      localStorage.removeItem('rememberedEmail');
+  }
 
   authMsg.textContent = 'Giriş yapılıyor...';
 
@@ -443,7 +470,40 @@ async function signIn() {
   if (error) showMsg('Hatalı e-posta veya şifre.', true);
 }
 
-async function signOut() { await supabaseClient.auth.signOut(); }
+// YENİ EKLENEN ŞİFRE SIFIRLAMA (FORGOT PASSWORD) MANTIĞI
+async function resetPassword() {
+    const email = document.getElementById('login-email').value.trim();
+    if (!email) {
+        return showMsg('Lütfen şifresini unuttuğunuz e-posta adresini yukarıya yazın.', true);
+    }
+    
+    authMsg.textContent = 'Sıfırlama bağlantısı gönderiliyor...';
+    
+    const { data, error } = await supabaseClient.auth.resetPasswordForEmail(email, {
+      redirectTo: window.location.href, 
+    });
+
+    if (error) {
+        showMsg('Hata: ' + error.message, true);
+    } else {
+        showMsg('Şifre sıfırlama bağlantısı e-posta adresine gönderildi!', false);
+    }
+}
+
+async function signOut() { 
+  await supabaseClient.auth.signOut(); 
+  
+  // ÇIKIŞ YAPINCA EKRANI TEMİZLEME (YENİ)
+  document.getElementById('login-password').value = '';
+  if (!document.getElementById('remember-me').checked) {
+      document.getElementById('login-email').value = '';
+  }
+  document.getElementById('signup-username').value = '';
+  document.getElementById('signup-email').value = '';
+  document.getElementById('signup-password').value = '';
+  document.getElementById('signup-password-confirm').value = '';
+  authMsg.textContent = ''; 
+}
 
 let hasInitialized = false;
 
@@ -589,7 +649,6 @@ function renderView(){
   else { renderCommunity(); }
 }
 
-// Zaman Algoritmaları
 function parseSetsTotal(sr){ 
     if(!sr) return 3;
     if(typeof sr === 'number') return sr;
@@ -629,11 +688,9 @@ const STEP = 2.5;
 function fmt(w){ return (Number.isInteger(w) ? w : w.toFixed(1)); }
 function cpUid(){ return 'id' + Math.random().toString(36).slice(2,9) + Date.now().toString(36); }
 
-// --- YENİ GÖRSEL PENCERESİ (MODAL) ---
 function openImageModal(name) {
     currentImgQuery = name;
     document.getElementById('ex-modal-title').textContent = name;
-    // Senin harika tespitin: gl=us ve hl=en parametrelerini kaldırdık!
     document.getElementById('ex-modal-iframe').src = "https://www.google.com/search?igu=1&tbm=isch&q=" + encodeURIComponent(name + " exercise form anatomy");
     document.getElementById('ex-modal').classList.add('active');
 }

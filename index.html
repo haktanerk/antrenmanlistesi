@@ -255,7 +255,7 @@
   .wm-end-btn:active { transform:scale(0.95);}
   .wm-end-btn:disabled { opacity:0.6; cursor:not-allowed;}
 
-  /* YENİ: KAYAN ŞERİT (TRACK) MANTIĞI */
+  /* GPU İVMESİ VE EŞİT MESAFELİ ŞERİT ALTYAPISI (OPTİMİZE) */
   .wm-carousel { 
       flex:1; 
       position:relative; 
@@ -268,39 +268,46 @@
       display: flex;
       flex-direction: column;
       align-items: center;
-      gap: 32px; /* KARTLAR ARASI SABİT VE EŞİT MESAFE */
-      transition: transform 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94);
-      padding: 50vh 0; /* Şeridin tavan ve tabana çarpmadan sonsuz hissi vermesi için destek */
+      gap: 40px; /* KARTLAR ARASI SABİT VE EŞİT MESAFE */
+      transition: transform 0.5s cubic-bezier(0.22, 1, 0.36, 1); /* DAHA PÜRÜZSÜZ ANİMASYON */
+      padding: 50vh 0; 
+      will-change: transform; /* GPU HIZLANDIRMASI */
   }
   
-  /* YENİ: SABİT KARTLAR (ARTIK OVERFLOW/KAYDIRMA YOK) */
   .wm-card {
       width: 92%; max-width: 450px;
       background: var(--surface); border-radius:20px; padding:24px;
-      box-shadow: 0 2px 10px rgba(0,0,0,0.06); /* GÖLGE KISILDI, HALE OLUŞUMU ENGELLENDİ */
-      transition: transform 0.4s ease; /* SADECE BOYUT GEÇİŞİ KALDI (OPASİTE %100) */
+      box-shadow: 0 2px 10px rgba(0,0,0,0.06); /* HALE OLUŞUMU ENGELLENDİ */
+      transition: transform 0.4s cubic-bezier(0.22, 1, 0.36, 1); 
       border: 1px solid var(--line); border-left:6px solid var(--accent);
-      flex-shrink: 0; /* Kartların ezilmesini önler */
+      flex-shrink: 0;
+      will-change: transform; /* GPU HIZLANDIRMASI */
   }
   
-  .wm-card.active { 
-      transform: scale(1); 
-      pointer-events:auto; 
+  .wm-card.active { transform: scale(1); pointer-events:auto; opacity: 1; }
+  .wm-card.prev { transform: scale(0.92); pointer-events:none; opacity: 1; }
+  .wm-card.next { transform: scale(0.92); pointer-events:none; opacity: 1; }
+
+  /* ÖNCEKİ HAREKETE DÖN BUTONU OPTİMİZASYONU (PÜRÜZSÜZ YÜKSEKLİK) */
+  .wm-prev-btn { 
+      display:flex; align-items:center; justify-content:center; width:100%; 
+      background:var(--surface-2); color:var(--text-dim); border:1px dashed var(--line); border-radius:12px; 
+      font-family:'Inter'; font-weight:600; font-size:12px; cursor:pointer; 
+      letter-spacing:0.5px; text-transform:uppercase; 
+      
+      /* Pürüzsüz animasyon için max-height tekniği */
+      transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+      max-height: 0; opacity: 0; padding-top: 0; padding-bottom: 0; margin-bottom: 0; border-width: 0; overflow: hidden;
   }
-  .wm-card.prev { 
-      transform: scale(0.92); 
-      pointer-events:none; 
-  }
-  .wm-card.next { 
-      transform: scale(0.92); 
-      pointer-events:none; 
+  .wm-prev-btn:hover { border-color:var(--accent); color:var(--text); background:var(--line);}
+  
+  /* Buton açıldığında */
+  .wm-prev-btn.show {
+      max-height: 50px; opacity: 1; padding-top: 10px; padding-bottom: 10px; margin-bottom: 16px; border-width: 1px;
   }
 
   .wm-skip-btn { display:flex; align-items:center; justify-content:center; width:100%; margin-top:20px; padding:12px; background:var(--surface-2); color:var(--text-dim); border:1px dashed var(--line); border-radius:12px; font-family:'Inter'; font-weight:600; font-size:13px; cursor:pointer; transition:0.2s; letter-spacing:0.5px; text-transform:uppercase; }
   .wm-skip-btn:hover { border-color:var(--accent); color:var(--text); background:var(--line);}
-  
-  .wm-prev-btn { display:flex; align-items:center; justify-content:center; width:100%; margin-bottom:16px; padding:10px; background:var(--surface-2); color:var(--text-dim); border:1px dashed var(--line); border-radius:12px; font-family:'Inter'; font-weight:600; font-size:12px; cursor:pointer; transition:0.2s; letter-spacing:0.5px; text-transform:uppercase; }
-  .wm-prev-btn:hover { border-color:var(--accent); color:var(--text); background:var(--line);}
 
   .wm-progress-container { padding: 24px 20px; background: var(--surface); border-top:1px solid var(--line); z-index:10;}
   .wm-progress-bar-bg { width:100%; height:12px; background:var(--surface-2); border-radius:6px; overflow:hidden; border:1px solid var(--line);}
@@ -358,6 +365,7 @@
       <button class="auth-btn-primary" onclick="signUp()">Hesap Oluştur</button>
     </div>
 
+    <!-- ŞİFRE SIFIRLAMA FORMU -->
     <div id="update-password-form" style="display:none;">
       <div style="font-size:14px; margin-bottom:12px; font-weight:600; text-align:center; color:var(--accent);">Lütfen yeni şifrenizi belirleyin.</div>
       <input type="password" id="new-password" class="auth-input" placeholder="Yeni Şifre (En az 6 karakter)" />
@@ -394,7 +402,7 @@
         <button class="wm-end-btn" id="wm-end-btn" onclick="finishWorkoutMode()">Bitir & Kaydet</button>
     </div>
     <div class="wm-carousel" id="wm-carousel-container">
-        <!-- YENİ: KARTLARIN EŞİT MESAFEDE DİZİLDİĞİ ŞERİT -->
+        <!-- KARTLARIN EŞİT MESAFEDE DİZİLDİĞİ ŞERİT -->
         <div class="wm-track" id="wm-track"></div>
     </div>
     <div class="wm-progress-container">
@@ -403,6 +411,7 @@
     </div>
 </div>
 
+<!-- GÖRSEL ARAMA PENCERESİ (MODAL) -->
 <div id="ex-modal" class="ex-modal">
     <div class="ex-modal-content">
         <div class="ex-modal-header">
@@ -419,6 +428,9 @@
 </div>
 
 <script>
+// ==========================================
+// SUPABASE BAĞLANTISI
+// ==========================================
 const SUPABASE_URL = 'https://luhjxfpnhszoptusadwl.supabase.co';
 const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imx1aGp4ZnBuaHN6b3B0dXNhZHdsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODU4MTA1NDksImV4cCI6MjEwMTM4NjU0OX0.bbZky4piJuYWDORymhZi-t7C4aDBbqDHbOCMLq7TAag';
 
@@ -564,7 +576,6 @@ async function signOut() {
 }
 
 let hasInitialized = false;
-
 let isRecoveryMode = window.location.hash.includes('type=recovery') || window.location.search.includes('type=recovery');
 
 supabaseClient.auth.onAuthStateChange(async (event, session) => {
@@ -630,6 +641,10 @@ supabaseClient.auth.onAuthStateChange(async (event, session) => {
   }
 });
 
+// ==========================================
+// ANA UYGULAMA MANTIĞI VE UI YÖNETİMİ
+// ==========================================
+
 let currentSubDay = 0; 
 let communityListCache = []; 
 let viewingCommunityProgram = null; 
@@ -649,9 +664,10 @@ document.addEventListener("visibilitychange", () => {
     }
 });
 
+// YENİ: Ekran boyutu değiştiğinde şeridi anında hizala (Mobil klavye açılma vs. durumları)
 window.addEventListener('resize', () => {
     if(document.getElementById('workout-mode-screen').style.display === 'flex') {
-        updateWMCarouselClasses();
+        alignWMTrack();
     }
 });
 
@@ -666,6 +682,7 @@ function getCustomProgram(){
   return cloudData.custom_program;
 }
 
+// YENİ: BULUT OPTİMİZASYONU (%50 DAHA AZ SORGULAMA)
 async function saveCloudData() {
   try {
     const payload = {
@@ -674,13 +691,7 @@ async function saveCloudData() {
       saved_programs: cloudData.saved_programs,
       session_state: cloudData.session_state
     };
-    const { data: existing } = await supabaseClient.from('user_data').select('user_id').eq('user_id', currentUser.id);
-    
-    if (existing && existing.length > 0) {
-      await supabaseClient.from('user_data').update(payload).eq('user_id', currentUser.id);
-    } else {
-      await supabaseClient.from('user_data').insert([{ user_id: currentUser.id, ...payload }]);
-    }
+    await supabaseClient.from('user_data').upsert([{ user_id: currentUser.id, ...payload }]);
   } catch (err) { console.error('Cloud güncelleme hatası:', err); }
 }
 
@@ -927,7 +938,6 @@ function renderDaySection(day, main, isReadOnly){
     const weight = getWeight(day.id, idx, ex.start || 0);
     const exMin = calcExTime(ex.sets || ex.sr, ex.rest);
 
-    // KÖKÜNDEN DÜZELTİLEN YER: SN SN HATASI FİLTRESİ
     let restValueForDisplay = String(ex.rest).toLowerCase().includes('sn') ? ex.rest : ex.rest + ' sn';
 
     if(isReadOnly) {
@@ -1092,8 +1102,10 @@ function renderDaySection(day, main, isReadOnly){
 }
 
 // ==========================================
-// ODAKLI ANTRENMAN MODU SİSTEMİ (YENİ ŞERİT MANTIĞI)
+// ODAKLI ANTRENMAN MODU SİSTEMİ (RESIZEOBSERVER İLE)
 // ==========================================
+
+let wmTrackObserver = null;
 
 function openWorkoutMode(dayObj) {
     wmCurrentDayObj = dayObj;
@@ -1131,7 +1143,7 @@ function openWorkoutMode(dayObj) {
 }
 
 function buildWMCarousel() {
-    const container = document.getElementById('wm-track'); // Hedef şerit
+    const container = document.getElementById('wm-track');
     container.innerHTML = '';
 
     wmState.forEach((ex, i) => {
@@ -1140,12 +1152,11 @@ function buildWMCarousel() {
         card.id = 'wm-card-' + i;
 
         let restValueForDisplay = String(ex.rest).toLowerCase().includes('sn') ? ex.rest : ex.rest + ' sn';
-        
         let displaySr = ex.sr;
         if(displaySr && displaySr.includes('undefined')) displaySr = displaySr.replace('undefined', '');
 
         card.innerHTML = `
-          <button class="wm-prev-btn" style="display:none;">↑ Eksİk Kalan Öncekİ Harekete Dön</button>
+          <button class="wm-prev-btn">↑ Eksİk Kalan Öncekİ Harekete Dön</button>
           
           <div class="row-top">
             <div class="ex-name" style="font-size:20px;">${ex.name}</div>
@@ -1299,10 +1310,29 @@ function buildWMCarousel() {
         container.appendChild(card);
     });
 
+    if(wmTrackObserver) wmTrackObserver.disconnect();
+    wmTrackObserver = new ResizeObserver(() => {
+        requestAnimationFrame(alignWMTrack);
+    });
+    wmTrackObserver.observe(container);
+
     updateWMCarouselClasses();
 }
 
-// YENİ: KAYAN ŞERİT (SLIDER) POZİSYON HESAPLAYICISI
+// YENİ: Anında Merkezleme Formülü
+function alignWMTrack() {
+    const track = document.getElementById('wm-track');
+    const container = document.getElementById('wm-carousel-container');
+    const activeCard = document.getElementById('wm-card-' + wmActiveIndex);
+    
+    if(activeCard && track && container) {
+        const containerCenter = container.offsetHeight / 2;
+        const cardCenter = activeCard.offsetTop + (activeCard.offsetHeight / 2);
+        const shift = containerCenter - cardCenter;
+        track.style.transform = `translateY(${shift}px)`;
+    }
+}
+
 function updateWMCarouselClasses() {
     wmState.forEach((ex, i) => {
         const card = document.getElementById('wm-card-' + i);
@@ -1310,38 +1340,26 @@ function updateWMCarouselClasses() {
         
         card.className = 'wm-card'; 
         const prevBtn = card.querySelector('.wm-prev-btn');
-        if(prevBtn) prevBtn.style.display = 'none';
 
         if(i === wmActiveIndex) {
             card.classList.add('active');
-            if (i > 0) {
-                let prevEx = wmState[i - 1];
-                if (prevEx.setsDone < prevEx.setsTotal) {
-                    if(prevBtn) prevBtn.style.display = 'flex';
-                }
+            if (i > 0 && wmState[i - 1].setsDone < wmState[i - 1].setsTotal) {
+                if(prevBtn) prevBtn.classList.add('show');
+            } else {
+                if(prevBtn) prevBtn.classList.remove('show');
             }
         }
-        else if(i < wmActiveIndex) card.classList.add('prev');
-        else if(i > wmActiveIndex) card.classList.add('next');
+        else if(i < wmActiveIndex) {
+            card.classList.add('prev');
+            if(prevBtn) prevBtn.classList.remove('show');
+        }
+        else if(i > wmActiveIndex) {
+            card.classList.add('next');
+            if(prevBtn) prevBtn.classList.remove('show');
+        }
     });
 
-    // DOM'un yeni boyutları (butonların görünmesi vb.) hesaplamasını kısa bir süre bekleyip şeridi kaydır
-    setTimeout(() => {
-        const track = document.getElementById('wm-track');
-        const container = document.getElementById('wm-carousel-container');
-        const activeCard = document.getElementById('wm-card-' + wmActiveIndex);
-        
-        if(activeCard && track && container) {
-            // Konteynerın orta noktasını bul
-            const containerCenter = container.offsetHeight / 2;
-            // Aktif kartın şerit üzerindeki orta noktasını bul
-            const cardCenter = activeCard.offsetTop + (activeCard.offsetHeight / 2);
-            // Şeridin ne kadar kaydırılacağını matematiksel olarak tam hizala
-            const shift = containerCenter - cardCenter;
-            
-            track.style.transform = `translateY(${shift}px)`;
-        }
-    }, 30);
+    requestAnimationFrame(alignWMTrack);
 }
 
 function updateWMProgress() {
@@ -1402,6 +1420,7 @@ async function finishWorkoutMode() {
         for(let ex of wmState){ await setSetsDone(wmCurrentDayObj.id, ex.originalIdx, 0); }
     }
 
+    if(wmTrackObserver) wmTrackObserver.disconnect();
     document.getElementById('workout-mode-screen').style.display = 'none';
     document.getElementById('app-screen').style.display = 'block';
     

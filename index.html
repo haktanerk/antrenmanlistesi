@@ -81,6 +81,7 @@
   .program-controls .btn-share:active { transform:scale(0.95); }
   .program-controls .btn-del:hover { background:var(--warn); color:#fff; border-color:var(--warn);}
 
+  /* ANTRENMANI BAŞLAT BUTONU */
   .start-workout-btn { display:flex; align-items:center; justify-content:center; width:100%; margin-bottom:20px; padding:16px; background:var(--text); color:var(--surface); border:none; border-radius:16px; font-family:'Barlow Condensed', sans-serif; font-weight:700; font-size:18px; letter-spacing:1px; text-transform:uppercase; cursor:pointer; transition:0.2s; box-shadow:0 4px 12px rgba(0,0,0,0.15);}
   .start-workout-btn:active { transform:scale(0.98); }
 
@@ -267,7 +268,7 @@
       display: flex;
       flex-direction: column;
       align-items: center;
-      gap: 50px; /* Kartlar arası ferah mesafe */
+      gap: 50px; 
       /* Sadece GPU ile çalışan translate3d animasyonu */
       transition: transform 0.45s cubic-bezier(0.25, 1, 0.5, 1);
       will-change: transform;
@@ -276,7 +277,7 @@
   }
   
   .wm-card {
-      position: relative; /* Sabit yükseklik, mutlak konumlandırma iptal! */
+      position: relative; 
       width: 92%; max-width: 450px;
       background: var(--surface); border-radius:20px; padding:24px;
       box-shadow: 0 4px 15px rgba(0,0,0,0.05); 
@@ -289,10 +290,10 @@
   .wm-card.prev { transform: scale(0.9); pointer-events:none; opacity: 0.35; z-index: 1;}
   .wm-card.next { transform: scale(0.9); pointer-events:none; opacity: 0.35; z-index: 1;}
 
-  /* YIRTILMAYI (THRASHING) ÖNLEYEN MUTLAK KONUMLU BUTON */
+  /* YIRTILMAYI ÖNLEYEN MUTLAK KONUMLU BUTON */
   .wm-prev-btn { 
       position: absolute;
-      top: -38px; /* Kartın hemen üzerinde havada asılı durur, layout'u bozmaz */
+      top: -38px;
       left: 50%;
       transform: translateX(-50%);
       width: 80%; 
@@ -315,7 +316,7 @@
   .wm-progress-bar-fill { height:100%; background:var(--accent); width:0%; transition:width 0.5s cubic-bezier(0.4, 0, 0.2, 1); }
   .wm-progress-text { text-align:center; font-size:14px; font-weight:700; color:var(--text); margin-top:10px; transition:0.2s;}
 
-  /* --- UYGULAMA İÇİ GÖRSEL ARAMA PENCERESİ (MODAL) --- */
+  /* --- UYGULAMA İÇİ GÖRSEL ARAMA PENCERESİ VE KURTARMA MODAL'I --- */
   .ex-modal { position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(15,23,42,0.85); backdrop-filter:blur(6px); z-index:100000; display:none; align-items:center; justify-content:center; padding:20px; }
   .ex-modal.active { display:flex; animation: fadeIn 0.3s ease; }
   .ex-modal-content { width:100%; max-width:500px; height:85%; background:var(--bg); border-radius:20px; display:flex; flex-direction:column; overflow:hidden; box-shadow:0 10px 40px rgba(0,0,0,0.3); border:1px solid var(--line);}
@@ -366,6 +367,7 @@
       <button class="auth-btn-primary" onclick="signUp()">Hesap Oluştur</button>
     </div>
 
+    <!-- ŞİFRE SIFIRLAMA FORMU -->
     <div id="update-password-form" style="display:none;">
       <div style="font-size:14px; margin-bottom:12px; font-weight:600; text-align:center; color:var(--accent);">Lütfen yeni şifrenizi belirleyin.</div>
       <input type="password" id="new-password" class="auth-input" placeholder="Yeni Şifre (En az 6 karakter)" />
@@ -423,10 +425,19 @@
     </div>
 </div>
 
+<!-- YENİ: YARIM KALAN ANTRENMAN KURTARMA PENCERESİ -->
+<div id="recovery-modal" class="ex-modal">
+    <div class="ex-modal-content" style="height:auto; max-width:340px; text-align:center; padding:24px; background:var(--surface);">
+        <h3 style="margin:0 0 16px 0; color:var(--accent); font-family:'Barlow Condensed'; font-size:24px; text-transform:uppercase;">Yarım Kalan Antrenman</h3>
+        <p style="font-size:14px; color:var(--text); margin-bottom:24px; line-height:1.5;">Devam etmekte olan bir antrenmanınız algılandı. Kaldığınız yerden devam etmek ister misiniz?</p>
+        <div style="display:flex; gap:12px;">
+            <button class="ex-modal-btn" style="flex:1;" onclick="discardActiveWorkout()">İptal Et</button>
+            <button class="ex-modal-btn" style="flex:1; background:var(--accent); color:#fff; border:none;" onclick="resumeActiveWorkout()">Devam Et</button>
+        </div>
+    </div>
+</div>
+
 <script>
-// ==========================================
-// SUPABASE BAĞLANTISI VE AUTHENTICATION
-// ==========================================
 const SUPABASE_URL = 'https://luhjxfpnhszoptusadwl.supabase.co';
 const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imx1aGp4ZnBuaHN6b3B0dXNhZHdsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODU4MTA1NDksImV4cCI6MjEwMTM4NjU0OX0.bbZky4piJuYWDORymhZi-t7C4aDBbqDHbOCMLq7TAag';
 
@@ -601,15 +612,12 @@ supabaseClient.auth.onAuthStateChange(async (event, session) => {
         currentDay = Math.min(savedTab, getTabLabels().length - 1);
     }
     
-    initApp();
+    checkActiveWorkout(); // YENİ: Başlarken yarım kalan antrenman var mı kontrol et
   } else if (!isRecoveryMode) {
     currentUser = null; hasInitialized = false; authScreen.style.display = 'block'; appScreen.style.display = 'none';
   }
 });
 
-// ==========================================
-// ANA UYGULAMA VE BATARYA OPTİMİZASYONLARI
-// ==========================================
 let currentSubDay = 0; 
 let communityListCache = []; 
 let viewingCommunityProgram = null; 
@@ -621,7 +629,6 @@ let wmGlobalStartTime = 0;
 let wmCurrentDayObj = null;
 let currentImgQuery = '';
 
-// BATARYA DOSTU EKRAN YENİLEME
 let resizeTimeout;
 window.addEventListener('resize', () => {
     if(document.getElementById('workout-mode-screen').style.display === 'flex') {
@@ -630,13 +637,75 @@ window.addEventListener('resize', () => {
     }
 });
 
-// BATARYA DOSTU BULUT EŞİTLEME (DEBOUNCE)
 let cloudSaveTimeout = null;
 function requestCloudSave() {
     if(cloudSaveTimeout) clearTimeout(cloudSaveTimeout);
     cloudSaveTimeout = setTimeout(() => {
         saveCloudData();
-    }, 2500); // 2.5 saniye hareketsizlik sonrası 1 kere kaydeder.
+    }, 2500); 
+}
+
+// YENİ: YEREL HAFIZA KURTARMA (CRASH RECOVERY) FONKSİYONLARI
+function saveActiveWorkoutState() {
+    if (document.getElementById('workout-mode-screen').style.display === 'flex' && currentUser) {
+        const data = {
+            dayObj: wmCurrentDayObj,
+            activeIndex: wmActiveIndex,
+            // Interval id'lerini temizle ki hata vermesin
+            state: wmState.map(s => ({...s, timerInterval: null})), 
+            startTime: wmGlobalStartTime
+        };
+        localStorage.setItem('activeWorkout_' + currentUser.id, JSON.stringify(data));
+    }
+}
+
+function checkActiveWorkout() {
+    const saved = localStorage.getItem('activeWorkout_' + currentUser.id);
+    if (saved) {
+        document.getElementById('recovery-modal').classList.add('active');
+    } else {
+        initApp();
+    }
+}
+
+function resumeActiveWorkout() {
+    document.getElementById('recovery-modal').classList.remove('active');
+    const saved = JSON.parse(localStorage.getItem('activeWorkout_' + currentUser.id));
+    if(!saved) { initApp(); return; }
+    
+    wmCurrentDayObj = saved.dayObj;
+    wmActiveIndex = saved.activeIndex;
+    wmGlobalStartTime = saved.startTime;
+    wmState = saved.state;
+    
+    // Güvenlik: Aktif dinlenme sayaçlarını durdur, kullanıcı kendisi devam ettirsin.
+    wmState.forEach(ex => {
+       ex.timerRunning = false;
+       ex.timeLeft = ex.restSeconds;
+    });
+    
+    document.getElementById('app-screen').style.display = 'none';
+    document.getElementById('workout-mode-screen').style.display = 'flex';
+    
+    if(wmGlobalTimerInterval) clearInterval(wmGlobalTimerInterval);
+    wmGlobalTimerInterval = setInterval(() => {
+        const s = Math.floor((Date.now() - wmGlobalStartTime) / 1000);
+        document.getElementById('wm-global-timer').textContent = fmtTime(s);
+    }, 1000);
+
+    buildWMCarousel();
+    updateWMProgress();
+}
+
+async function discardActiveWorkout() {
+    document.getElementById('recovery-modal').classList.remove('active');
+    const saved = JSON.parse(localStorage.getItem('activeWorkout_' + currentUser.id));
+    if(saved && saved.dayObj) {
+        // İptal ediliyorsa buluttaki yarım kalan setleri de sıfırla
+        for(let ex of saved.state){ setSetsDone(saved.dayObj.id, ex.originalIdx, 0); }
+    }
+    localStorage.removeItem('activeWorkout_' + currentUser.id);
+    initApp();
 }
 
 function initApp() { renderTabs(); renderView(); }
@@ -648,7 +717,6 @@ function getCustomProgram(){
   return cloudData.custom_program;
 }
 
-// TEKİL İŞLEM YAPAN HIZLI UPSERT
 async function saveCloudData() {
   try {
     const payload = { weights: cloudData.weights, custom_program: cloudData.custom_program, saved_programs: cloudData.saved_programs, session_state: cloudData.session_state };
@@ -658,7 +726,7 @@ async function saveCloudData() {
 
 async function saveCustomProgram(prog) {
   cloudData.custom_program = prog;
-  await saveCloudData(); // Program yaratımı/kaydı anlık olmalı
+  await saveCloudData(); 
 }
 
 function getTabLabels(){
@@ -783,8 +851,11 @@ function renderProgramView(program){
   main.appendChild(headerDiv);
 
   headerDiv.querySelector('.edit-btn').onclick = async () => {
-      if(confirm("Bu programı düzenlemek için 'Oluştur' sekmesine yüklemek istiyor musunuz?")) {
-          cloudData.custom_program = JSON.parse(JSON.stringify(program));
+      if(confirm("Bu programı düzenlemek için 'Oluştur' (Editör) sekmesine yüklemek istiyor musunuz? (Mevcut taslağınızın üzerine yazılacaktır)")) {
+          const progClone = JSON.parse(JSON.stringify(program));
+          progClone.days.forEach(d => { d.name = d.name || d.title || d.shortLabel || ''; });
+          
+          cloudData.custom_program = progClone;
           cloudData.custom_program.editing_id = program.id; 
           await saveCloudData();
           currentDay = getProgramList().length + 1; currentSubDay = 0; renderTabs(); renderView();
@@ -800,7 +871,7 @@ function renderProgramView(program){
   };
 
   headerDiv.querySelector('#del-prog-btn').onclick = async () => {
-      if(!confirm(`"${program.name}" programını silmek istediğinize emin misiniz?`)) return;
+      if(!confirm(`"${program.name}" programını tamamen silmek istediğinize emin misiniz?`)) return;
       cloudData.saved_programs = cloudData.saved_programs.filter(p => p.id !== program.id);
       await saveCloudData(); currentDay = getProgramList().length + 1; currentSubDay = 0; renderTabs(); renderView();
   };
@@ -808,8 +879,7 @@ function renderProgramView(program){
   const stContainer = document.createElement('div'); stContainer.className = 'sub-tabs-container';
   program.days.forEach((day, i) => {
      const st = document.createElement('div'); st.className = 'sub-tab' + (i === currentSubDay ? ' active' : '');
-     st.textContent = day.name || `Gün ${i+1}`;
-     st.onclick = () => { currentSubDay = i; renderView(); }; stContainer.appendChild(st);
+     st.textContent = day.name || `Gün ${i+1}`; st.onclick = () => { currentSubDay = i; renderView(); }; stContainer.appendChild(st);
   });
   main.appendChild(stContainer);
   if(program.days[currentSubDay]) renderDaySection(program.days[currentSubDay], main, false);
@@ -864,9 +934,7 @@ function renderDaySection(day, main, isReadOnly){
       </div>
       <div class="stepper">
         <button class="minus">−</button>
-        <div class="weight-display">
-          <input type="number" inputmode="decimal" class="wnum-input" value="${fmt(weight)}" step="0.5" min="0"/><span class="weight-unit">kg</span>
-        </div>
+        <div class="weight-display"><input type="number" inputmode="decimal" class="wnum-input" value="${fmt(weight)}" step="0.5" min="0"/><span class="weight-unit">kg</span></div>
         <button class="plus">+</button>
       </div>
       <div class="sets-row"><button class="set-btn"><span class="dots"></span><span class="set-label"></span></button><button class="set-reset">↺</button></div>
@@ -975,6 +1043,7 @@ function openWorkoutMode(dayObj) {
 
     buildWMCarousel();
     updateWMProgress();
+    saveActiveWorkoutState(); // YENİ: Başlar başlamaz kaydet
 }
 
 function buildWMCarousel() {
@@ -1012,8 +1081,13 @@ function buildWMCarousel() {
         `;
 
         const wInput = card.querySelector('.wnum-input'); 
-        const updateWeight = (newVal) => { ex.weight = Math.max(0, parseFloat(newVal) || 0); wInput.value = fmt(ex.weight); setWeight(wmCurrentDayObj.id, ex.originalIdx, ex.weight); };
-        card.querySelector('.minus').onclick = () => updateWeight(ex.weight - STEP); card.querySelector('.plus').onclick = () => updateWeight(ex.weight + STEP);
+        const updateWeight = (newVal) => { 
+            ex.weight = Math.max(0, parseFloat(newVal) || 0); wInput.value = fmt(ex.weight); 
+            setWeight(wmCurrentDayObj.id, ex.originalIdx, ex.weight); 
+            saveActiveWorkoutState(); // YENİ: Kiloyu kaydedince lokale de yaz
+        };
+        card.querySelector('.minus').onclick = () => updateWeight(ex.weight - STEP); 
+        card.querySelector('.plus').onclick = () => updateWeight(ex.weight + STEP);
         wInput.addEventListener('change', (e) => updateWeight(e.target.value));
 
         const setBtn = card.querySelector('.set-btn'); const dotsEl = card.querySelector('.dots'); const setLabelEl = card.querySelector('.set-label');
@@ -1033,18 +1107,19 @@ function buildWMCarousel() {
             if(ex.setsDone >= ex.setsTotal) return; 
             ex.setsDone++; renderWMSetUI(); updateWMProgress();
             setSetsDone(wmCurrentDayObj.id, ex.originalIdx, ex.setsDone);
+            saveActiveWorkoutState(); // YENİ: Set işaretlenince lokale yaz
 
             if(ex.setsDone >= ex.setsTotal) {
                 setTimeout(() => {
-                    if(wmActiveIndex < wmState.length - 1) { wmActiveIndex++; updateWMCarouselClasses(); } 
+                    if(wmActiveIndex < wmState.length - 1) { wmActiveIndex++; updateWMCarouselClasses(); saveActiveWorkoutState(); } 
                     else { finishWorkoutMode(); }
                 }, 800); 
             }
         };
 
-        card.querySelector('.set-reset').onclick = () => { ex.setsDone = 0; renderWMSetUI(); updateWMProgress(); setSetsDone(wmCurrentDayObj.id, ex.originalIdx, 0); };
-        card.querySelector('.wm-prev-btn').onclick = () => { if(wmActiveIndex > 0) { wmActiveIndex--; updateWMCarouselClasses(); } };
-        card.querySelector('.wm-skip-btn').onclick = () => { if(wmActiveIndex < wmState.length - 1) { wmActiveIndex++; updateWMCarouselClasses(); } else { finishWorkoutMode(); } };
+        card.querySelector('.set-reset').onclick = () => { ex.setsDone = 0; renderWMSetUI(); updateWMProgress(); setSetsDone(wmCurrentDayObj.id, ex.originalIdx, 0); saveActiveWorkoutState(); };
+        card.querySelector('.wm-prev-btn').onclick = () => { if(wmActiveIndex > 0) { wmActiveIndex--; updateWMCarouselClasses(); saveActiveWorkoutState(); } };
+        card.querySelector('.wm-skip-btn').onclick = () => { if(wmActiveIndex < wmState.length - 1) { wmActiveIndex++; updateWMCarouselClasses(); saveActiveWorkoutState(); } else { finishWorkoutMode(); } };
 
         const timerDisplay = card.querySelector('.timer-display'); const timerStartBtn = card.querySelector('.timer-btn.start');
 
@@ -1058,14 +1133,13 @@ function buildWMCarousel() {
                 if(ex.timeLeft <= 0) ex.timeLeft = ex.restSeconds; 
                 ex.timerRunning = true; timerStartBtn.textContent = 'Durdur'; timerStartBtn.className = 'timer-btn pause'; 
                 ex.targetEndTime = Date.now() + (ex.timeLeft * 1000);
-                ex.timerInterval = setInterval(() => {
+                timerInterval = setInterval(() => {
                     ex.timeLeft = Math.max(0, Math.ceil((ex.targetEndTime - Date.now()) / 1000));
-                    if(ex.timeLeft <= 0){ clearInterval(ex.timerInterval); ex.timerRunning = false; timerStartBtn.textContent = 'Başlat'; timerStartBtn.className = 'timer-btn start'; }
+                    if(ex.timeLeft <= 0){ clearInterval(timerInterval); ex.timerRunning = false; timerStartBtn.textContent = 'Başlat'; timerStartBtn.className = 'timer-btn start'; }
                     renderWMTimer();
                 }, 1000); 
             } else { 
-                ex.timerRunning = false; clearInterval(ex.timerInterval); 
-                ex.timeLeft = Math.max(0, Math.ceil((ex.targetEndTime - Date.now()) / 1000));
+                running = false; clearInterval(timerInterval); 
                 timerStartBtn.textContent = 'Devam'; timerStartBtn.className = 'timer-btn start'; 
             }
             renderWMTimer();
@@ -1138,7 +1212,9 @@ async function finishWorkoutMode() {
 
     if(doneExercises.length > 0){ 
         const now = new Date();
-        const entry = { dayLabel: wmCurrentDayObj.title || wmCurrentDayObj.name, dateStr: now.toLocaleDateString('tr-TR'), exercises: doneExercises, duration: finalDuration };
+        const entry = { 
+            dayLabel: wmCurrentDayObj.title || wmCurrentDayObj.name, dateStr: now.toLocaleDateString('tr-TR'), exercises: doneExercises, duration: finalDuration 
+        };
         await saveHistoryEntryToCloud(entry);
         for(let ex of wmState){ setSetsDone(wmCurrentDayObj.id, ex.originalIdx, 0); }
         alert("Antrenman tamamlandı ve buluta kaydedildi! Tebrikler 💪");
@@ -1147,8 +1223,11 @@ async function finishWorkoutMode() {
         for(let ex of wmState){ setSetsDone(wmCurrentDayObj.id, ex.originalIdx, 0); }
     }
 
+    // YENİ: Başarıyla bitince yerel hafızadan kurtarma dosyasını sil
+    localStorage.removeItem('activeWorkout_' + currentUser.id);
+
     if(cloudSaveTimeout) clearTimeout(cloudSaveTimeout);
-    await saveCloudData(); // Antrenman bittiğinde bekleyen verileri anında kaydet
+    await saveCloudData(); 
 
     document.getElementById('workout-mode-screen').style.display = 'none'; document.getElementById('app-screen').style.display = 'block';
     btn.disabled = false; btn.textContent = origText;
@@ -1235,6 +1314,7 @@ const EXERCISE_DB = {
 
 let builderOpenPicker = JSON.parse(sessionStorage.getItem('openPicker') || '{}');
 
+// --- OLUŞTURUCU YAPI ---
 async function renderBuilder(){
   const main = document.getElementById('main');
   main.innerHTML = `<div class="day-note" style="margin-bottom:20px;">Özel programınızı oluşturun. Aşağıdan gün sayısını seçip hareketleri ekleyebilirsiniz.</div>`;
@@ -1250,7 +1330,8 @@ async function renderBuilder(){
   const stContainer = document.createElement('div'); stContainer.className = 'sub-tabs-container';
   prog.days.forEach((d, i) => {
      const st = document.createElement('div'); st.className = 'sub-tab' + (i === currentSubDay ? ' active' : '');
-     st.textContent = d.name || `Gün ${i+1}`; st.onclick = () => { currentSubDay = i; renderBuilder(); }; stContainer.appendChild(st);
+     st.textContent = d.name || d.title || d.shortLabel || `Gün ${i+1}`; 
+     st.onclick = () => { currentSubDay = i; renderBuilder(); }; stContainer.appendChild(st);
   });
   main.appendChild(stContainer);
 
@@ -1258,7 +1339,9 @@ async function renderBuilder(){
   if(day) {
       const card = document.createElement('div'); card.className = 'day-card';
       const head = document.createElement('div'); head.className = 'day-card-head';
-      head.innerHTML = `<input class="day-name-input" value="${day.name}" placeholder="Gün Adı (Örn: İtiş)" /><div class="day-time-badge" style="font-family:'IBM Plex Mono'; font-weight:700; color:var(--accent); font-size:16px; white-space:nowrap; margin-left:12px;">⏱ ~${calcDayTime(day)} dk</div>`;
+      
+      const dayNameVal = day.name || day.title || day.shortLabel || '';
+      head.innerHTML = `<input class="day-name-input" value="${dayNameVal}" placeholder="Gün Adı (Örn: İtiş)" /><div class="day-time-badge" style="font-family:'IBM Plex Mono'; font-weight:700; color:var(--accent); font-size:16px; white-space:nowrap; margin-left:12px;">⏱ ~${calcDayTime(day)} dk</div>`;
       head.querySelector('.day-name-input').oninput = async (e) => { day.name = e.target.value; await saveCustomProgram(prog); renderTabs(); };
       card.appendChild(head);
 

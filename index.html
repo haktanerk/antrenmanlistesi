@@ -255,26 +255,46 @@
   .wm-end-btn:active { transform:scale(0.95);}
   .wm-end-btn:disabled { opacity:0.6; cursor:not-allowed;}
 
-  .wm-carousel { flex:1; position:relative; overflow:hidden; display:flex; align-items:center; justify-content:center; }
-  
-  /* YENİ: Kartlar için max-height eklendi. Bu sayede aktif kart çok uzayıp alttakini ezemez. */
-  .wm-card {
-      position: absolute; width: 92%; max-width: 450px;
-      background: var(--surface); border-radius:20px; padding:24px;
-      box-shadow: 0 10px 40px rgba(0,0,0,0.1);
-      transition: transform 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94), opacity 0.5s ease;
-      border: 1px solid var(--line); border-left:6px solid var(--accent);
-      max-height: 72vh; overflow-y: auto; scrollbar-width: none;
+  /* YENİ: KAYAN ŞERİT (TRACK) MANTIĞI */
+  .wm-carousel { 
+      flex:1; 
+      position:relative; 
+      overflow:hidden; 
+      width: 100%;
   }
-  .wm-card::-webkit-scrollbar { display: none; }
+  .wm-track {
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 32px; /* KARTLAR ARASI SABİT VE EŞİT MESAFE */
+      transition: transform 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+      padding: 50vh 0; /* Şeridin tavan ve tabana çarpmadan sonsuz hissi vermesi için destek */
+  }
   
-  .wm-card.active { transform: translateY(0) scale(1); opacity:1; z-index:3; pointer-events:auto; }
+  /* YENİ: SABİT KARTLAR (ARTIK OVERFLOW/KAYDIRMA YOK) */
+  .wm-card {
+      width: 92%; max-width: 450px;
+      background: var(--surface); border-radius:20px; padding:24px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.06); /* GÖLGE KISILDI, HALE OLUŞUMU ENGELLENDİ */
+      transition: transform 0.4s ease; /* SADECE BOYUT GEÇİŞİ KALDI (OPASİTE %100) */
+      border: 1px solid var(--line); border-left:6px solid var(--accent);
+      flex-shrink: 0; /* Kartların ezilmesini önler */
+  }
   
-  /* YENİ: Mesafeler 110%'a çekildi ve görünürlük (opacity) artırıldı. */
-  .wm-card.prev { transform: translateY(-110%) scale(0.88); opacity:0.3; z-index:1; pointer-events:none; }
-  .wm-card.next { transform: translateY(110%) scale(0.88); opacity:0.75; z-index:1; pointer-events:none; }
-  
-  .wm-card.hidden { opacity:0; pointer-events:none; z-index:0; }
+  .wm-card.active { 
+      transform: scale(1); 
+      pointer-events:auto; 
+  }
+  .wm-card.prev { 
+      transform: scale(0.92); 
+      pointer-events:none; 
+  }
+  .wm-card.next { 
+      transform: scale(0.92); 
+      pointer-events:none; 
+  }
 
   .wm-skip-btn { display:flex; align-items:center; justify-content:center; width:100%; margin-top:20px; padding:12px; background:var(--surface-2); color:var(--text-dim); border:1px dashed var(--line); border-radius:12px; font-family:'Inter'; font-weight:600; font-size:13px; cursor:pointer; transition:0.2s; letter-spacing:0.5px; text-transform:uppercase; }
   .wm-skip-btn:hover { border-color:var(--accent); color:var(--text); background:var(--line);}
@@ -338,11 +358,9 @@
       <button class="auth-btn-primary" onclick="signUp()">Hesap Oluştur</button>
     </div>
 
-    <!-- ŞİFRE SIFIRLAMA FORMU (SADECE LİNKE TIKLANINCA GÖZÜKÜR) -->
     <div id="update-password-form" style="display:none;">
       <div style="font-size:14px; margin-bottom:12px; font-weight:600; text-align:center; color:var(--accent);">Lütfen yeni şifrenizi belirleyin.</div>
       <input type="password" id="new-password" class="auth-input" placeholder="Yeni Şifre (En az 6 karakter)" />
-      <!-- YENİ EKLENEN ŞİFRE TEKRARI KUTUSU -->
       <input type="password" id="new-password-confirm" class="auth-input" placeholder="Yeni Şifre (Tekrar)" />
       <button class="auth-btn-primary" onclick="updatePassword()">Şifreyi Güncelle</button>
     </div>
@@ -376,7 +394,8 @@
         <button class="wm-end-btn" id="wm-end-btn" onclick="finishWorkoutMode()">Bitir & Kaydet</button>
     </div>
     <div class="wm-carousel" id="wm-carousel-container">
-        <!-- Kartlar Buraya Gelecek -->
+        <!-- YENİ: KARTLARIN EŞİT MESAFEDE DİZİLDİĞİ ŞERİT -->
+        <div class="wm-track" id="wm-track"></div>
     </div>
     <div class="wm-progress-container">
         <div class="wm-progress-bar-bg"><div class="wm-progress-bar-fill" id="wm-progress-fill"></div></div>
@@ -384,7 +403,6 @@
     </div>
 </div>
 
-<!-- GÖRSEL ARAMA PENCERESİ (MODAL) -->
 <div id="ex-modal" class="ex-modal">
     <div class="ex-modal-content">
         <div class="ex-modal-header">
@@ -401,9 +419,6 @@
 </div>
 
 <script>
-// ==========================================
-// SUPABASE BAĞLANTISI
-// ==========================================
 const SUPABASE_URL = 'https://luhjxfpnhszoptusadwl.supabase.co';
 const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imx1aGp4ZnBuaHN6b3B0dXNhZHdsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODU4MTA1NDksImV4cCI6MjEwMTM4NjU0OX0.bbZky4piJuYWDORymhZi-t7C4aDBbqDHbOCMLq7TAag';
 
@@ -513,7 +528,6 @@ async function resetPassword() {
     }
 }
 
-// ŞİFREYİ GÜNCELLEME İŞLEMİ
 async function updatePassword() {
   const newPassword = document.getElementById('new-password').value;
   const newPasswordConfirm = document.getElementById('new-password-confirm').value;
@@ -529,7 +543,6 @@ async function updatePassword() {
   } else {
     showMsg('Şifreniz başarıyla güncellendi! Sayfa yenileniyor...', false);
     setTimeout(() => {
-        // URL'i temizle ve yenile
         window.location.href = window.location.pathname; 
     }, 1500);
   }
@@ -617,10 +630,6 @@ supabaseClient.auth.onAuthStateChange(async (event, session) => {
   }
 });
 
-// ==========================================
-// ANA UYGULAMA MANTIĞI VE UI YÖNETİMİ
-// ==========================================
-
 let currentSubDay = 0; 
 let communityListCache = []; 
 let viewingCommunityProgram = null; 
@@ -637,6 +646,12 @@ document.addEventListener("visibilitychange", () => {
     if (!document.hidden && document.getElementById('workout-mode-screen').style.display === 'flex') {
         const s = Math.floor((Date.now() - wmGlobalStartTime) / 1000);
         document.getElementById('wm-global-timer').textContent = fmtTime(s);
+    }
+});
+
+window.addEventListener('resize', () => {
+    if(document.getElementById('workout-mode-screen').style.display === 'flex') {
+        updateWMCarouselClasses();
     }
 });
 
@@ -771,7 +786,6 @@ async function setSetsDone(dayId, idx, value) { const key = `${dayId}_${idx}`; c
 function getWeight(dayId, idx, fallback){ const key = `${dayId}_${idx}`; if(cloudData.weights && cloudData.weights[key] !== undefined) return cloudData.weights[key]; return fallback; }
 async function setWeight(dayId, idx, value){ const key = `${dayId}_${idx}`; if(!cloudData.weights) cloudData.weights = {}; cloudData.weights[key] = value; await saveCloudData(); }
 
-// --- GEÇMİŞ BÖLÜMÜ ---
 async function saveHistoryEntryToCloud(entry){
   const { error } = await supabaseClient.from("workouts").insert([{ user_id: currentUser.id, workout_data: entry }]);
   if(error) return { error };
@@ -814,7 +828,6 @@ async function renderHistory(){
   });
 }
 
-// --- KULLANICI PROGRAMI GÖRÜNÜMÜ ---
 function renderProgramView(program){
   const main = document.getElementById('main');
 
@@ -914,21 +927,21 @@ function renderDaySection(day, main, isReadOnly){
     const weight = getWeight(day.id, idx, ex.start || 0);
     const exMin = calcExTime(ex.sets || ex.sr, ex.rest);
 
+    // KÖKÜNDEN DÜZELTİLEN YER: SN SN HATASI FİLTRESİ
+    let restValueForDisplay = String(ex.rest).toLowerCase().includes('sn') ? ex.rest : ex.rest + ' sn';
+
     if(isReadOnly) {
         card.innerHTML = `
           <div class="row-top"><div class="ex-name">${ex.name}</div><button class="link-btn" onclick="openImg('${ex.name}')">Görsel</button></div>
           <div class="meta">
               <div class="meta-item">Hedef Set: <b>${ex.sr || (ex.sets+'x'+ex.reps)}</b></div>
-              <div class="meta-item">Dinlenme: <b>${ex.rest}</b></div>
+              <div class="meta-item">Dinlenme: <b>${restValueForDisplay}</b></div>
               <div class="meta-item" style="color:var(--accent);">Süre: <b>~${exMin} dk</b></div>
           </div>
         `;
         main.appendChild(card);
         continue;
     }
-
-    let restValueForDisplay = ex.rest;
-    if(!isNaN(parseFloat(ex.rest))) restValueForDisplay = ex.rest + " sn";
 
     let displaySr = ex.sr || (ex.sets+'x'+ex.reps);
     if(displaySr && displaySr.includes('undefined')) displaySr = displaySr.replace('undefined', '');
@@ -1079,7 +1092,7 @@ function renderDaySection(day, main, isReadOnly){
 }
 
 // ==========================================
-// ODAKLI ANTRENMAN MODU SİSTEMİ 
+// ODAKLI ANTRENMAN MODU SİSTEMİ (YENİ ŞERİT MANTIĞI)
 // ==========================================
 
 function openWorkoutMode(dayObj) {
@@ -1118,7 +1131,7 @@ function openWorkoutMode(dayObj) {
 }
 
 function buildWMCarousel() {
-    const container = document.getElementById('wm-carousel-container');
+    const container = document.getElementById('wm-track'); // Hedef şerit
     container.innerHTML = '';
 
     wmState.forEach((ex, i) => {
@@ -1126,8 +1139,7 @@ function buildWMCarousel() {
         card.className = 'wm-card';
         card.id = 'wm-card-' + i;
 
-        let restValueForDisplay = ex.rest;
-        if(!isNaN(parseFloat(ex.rest))) restValueForDisplay = ex.rest + " sn";
+        let restValueForDisplay = String(ex.rest).toLowerCase().includes('sn') ? ex.rest : ex.rest + ' sn';
         
         let displaySr = ex.sr;
         if(displaySr && displaySr.includes('undefined')) displaySr = displaySr.replace('undefined', '');
@@ -1290,12 +1302,13 @@ function buildWMCarousel() {
     updateWMCarouselClasses();
 }
 
+// YENİ: KAYAN ŞERİT (SLIDER) POZİSYON HESAPLAYICISI
 function updateWMCarouselClasses() {
     wmState.forEach((ex, i) => {
         const card = document.getElementById('wm-card-' + i);
         if(!card) return;
-        card.className = 'wm-card'; 
         
+        card.className = 'wm-card'; 
         const prevBtn = card.querySelector('.wm-prev-btn');
         if(prevBtn) prevBtn.style.display = 'none';
 
@@ -1311,6 +1324,24 @@ function updateWMCarouselClasses() {
         else if(i < wmActiveIndex) card.classList.add('prev');
         else if(i > wmActiveIndex) card.classList.add('next');
     });
+
+    // DOM'un yeni boyutları (butonların görünmesi vb.) hesaplamasını kısa bir süre bekleyip şeridi kaydır
+    setTimeout(() => {
+        const track = document.getElementById('wm-track');
+        const container = document.getElementById('wm-carousel-container');
+        const activeCard = document.getElementById('wm-card-' + wmActiveIndex);
+        
+        if(activeCard && track && container) {
+            // Konteynerın orta noktasını bul
+            const containerCenter = container.offsetHeight / 2;
+            // Aktif kartın şerit üzerindeki orta noktasını bul
+            const cardCenter = activeCard.offsetTop + (activeCard.offsetHeight / 2);
+            // Şeridin ne kadar kaydırılacağını matematiksel olarak tam hizala
+            const shift = containerCenter - cardCenter;
+            
+            track.style.transform = `translateY(${shift}px)`;
+        }
+    }, 30);
 }
 
 function updateWMProgress() {

@@ -81,7 +81,6 @@
   .program-controls .btn-share:active { transform:scale(0.95); }
   .program-controls .btn-del:hover { background:var(--warn); color:#fff; border-color:var(--warn);}
 
-  /* ANTRENMANI BAŞLAT BUTONU */
   .start-workout-btn { display:flex; align-items:center; justify-content:center; width:100%; margin-bottom:20px; padding:16px; background:var(--text); color:var(--surface); border:none; border-radius:16px; font-family:'Barlow Condensed', sans-serif; font-weight:700; font-size:18px; letter-spacing:1px; text-transform:uppercase; cursor:pointer; transition:0.2s; box-shadow:0 4px 12px rgba(0,0,0,0.15);}
   .start-workout-btn:active { transform:scale(0.98); }
 
@@ -210,7 +209,7 @@
   .picker-ex-preview:hover { border-color:var(--accent); color:var(--accent); background:var(--surface);}
   .picker-close{ display:block; width:100%; text-align:center; padding:16px; font-size:13px; font-weight:700; color:var(--text); background:var(--surface-2); border:none; border-top:1px solid var(--line); cursor:pointer; text-transform:uppercase; letter-spacing:0.5px;}
 
-  /* DİKEY (ALT ALTA) HİZALANMIŞ BUTONLAR */
+  /* DİKEY BUTONLAR */
   .save-name-row{ display:flex; flex-direction:column; gap:12px; margin-top:28px; padding-top:24px; border-top:2px solid var(--line);}
   .save-name-input{ width:100%; padding:14px; border:1px solid var(--line); border-radius:14px; font-family:'Inter'; font-size:15px; font-weight:500; background:var(--surface); color:var(--text); outline:none;}
   .save-name-input:focus { border-color:var(--accent); box-shadow:0 0 0 3px rgba(13, 148, 136, 0.15);}
@@ -255,11 +254,11 @@
   .wm-end-btn:active { transform:scale(0.95);}
   .wm-end-btn:disabled { opacity:0.6; cursor:not-allowed;}
 
-  /* YENİ GPU/BATARYA OPTİMİZASYONLU ŞERİT MANTIĞI */
+  /* --- BATARYA VE PERFORMANS İÇİN OPTİMİZE ŞERİT MANTIĞI --- */
   .wm-carousel { 
-      flex:1; 
-      position:relative; 
-      overflow:hidden; 
+      flex: 1; 
+      position: relative; 
+      overflow: hidden; 
       width: 100%;
   }
   .wm-track {
@@ -268,42 +267,45 @@
       display: flex;
       flex-direction: column;
       align-items: center;
-      gap: 40px; 
-      /* Pili koruyan ve 60fps sağlayan GPU ivmesi */
-      transition: transform 0.5s cubic-bezier(0.22, 1, 0.36, 1);
+      gap: 50px; /* Kartlar arası ferah mesafe */
+      /* Sadece GPU ile çalışan translate3d animasyonu */
+      transition: transform 0.45s cubic-bezier(0.25, 1, 0.5, 1);
       will-change: transform;
       transform: translate3d(0, 0, 0); 
       padding: 50vh 0; 
   }
   
   .wm-card {
+      position: relative; /* Sabit yükseklik, mutlak konumlandırma iptal! */
       width: 92%; max-width: 450px;
       background: var(--surface); border-radius:20px; padding:24px;
-      box-shadow: 0 2px 10px rgba(0,0,0,0.06); 
-      /* Yalnızca GPU'nun işleyeceği parametrelere izin verildi */
-      transition: transform 0.4s cubic-bezier(0.22, 1, 0.36, 1); 
-      will-change: transform;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.05); 
+      transition: transform 0.45s cubic-bezier(0.25, 1, 0.5, 1), opacity 0.45s ease; 
       border: 1px solid var(--line); border-left:6px solid var(--accent);
       flex-shrink: 0;
   }
   
-  .wm-card.active { transform: translate3d(0,0,0) scale(1); pointer-events:auto; opacity: 1; }
-  .wm-card.prev { transform: translate3d(0,0,0) scale(0.92); pointer-events:none; opacity: 1; }
-  .wm-card.next { transform: transform: translate3d(0,0,0) scale(0.92); pointer-events:none; opacity: 1; }
+  .wm-card.active { transform: scale(1); pointer-events:auto; opacity: 1; z-index: 3;}
+  .wm-card.prev { transform: scale(0.9); pointer-events:none; opacity: 0.35; z-index: 1;}
+  .wm-card.next { transform: scale(0.9); pointer-events:none; opacity: 0.35; z-index: 1;}
 
-  /* KART BOYUNU SABİT TUTAN YENİ BUTON MANTIĞI (TAKILMALARI ÖNLER) */
+  /* YIRTILMAYI (THRASHING) ÖNLEYEN MUTLAK KONUMLU BUTON */
   .wm-prev-btn { 
-      display:flex; align-items:center; justify-content:center; width:100%; 
-      background:var(--surface-2); color:var(--text-dim); border:1px dashed var(--line); border-radius:12px; 
+      position: absolute;
+      top: -38px; /* Kartın hemen üzerinde havada asılı durur, layout'u bozmaz */
+      left: 50%;
+      transform: translateX(-50%);
+      width: 80%; 
+      height: 32px;
+      background: var(--text); color: var(--surface); 
+      border: none; border-radius: 16px; 
       font-family:'Inter'; font-weight:600; font-size:12px; cursor:pointer; 
       letter-spacing:0.5px; text-transform:uppercase; 
-      /* Yükseklik hep sabit, kart boyu oynamaz, sadece görünmez olur */
-      height: 36px; margin-bottom: 16px; opacity: 0; pointer-events: none;
+      display: flex; align-items: center; justify-content: center;
+      opacity: 0; pointer-events: none; z-index: 0;
       transition: opacity 0.3s ease;
   }
-  .wm-prev-btn:hover { border-color:var(--accent); color:var(--text); background:var(--line);}
-  
-  .wm-prev-btn.show { opacity: 1; pointer-events: auto; }
+  .wm-prev-btn.show { opacity: 1; pointer-events: auto; z-index: 5;}
 
   .wm-skip-btn { display:flex; align-items:center; justify-content:center; width:100%; margin-top:20px; padding:12px; background:var(--surface-2); color:var(--text-dim); border:1px dashed var(--line); border-radius:12px; font-family:'Inter'; font-weight:600; font-size:13px; cursor:pointer; transition:0.2s; letter-spacing:0.5px; text-transform:uppercase; }
   .wm-skip-btn:hover { border-color:var(--accent); color:var(--text); background:var(--line);}
@@ -364,7 +366,6 @@
       <button class="auth-btn-primary" onclick="signUp()">Hesap Oluştur</button>
     </div>
 
-    <!-- ŞİFRE SIFIRLAMA FORMU -->
     <div id="update-password-form" style="display:none;">
       <div style="font-size:14px; margin-bottom:12px; font-weight:600; text-align:center; color:var(--accent);">Lütfen yeni şifrenizi belirleyin.</div>
       <input type="password" id="new-password" class="auth-input" placeholder="Yeni Şifre (En az 6 karakter)" />
@@ -373,7 +374,6 @@
     </div>
 
     <div id="auth-msg"></div>
-    
     <button id="back-to-login-btn" class="auth-btn-primary" style="display:none; margin-top:14px; background:var(--text);" onclick="resetAuthUI()">← Giriş Ekranına Dön</button>
   </div>
 </div>
@@ -391,7 +391,6 @@
   <footer>Tüm antrenman verileriniz şifrelenmiş %100 bulut altyapısında saklanır.</footer>
 </div>
 
-<!-- ODAKLI ANTRENMAN EKRANI -->
 <div id="workout-mode-screen" style="display: none;">
     <div class="wm-top">
         <div class="wm-global-timer-container">
@@ -401,7 +400,6 @@
         <button class="wm-end-btn" id="wm-end-btn" onclick="finishWorkoutMode()">Bitir & Kaydet</button>
     </div>
     <div class="wm-carousel" id="wm-carousel-container">
-        <!-- KARTLARIN EŞİT MESAFEDE DİZİLDİĞİ ŞERİT -->
         <div class="wm-track" id="wm-track"></div>
     </div>
     <div class="wm-progress-container">
@@ -410,7 +408,6 @@
     </div>
 </div>
 
-<!-- GÖRSEL ARAMA PENCERESİ (MODAL) -->
 <div id="ex-modal" class="ex-modal">
     <div class="ex-modal-content">
         <div class="ex-modal-header">
@@ -428,7 +425,7 @@
 
 <script>
 // ==========================================
-// SUPABASE BAĞLANTISI
+// SUPABASE BAĞLANTISI VE AUTHENTICATION
 // ==========================================
 const SUPABASE_URL = 'https://luhjxfpnhszoptusadwl.supabase.co';
 const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imx1aGp4ZnBuaHN6b3B0dXNhZHdsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODU4MTA1NDksImV4cCI6MjEwMTM4NjU0OX0.bbZky4piJuYWDORymhZi-t7C4aDBbqDHbOCMLq7TAag';
@@ -436,7 +433,6 @@ const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBh
 const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 let currentUser = null;
 let currentUsername = "";
-
 let cloudData = { weights: {}, custom_program: null, saved_programs: [], session_state: {} };
 
 const authScreen = document.getElementById('auth-screen');
@@ -513,7 +509,6 @@ async function signIn() {
   }
 
   authMsg.textContent = 'Giriş yapılıyor...';
-
   const { error } = await supabaseClient.auth.signInWithPassword({ email, password });
   if (error) showMsg('Hatalı e-posta veya şifre.', true);
 }
@@ -523,12 +518,8 @@ async function resetPassword() {
     if (!email) {
         return showMsg('Lütfen şifresini unuttuğunuz e-posta adresini yukarıya yazın.', true);
     }
-    
     authMsg.textContent = 'Sıfırlama bağlantısı gönderiliyor...';
-    
-    const { data, error } = await supabaseClient.auth.resetPasswordForEmail(email, {
-      redirectTo: window.location.href, 
-    });
+    const { error } = await supabaseClient.auth.resetPasswordForEmail(email, { redirectTo: window.location.href });
 
     if (error) {
         showMsg('Hata: ' + error.message, true);
@@ -553,23 +544,16 @@ async function updatePassword() {
     showMsg('Hata: ' + error.message, true);
   } else {
     showMsg('Şifreniz başarıyla güncellendi! Sayfa yenileniyor...', false);
-    setTimeout(() => {
-        window.location.href = window.location.pathname; 
-    }, 1500);
+    setTimeout(() => { window.location.href = window.location.pathname; }, 1500);
   }
 }
 
 async function signOut() { 
   await supabaseClient.auth.signOut(); 
-  
   document.getElementById('login-password').value = '';
-  if (!document.getElementById('remember-me').checked) {
-      document.getElementById('login-email').value = '';
-  }
-  document.getElementById('signup-username').value = '';
-  document.getElementById('signup-email').value = '';
-  document.getElementById('signup-password').value = '';
-  document.getElementById('signup-password-confirm').value = '';
+  if (!document.getElementById('remember-me').checked) { document.getElementById('login-email').value = ''; }
+  document.getElementById('signup-username').value = ''; document.getElementById('signup-email').value = '';
+  document.getElementById('signup-password').value = ''; document.getElementById('signup-password-confirm').value = '';
   authMsg.textContent = ''; 
   document.getElementById('back-to-login-btn').style.display = 'none';
 }
@@ -580,20 +564,16 @@ let isRecoveryMode = window.location.hash.includes('type=recovery') || window.lo
 supabaseClient.auth.onAuthStateChange(async (event, session) => {
   if (event === 'PASSWORD_RECOVERY' || isRecoveryMode) {
       isRecoveryMode = true; 
-      authScreen.style.display = 'block';
-      appScreen.style.display = 'none';
+      authScreen.style.display = 'block'; appScreen.style.display = 'none';
       document.querySelector('.auth-tabs-container').style.display = 'none';
-      document.getElementById('login-form').style.display = 'none';
-      document.getElementById('signup-form').style.display = 'none';
-      document.getElementById('back-to-login-btn').style.display = 'none';
-      document.getElementById('update-password-form').style.display = 'block';
+      document.getElementById('login-form').style.display = 'none'; document.getElementById('signup-form').style.display = 'none';
+      document.getElementById('back-to-login-btn').style.display = 'none'; document.getElementById('update-password-form').style.display = 'block';
       showMsg('Lütfen yeni şifrenizi belirleyip kaydedin.', false);
       return;
   }
 
   if (session && session.user && !isRecoveryMode) {
     currentUser = session.user;
-
     if (hasInitialized) return;
     hasInitialized = true;
 
@@ -604,46 +584,32 @@ supabaseClient.auth.onAuthStateChange(async (event, session) => {
     
     if(uDataArray && uDataArray.length > 0) {
       const uData = uDataArray[0];
-      cloudData = {
-        weights: uData.weights || {},
-        custom_program: uData.custom_program || null,
-        saved_programs: uData.saved_programs || [],
-        session_state: uData.session_state || {}
-      };
+      cloudData = { weights: uData.weights || {}, custom_program: uData.custom_program || null, saved_programs: uData.saved_programs || [], session_state: uData.session_state || {} };
     } else {
       cloudData = { weights: {}, custom_program: null, saved_programs: [], session_state: {} };
     }
 
-    authScreen.style.display = 'none';
-    appScreen.style.display = 'block';
+    authScreen.style.display = 'none'; appScreen.style.display = 'block';
     
     const displayUser = currentUsername || currentUser.email.split('@')[0];
     document.getElementById('user-greeting').innerHTML = `Hoş geldin, <b style="color:var(--accent); font-family:'IBM Plex Mono'; font-size:14px;">@${displayUser}</b>`;
     
     let savedTab = parseInt(sessionStorage.getItem('currentTab'));
     if (isNaN(savedTab)) {
-        if (!cloudData.saved_programs || cloudData.saved_programs.length === 0) {
-            currentDay = 1; 
-        } else {
-            currentDay = 0; 
-        }
+        if (!cloudData.saved_programs || cloudData.saved_programs.length === 0) currentDay = 1; else currentDay = 0; 
     } else {
         currentDay = Math.min(savedTab, getTabLabels().length - 1);
     }
     
     initApp();
   } else if (!isRecoveryMode) {
-    currentUser = null;
-    hasInitialized = false;
-    authScreen.style.display = 'block';
-    appScreen.style.display = 'none';
+    currentUser = null; hasInitialized = false; authScreen.style.display = 'block'; appScreen.style.display = 'none';
   }
 });
 
 // ==========================================
-// ANA UYGULAMA MANTIĞI VE UI YÖNETİMİ
+// ANA UYGULAMA VE BATARYA OPTİMİZASYONLARI
 // ==========================================
-
 let currentSubDay = 0; 
 let communityListCache = []; 
 let viewingCommunityProgram = null; 
@@ -655,7 +621,7 @@ let wmGlobalStartTime = 0;
 let wmCurrentDayObj = null;
 let currentImgQuery = '';
 
-// YENİ: Performans için ResizeObserver yerine hafif debounce
+// BATARYA DOSTU EKRAN YENİLEME
 let resizeTimeout;
 window.addEventListener('resize', () => {
     if(document.getElementById('workout-mode-screen').style.display === 'flex') {
@@ -664,10 +630,17 @@ window.addEventListener('resize', () => {
     }
 });
 
+// BATARYA DOSTU BULUT EŞİTLEME (DEBOUNCE)
+let cloudSaveTimeout = null;
+function requestCloudSave() {
+    if(cloudSaveTimeout) clearTimeout(cloudSaveTimeout);
+    cloudSaveTimeout = setTimeout(() => {
+        saveCloudData();
+    }, 2500); // 2.5 saniye hareketsizlik sonrası 1 kere kaydeder.
+}
+
 function initApp() { renderTabs(); renderView(); }
-
 function getProgramList(){ return cloudData.saved_programs || []; }
-
 function getCustomProgram(){
   if(cloudData.custom_program && cloudData.custom_program.days) return cloudData.custom_program;
   cloudData.custom_program = { name: "", editing_id: null, days: [ { id: cpUid(), name:"Gün 1", exercises: [] } ] };
@@ -675,22 +648,17 @@ function getCustomProgram(){
   return cloudData.custom_program;
 }
 
-// YENİ: Batarya optimizasyonlu (tekil işlem) UPSERT
+// TEKİL İŞLEM YAPAN HIZLI UPSERT
 async function saveCloudData() {
   try {
-    const payload = {
-      weights: cloudData.weights,
-      custom_program: cloudData.custom_program,
-      saved_programs: cloudData.saved_programs,
-      session_state: cloudData.session_state
-    };
+    const payload = { weights: cloudData.weights, custom_program: cloudData.custom_program, saved_programs: cloudData.saved_programs, session_state: cloudData.session_state };
     await supabaseClient.from('user_data').upsert([{ user_id: currentUser.id, ...payload }]);
   } catch (err) { console.error('Cloud güncelleme hatası:', err); }
 }
 
 async function saveCustomProgram(prog) {
   cloudData.custom_program = prog;
-  await saveCloudData();
+  await saveCloudData(); // Program yaratımı/kaydı anlık olmalı
 }
 
 function getTabLabels(){
@@ -707,13 +675,7 @@ function renderTabs(){
   labels.forEach((label, i) => {
     const t = document.createElement('div'); t.className = 'tab' + (i === currentDay ? ' active' : '');
     t.textContent = label;
-    t.onclick = () => { 
-        currentDay = i; 
-        currentSubDay = 0; 
-        viewingCommunityProgram = null; 
-        renderTabs(); 
-        renderView(); 
-    };
+    t.onclick = () => { currentDay = i; currentSubDay = 0; viewingCommunityProgram = null; renderTabs(); renderView(); };
     tabsEl.appendChild(t);
   });
 }
@@ -729,8 +691,7 @@ function renderView(){
 }
 
 function parseSetsTotal(sr){ 
-    if(!sr) return 3;
-    if(typeof sr === 'number') return sr;
+    if(!sr) return 3; if(typeof sr === 'number') return sr;
     const m = String(sr).match(/^(\d+)\s*x/i) || String(sr).match(/^(\d+)/); 
     return m ? parseInt(m[1], 10) : 3; 
 }
@@ -740,26 +701,18 @@ function parseRestSeconds(rt){
     return nums.length?Math.round(nums.reduce((a,b)=>a+b,0)/nums.length):parseFloat(rt) || 90; 
 }
 function fmtTime(s){ 
-    s=Math.max(0,Math.round(s)); 
-    const h = Math.floor(s/3600);
-    const m=Math.floor((s%3600)/60); 
-    const sec = s%60;
+    s=Math.max(0,Math.round(s)); const h = Math.floor(s/3600); const m=Math.floor((s%3600)/60); const sec = s%60;
     if (h > 0) return `${String(h).padStart(2,'0')}:${String(m).padStart(2,'0')}:${String(sec).padStart(2,'0')}`;
     return `${String(m).padStart(2,'0')}:${String(sec).padStart(2,'0')}`; 
 }
-
 function calcExTime(setsInput, restInput) {
-    let sets = parseSetsTotal(setsInput);
-    let restSec = parseRestSeconds(restInput || '90 sn');
-    let workSec = sets * 40; 
-    let totalRest = Math.max(0, sets - 1) * restSec;
+    let sets = parseSetsTotal(setsInput); let restSec = parseRestSeconds(restInput || '90 sn');
+    let workSec = sets * 40; let totalRest = Math.max(0, sets - 1) * restSec;
     return Math.ceil((workSec + totalRest) / 60); 
 }
 function calcDayTime(dayObj) {
     let total = 0;
-    if(dayObj && dayObj.exercises) {
-        dayObj.exercises.forEach(ex => { total += calcExTime(ex.sets || ex.sr, ex.rest); });
-    }
+    if(dayObj && dayObj.exercises) { dayObj.exercises.forEach(ex => { total += calcExTime(ex.sets || ex.sr, ex.rest); }); }
     return total;
 }
 
@@ -768,39 +721,29 @@ function fmt(w){ return (Number.isInteger(w) ? w : w.toFixed(1)); }
 function cpUid(){ return 'id' + Math.random().toString(36).slice(2,9) + Date.now().toString(36); }
 
 function openImageModal(name) {
-    currentImgQuery = name;
-    document.getElementById('ex-modal-title').textContent = name;
+    currentImgQuery = name; document.getElementById('ex-modal-title').textContent = name;
     document.getElementById('ex-modal-iframe').src = "https://www.google.com/search?igu=1&tbm=isch&q=" + encodeURIComponent(name + " exercise form anatomy");
     document.getElementById('ex-modal').classList.add('active');
 }
-function closeImageModal() {
-    document.getElementById('ex-modal').classList.remove('active');
-    document.getElementById('ex-modal-iframe').src = ""; 
-}
-function openExternalImg() {
-    window.open("https://www.google.com/search?q=" + encodeURIComponent(currentImgQuery + " exercise form anatomy") + "&tbm=isch", '_blank');
-}
-function openImg(name) { 
-    openImageModal(name); 
-}
+function closeImageModal() { document.getElementById('ex-modal').classList.remove('active'); document.getElementById('ex-modal-iframe').src = ""; }
+function openExternalImg() { window.open("https://www.google.com/search?q=" + encodeURIComponent(currentImgQuery + " exercise form anatomy") + "&tbm=isch", '_blank'); }
+function openImg(name) { openImageModal(name); }
 
 function getSetsDone(dayId, idx) { const key = `${dayId}_${idx}`; return cloudData.session_state[key] || 0; }
-async function setSetsDone(dayId, idx, value) { const key = `${dayId}_${idx}`; cloudData.session_state[key] = value; await saveCloudData(); }
+function setSetsDone(dayId, idx, value) { const key = `${dayId}_${idx}`; cloudData.session_state[key] = value; requestCloudSave(); }
 
 function getWeight(dayId, idx, fallback){ const key = `${dayId}_${idx}`; if(cloudData.weights && cloudData.weights[key] !== undefined) return cloudData.weights[key]; return fallback; }
-async function setWeight(dayId, idx, value){ const key = `${dayId}_${idx}`; if(!cloudData.weights) cloudData.weights = {}; cloudData.weights[key] = value; await saveCloudData(); }
+function setWeight(dayId, idx, value){ const key = `${dayId}_${idx}`; if(!cloudData.weights) cloudData.weights = {}; cloudData.weights[key] = value; requestCloudSave(); }
 
 async function saveHistoryEntryToCloud(entry){
   const { error } = await supabaseClient.from("workouts").insert([{ user_id: currentUser.id, workout_data: entry }]);
-  if(error) return { error };
-  return { error: null };
+  return { error: error || null };
 }
 
 async function deleteHistory(id) {
     if(!confirm("Bu antrenmanı geçmişinizden silmek istediğinize emin misiniz?")) return;
     const { error } = await supabaseClient.from('workouts').delete().eq('id', id);
-    if(error) alert("Silinirken hata oluştu: " + error.message);
-    else renderHistory();
+    if(error) alert("Silinirken hata oluştu: " + error.message); else renderHistory();
 }
 
 async function renderHistory(){
@@ -814,16 +757,12 @@ async function renderHistory(){
     if(!entry || !entry.exercises) return;
     const dt = new Date(row.created_at);
     const dateStr = dt.toLocaleDateString('tr-TR') + " " + dt.toLocaleTimeString('tr-TR', {hour:'2-digit', minute:'2-digit'});
-    
     const durationStr = entry.duration ? `<span class="hist-duration">⏱ ${entry.duration}</span>` : '';
 
     const card = document.createElement('div'); card.className = 'hist-card';
     card.innerHTML = `
       <div class="hist-head">
-          <div>
-            <div class="hist-day">${(entry.dayLabel || 'Antrenman').split('—')[0].trim()} ${durationStr}</div>
-            <div class="hist-datetime">${dateStr}</div>
-          </div>
+          <div><div class="hist-day">${(entry.dayLabel || 'Antrenman').split('—')[0].trim()} ${durationStr}</div><div class="hist-datetime">${dateStr}</div></div>
           <button class="hist-del" onclick="deleteHistory('${row.id}')">Sil ✕</button>
       </div>
       ${entry.exercises.map(ex => `<div class="hist-ex-row"><span class="hist-ex-name">${ex.name}</span><span class="hist-ex-stats">${ex.sets}/${ex.setsTotal} SET <span style="color:var(--line);">|</span> ${fmt(ex.weight)} KG</span></div>`).join('')}
@@ -834,33 +773,21 @@ async function renderHistory(){
 
 function renderProgramView(program){
   const main = document.getElementById('main');
-
-  const headerDiv = document.createElement('div');
-  headerDiv.className = 'program-header';
-  
+  const headerDiv = document.createElement('div'); headerDiv.className = 'program-header';
   const pencilSvg = `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 3a2.828 2.828 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z"></path></svg>`;
   
   headerDiv.innerHTML = `
-    <div class="program-title">
-        ${program.name} 
-        <span class="edit-btn" title="Programı Düzenle">${pencilSvg}</span>
-    </div>
-    <div class="program-controls">
-        <button class="btn-share" id="share-prog-btn">Topluluğa Yolla</button>
-        <button class="btn-del" id="del-prog-btn">Sil</button>
-    </div>
+    <div class="program-title">${program.name} <span class="edit-btn" title="Programı Düzenle">${pencilSvg}</span></div>
+    <div class="program-controls"><button class="btn-share" id="share-prog-btn">Topluluğa Yolla</button><button class="btn-del" id="del-prog-btn">Sil</button></div>
   `;
   main.appendChild(headerDiv);
 
   headerDiv.querySelector('.edit-btn').onclick = async () => {
-      if(confirm("Bu programı düzenlemek için 'Oluştur' (Editör) sekmesine yüklemek istiyor musunuz? (Mevcut taslağınızın üzerine yazılacaktır)")) {
+      if(confirm("Bu programı düzenlemek için 'Oluştur' sekmesine yüklemek istiyor musunuz?")) {
           cloudData.custom_program = JSON.parse(JSON.stringify(program));
           cloudData.custom_program.editing_id = program.id; 
           await saveCloudData();
-          currentDay = getProgramList().length + 1; 
-          currentSubDay = 0;
-          renderTabs();
-          renderView();
+          currentDay = getProgramList().length + 1; currentSubDay = 0; renderTabs(); renderView();
       }
   };
 
@@ -868,63 +795,43 @@ function renderProgramView(program){
       this.textContent = "Gönderiliyor...";
       const progDataToShare = JSON.parse(JSON.stringify(program));
       progDataToShare.author_username = currentUsername || currentUser.email.split('@')[0];
-      
       await supabaseClient.from('programs').insert([{ user_id: currentUser.id, title: program.name, is_public: true, program_data: progDataToShare }]);
-      this.textContent = "Paylaşıldı ✓";
-      this.disabled = true;
+      this.textContent = "Paylaşıldı ✓"; this.disabled = true;
   };
 
   headerDiv.querySelector('#del-prog-btn').onclick = async () => {
-      if(!confirm(`"${program.name}" programını tamamen silmek istediğinize emin misiniz?`)) return;
+      if(!confirm(`"${program.name}" programını silmek istediğinize emin misiniz?`)) return;
       cloudData.saved_programs = cloudData.saved_programs.filter(p => p.id !== program.id);
-      await saveCloudData();
-      currentDay = getProgramList().length + 1;
-      currentSubDay = 0;
-      renderTabs(); renderView();
+      await saveCloudData(); currentDay = getProgramList().length + 1; currentSubDay = 0; renderTabs(); renderView();
   };
 
-  const stContainer = document.createElement('div');
-  stContainer.className = 'sub-tabs-container';
+  const stContainer = document.createElement('div'); stContainer.className = 'sub-tabs-container';
   program.days.forEach((day, i) => {
-     const st = document.createElement('div');
-     st.className = 'sub-tab' + (i === currentSubDay ? ' active' : '');
+     const st = document.createElement('div'); st.className = 'sub-tab' + (i === currentSubDay ? ' active' : '');
      st.textContent = day.name || `Gün ${i+1}`;
-     st.onclick = () => { currentSubDay = i; renderView(); };
-     stContainer.appendChild(st);
+     st.onclick = () => { currentSubDay = i; renderView(); }; stContainer.appendChild(st);
   });
   main.appendChild(stContainer);
-
-  if(program.days[currentSubDay]) {
-      renderDaySection(program.days[currentSubDay], main, false);
-  }
+  if(program.days[currentSubDay]) renderDaySection(program.days[currentSubDay], main, false);
 }
 
 function renderDaySection(day, main, isReadOnly){
   if(!isReadOnly && day.exercises && day.exercises.length > 0) {
-      const startBtn = document.createElement('button');
-      startBtn.className = 'start-workout-btn';
-      startBtn.innerHTML = '▶ Antrenmanı Başlat';
-      startBtn.onclick = () => openWorkoutMode(day);
-      main.appendChild(startBtn);
+      const startBtn = document.createElement('button'); startBtn.className = 'start-workout-btn';
+      startBtn.innerHTML = '▶ Antrenmanı Başlat'; startBtn.onclick = () => openWorkoutMode(day); main.appendChild(startBtn);
   }
 
-  const dayTitleDiv = document.createElement('div');
-  dayTitleDiv.className = 'day-section-title';
+  const dayTitleDiv = document.createElement('div'); dayTitleDiv.className = 'day-section-title';
   dayTitleDiv.innerHTML = `<span>${day.title || day.shortLabel || day.name || 'Antrenman'}</span> <span style="font-size:14px; color:var(--accent); font-family:'IBM Plex Mono'; font-weight:600;">⏱ ~${calcDayTime(day)} dk</span>`;
   main.appendChild(dayTitleDiv);
 
-  if(day.note){
-    const noteEl = document.createElement('div'); noteEl.className = 'day-note'; noteEl.textContent = day.note;
-    main.appendChild(noteEl);
-  }
-  const dayState = [];
-  let lastBlok = null;
+  if(day.note){ const noteEl = document.createElement('div'); noteEl.className = 'day-note'; noteEl.textContent = day.note; main.appendChild(noteEl); }
+  const dayState = []; let lastBlok = null;
 
   for(let idx=0; idx<day.exercises.length; idx++){
     const ex = day.exercises[idx];
     if(ex.blok && ex.blok !== lastBlok){
-      const label = document.createElement('div'); label.className = 'block-label'; label.textContent = ex.blok;
-      main.appendChild(label); lastBlok = ex.blok;
+      const label = document.createElement('div'); label.className = 'block-label'; label.textContent = ex.blok; main.appendChild(label); lastBlok = ex.blok;
     }
 
     const card = document.createElement('div'); card.className = 'card' + (ex.superset ? ' superset' : '');
@@ -942,18 +849,14 @@ function renderDaySection(day, main, isReadOnly){
               <div class="meta-item" style="color:var(--accent);">Süre: <b>~${exMin} dk</b></div>
           </div>
         `;
-        main.appendChild(card);
-        continue;
+        main.appendChild(card); continue;
     }
 
     let displaySr = ex.sr || (ex.sets+'x'+ex.reps);
     if(displaySr && displaySr.includes('undefined')) displaySr = displaySr.replace('undefined', '');
 
     card.innerHTML = `
-      <div class="row-top">
-        <div class="ex-name">${ex.name}</div>
-        <button class="link-btn" onclick="openImg('${ex.name}')">Görsel</button>
-      </div>
+      <div class="row-top"><div class="ex-name">${ex.name}</div><button class="link-btn" onclick="openImg('${ex.name}')">Görsel</button></div>
       <div class="meta">
           <div class="meta-item">Set: <b>${displaySr}</b></div>
           <div class="meta-item">Dinlenme: <b>${restValueForDisplay}</b></div>
@@ -962,8 +865,7 @@ function renderDaySection(day, main, isReadOnly){
       <div class="stepper">
         <button class="minus">−</button>
         <div class="weight-display">
-          <input type="number" inputmode="decimal" class="wnum-input" value="${fmt(weight)}" step="0.5" min="0"/>
-          <span class="weight-unit">kg</span>
+          <input type="number" inputmode="decimal" class="wnum-input" value="${fmt(weight)}" step="0.5" min="0"/><span class="weight-unit">kg</span>
         </div>
         <button class="plus">+</button>
       </div>
@@ -972,22 +874,13 @@ function renderDaySection(day, main, isReadOnly){
       <div class="timer-row"><div class="timer-display">00:00</div><button class="timer-btn start">Başlat</button><button class="timer-btn reset">↺</button></div>
     `;
 
-    const wInput = card.querySelector('.wnum-input'); 
-    let current = weight;
+    const wInput = card.querySelector('.wnum-input'); let current = weight;
+    const updateWeightUI = (newVal) => { current = Math.max(0, parseFloat(newVal) || 0); wInput.value = fmt(current); setWeight(day.id, idx, current); };
 
-    const updateWeightUI = async (newVal) => {
-        current = Math.max(0, parseFloat(newVal) || 0);
-        wInput.value = fmt(current);
-        await setWeight(day.id, idx, current);
-    };
+    card.querySelector('.minus').onclick = () => updateWeightUI(current - STEP); card.querySelector('.plus').onclick = () => updateWeightUI(current + STEP);
+    wInput.addEventListener('change', (e) => updateWeightUI(e.target.value)); wInput.addEventListener('focus', (e) => e.target.select());
 
-    card.querySelector('.minus').onclick = () => updateWeightUI(current - STEP);
-    card.querySelector('.plus').onclick = () => updateWeightUI(current + STEP);
-    wInput.addEventListener('change', (e) => updateWeightUI(e.target.value));
-    wInput.addEventListener('focus', (e) => e.target.select());
-
-    const setsTotal = parseSetsTotal(ex.sr || ex.sets);
-    let setsDone = getSetsDone(day.id, idx);
+    const setsTotal = parseSetsTotal(ex.sr || ex.sets); let setsDone = getSetsDone(day.id, idx);
     const setBtn = card.querySelector('.set-btn'); const dotsEl = card.querySelector('.dots'); const setLabelEl = card.querySelector('.set-label');
 
     function renderSets(){
@@ -996,17 +889,8 @@ function renderDaySection(day, main, isReadOnly){
     }
     renderSets();
 
-    setBtn.onclick = async () => {
-      setsDone = setsDone >= setsTotal ? 0 : setsDone + 1;
-      await setSetsDone(day.id, idx, setsDone);
-      renderSets();
-    };
-
-    card.querySelector('.set-reset').onclick = async () => {
-      setsDone = 0;
-      await setSetsDone(day.id, idx, setsDone);
-      renderSets();
-    };
+    setBtn.onclick = () => { setsDone = setsDone >= setsTotal ? 0 : setsDone + 1; setSetsDone(day.id, idx, setsDone); renderSets(); };
+    card.querySelector('.set-reset').onclick = () => { setsDone = 0; setSetsDone(day.id, idx, setsDone); renderSets(); };
 
     dayState.push({ name: ex.name, setsTotal, getSetsDone: () => setsDone, getWeight: () => current });
 
@@ -1019,27 +903,16 @@ function renderDaySection(day, main, isReadOnly){
     timerStartBtn.onclick = () => {
       if(!running){ 
           if(timeLeft <= 0) timeLeft = restSeconds; 
-          running = true; 
-          timerStartBtn.textContent = 'Durdur'; 
-          timerStartBtn.className = 'timer-btn pause'; 
-          
+          running = true; timerStartBtn.textContent = 'Durdur'; timerStartBtn.className = 'timer-btn pause'; 
           let targetEndTime = Date.now() + (timeLeft * 1000);
           timerInterval = setInterval(() => {
               timeLeft = Math.max(0, Math.ceil((targetEndTime - Date.now()) / 1000));
-              if(timeLeft <= 0){ 
-                  timeLeft = 0; 
-                  clearInterval(timerInterval); 
-                  running = false; 
-                  timerStartBtn.textContent = 'Başlat'; 
-                  timerStartBtn.className = 'timer-btn start'; 
-              }
+              if(timeLeft <= 0){ clearInterval(timerInterval); running = false; timerStartBtn.textContent = 'Başlat'; timerStartBtn.className = 'timer-btn start'; }
               renderTimer();
           }, 1000); 
       } else { 
-          running = false; 
-          clearInterval(timerInterval); 
-          timerStartBtn.textContent = 'Devam'; 
-          timerStartBtn.className = 'timer-btn start'; 
+          running = false; clearInterval(timerInterval); 
+          timerStartBtn.textContent = 'Devam'; timerStartBtn.className = 'timer-btn start'; 
       }
       renderTimer();
     };
@@ -1054,22 +927,9 @@ function renderDaySection(day, main, isReadOnly){
   const toast = document.createElement('div'); saveBtn.style.marginBottom = '4px'; toast.className = 'save-toast';
   
   saveBtn.onclick = async () => {
-    if(saveBtn.disabled) return;
-    saveBtn.disabled = true;
-
-    const doneExercises = dayState.map(s => ({
-      name: s.name,
-      sets: s.getSetsDone(), 
-      setsTotal: s.setsTotal,
-      weight: s.getWeight()
-    })).filter(s => s.sets > 0); 
-
-    if(doneExercises.length === 0){ 
-        toast.textContent = 'Yapılmamış antrenman kaydedilmedi.'; 
-        setTimeout(()=>{ toast.textContent=''; }, 2500); 
-        saveBtn.disabled = false;
-        return; 
-    }
+    if(saveBtn.disabled) return; saveBtn.disabled = true;
+    const doneExercises = dayState.map(s => ({ name: s.name, sets: s.getSetsDone(), setsTotal: s.setsTotal, weight: s.getWeight() })).filter(s => s.sets > 0); 
+    if(doneExercises.length === 0){ toast.textContent = 'Yapılmamış antrenman kaydedilmedi.'; setTimeout(()=>{ toast.textContent=''; }, 2500); saveBtn.disabled = false; return; }
     
     const now = new Date();
     const entry = { dayLabel: day.title || day.shortLabel || day.name, dateStr: now.toLocaleDateString('tr-TR'), exercises: doneExercises };
@@ -1077,45 +937,29 @@ function renderDaySection(day, main, isReadOnly){
     saveBtn.textContent = "Kaydediliyor...";
     const result = await saveHistoryEntryToCloud(entry);
     
-    if (result.error) {
-      toast.textContent = 'Kayıt başarısız!';
-      saveBtn.textContent = 'Aşağıdan Elle Bitir & Kaydet';
-      saveBtn.disabled = false;
-      setTimeout(()=>{ toast.textContent=''; }, 3000);
-      return;
-    }
+    if (result.error) { toast.textContent = 'Kayıt başarısız!'; saveBtn.textContent = 'Aşağıdan Elle Bitir & Kaydet'; saveBtn.disabled = false; setTimeout(()=>{ toast.textContent=''; }, 3000); return; }
 
-    for(let idx=0; idx<day.exercises.length; idx++){ await setSetsDone(day.id, idx, 0); }
+    for(let idx=0; idx<day.exercises.length; idx++){ setSetsDone(day.id, idx, 0); }
     toast.textContent = 'Buluta başarıyla kaydedildi ✓';
-    saveBtn.textContent = 'Aşağıdan Elle Bitir & Kaydet';
-    saveBtn.disabled = false;
+    saveBtn.textContent = 'Aşağıdan Elle Bitir & Kaydet'; saveBtn.disabled = false;
     setTimeout(()=>{ toast.textContent=''; renderTabs(); renderView(); }, 1200);
   };
   main.appendChild(saveBtn); main.appendChild(toast);
 }
 
 // ==========================================
-// ODAKLI ANTRENMAN MODU SİSTEMİ (BATARYA/GPU OPTİMİZASYONLU)
+// ODAKLI ANTRENMAN MODU SİSTEMİ 
 // ==========================================
 
 function openWorkoutMode(dayObj) {
-    wmCurrentDayObj = dayObj;
-    wmActiveIndex = 0;
+    wmCurrentDayObj = dayObj; wmActiveIndex = 0;
     
     wmState = dayObj.exercises.map((ex, idx) => {
         return {
-            originalIdx: idx,
-            name: ex.name,
-            sr: ex.sr || (ex.sets+'x'+ex.reps),
-            rest: ex.rest,
-            setsTotal: parseSetsTotal(ex.sr || ex.sets),
-            setsDone: getSetsDone(dayObj.id, idx), 
-            weight: getWeight(dayObj.id, idx, ex.start || 0),
-            restSeconds: parseRestSeconds(ex.rest),
-            timeLeft: parseRestSeconds(ex.rest),
-            timerRunning: false,
-            timerInterval: null,
-            targetEndTime: 0
+            originalIdx: idx, name: ex.name, sr: ex.sr || (ex.sets+'x'+ex.reps), rest: ex.rest,
+            setsTotal: parseSetsTotal(ex.sr || ex.sets), setsDone: getSetsDone(dayObj.id, idx), 
+            weight: getWeight(dayObj.id, idx, ex.start || 0), restSeconds: parseRestSeconds(ex.rest),
+            timeLeft: parseRestSeconds(ex.rest), timerRunning: false, timerInterval: null, targetEndTime: 0
         };
     });
 
@@ -1138,173 +982,105 @@ function buildWMCarousel() {
     container.innerHTML = '';
 
     wmState.forEach((ex, i) => {
-        const card = document.createElement('div');
-        card.className = 'wm-card';
-        card.id = 'wm-card-' + i;
-
+        const card = document.createElement('div'); card.className = 'wm-card'; card.id = 'wm-card-' + i;
         let restValueForDisplay = String(ex.rest).toLowerCase().includes('sn') ? ex.rest : ex.rest + ' sn';
-        let displaySr = ex.sr;
-        if(displaySr && displaySr.includes('undefined')) displaySr = displaySr.replace('undefined', '');
+        let displaySr = ex.sr; if(displaySr && displaySr.includes('undefined')) displaySr = displaySr.replace('undefined', '');
 
         card.innerHTML = `
           <button class="wm-prev-btn">↑ Eksİk Kalan Öncekİ Harekete Dön</button>
           
-          <div class="row-top">
-            <div class="ex-name" style="font-size:20px;">${ex.name}</div>
-            <button class="link-btn" onclick="openImg('${ex.name}')">Görsel</button>
-          </div>
+          <div class="row-top"><div class="ex-name" style="font-size:20px;">${ex.name}</div><button class="link-btn" onclick="openImg('${ex.name}')">Görsel</button></div>
           <div class="meta" style="margin-top:12px; margin-bottom:20px;">
               <div class="meta-item" style="font-size:14px;">Set: <b style="font-size:16px;">${displaySr}</b></div>
               <div class="meta-item" style="font-size:14px;">Dinlenme: <b>${restValueForDisplay}</b></div>
           </div>
           <div class="stepper" style="padding:8px; border-radius:16px;">
             <button class="minus" style="width:60px; height:50px;">−</button>
-            <div class="weight-display">
-              <input type="number" inputmode="decimal" class="wnum-input" style="font-size:28px; width:80px;" value="${fmt(ex.weight)}" step="0.5" min="0"/>
-              <span class="weight-unit" style="font-size:16px;">kg</span>
-            </div>
+            <div class="weight-display"><input type="number" inputmode="decimal" class="wnum-input" style="font-size:28px; width:80px;" value="${fmt(ex.weight)}" step="0.5" min="0"/><span class="weight-unit" style="font-size:16px;">kg</span></div>
             <button class="plus" style="width:60px; height:50px;">+</button>
           </div>
           <div class="sets-row" style="margin-top:20px;">
-              <button class="set-btn" style="height:60px; font-size:16px; border-radius:16px;">
-                  <span class="dots" style="gap:8px;"></span><span class="set-label"></span>
-              </button>
+              <button class="set-btn" style="height:60px; font-size:16px; border-radius:16px;"><span class="dots" style="gap:8px;"></span><span class="set-label"></span></button>
               <button class="set-reset" style="height:60px; width:60px; border-radius:16px;">↺</button>
           </div>
           <div style="font-size:12px; color:var(--text-dim); text-transform:uppercase; letter-spacing:1.5px; margin-top:24px; margin-bottom:6px; font-weight:700; text-align:center;">Dinlenme Sayacı</div>
           <div class="timer-row" style="padding:10px; border-radius:16px;">
               <div class="timer-display" style="font-size:28px; width:90px;">00:00</div>
-              <button class="timer-btn start" style="height:48px; font-size:15px; border-radius:12px;">Başlat</button>
-              <button class="timer-btn reset" style="height:48px; font-size:16px;">↺</button>
+              <button class="timer-btn start" style="height:48px; font-size:15px; border-radius:12px;">Başlat</button><button class="timer-btn reset" style="height:48px; font-size:16px;">↺</button>
           </div>
           <button class="wm-skip-btn">↓ Mevcut Hareketi Atla</button>
         `;
 
         const wInput = card.querySelector('.wnum-input'); 
-        const updateWeight = async (newVal) => {
-            ex.weight = Math.max(0, parseFloat(newVal) || 0);
-            wInput.value = fmt(ex.weight);
-            await setWeight(wmCurrentDayObj.id, ex.originalIdx, ex.weight);
-        };
-        card.querySelector('.minus').onclick = () => updateWeight(ex.weight - STEP);
-        card.querySelector('.plus').onclick = () => updateWeight(ex.weight + STEP);
+        const updateWeight = (newVal) => { ex.weight = Math.max(0, parseFloat(newVal) || 0); wInput.value = fmt(ex.weight); setWeight(wmCurrentDayObj.id, ex.originalIdx, ex.weight); };
+        card.querySelector('.minus').onclick = () => updateWeight(ex.weight - STEP); card.querySelector('.plus').onclick = () => updateWeight(ex.weight + STEP);
         wInput.addEventListener('change', (e) => updateWeight(e.target.value));
 
-        const setBtn = card.querySelector('.set-btn'); 
-        const dotsEl = card.querySelector('.dots'); 
-        const setLabelEl = card.querySelector('.set-label');
+        const setBtn = card.querySelector('.set-btn'); const dotsEl = card.querySelector('.dots'); const setLabelEl = card.querySelector('.set-label');
 
         const renderWMSetUI = () => {
             dotsEl.innerHTML = ''; 
             for(let j=0; j<ex.setsTotal; j++){ 
-                const d = document.createElement('span'); 
-                d.className = 'set-dot' + (j < ex.setsDone ? ' filled' : ''); 
-                d.style.width = '14px'; d.style.height = '14px';
-                dotsEl.appendChild(d); 
+                const d = document.createElement('span'); d.className = 'set-dot' + (j < ex.setsDone ? ' filled' : ''); 
+                d.style.width = '14px'; d.style.height = '14px'; dotsEl.appendChild(d); 
             }
             const complete = ex.setsDone >= ex.setsTotal; 
-            setLabelEl.textContent = complete ? 'Tamamlandı ✓' : `Set ${ex.setsDone}/${ex.setsTotal}`; 
-            setBtn.classList.toggle('complete', complete);
+            setLabelEl.textContent = complete ? 'Tamamlandı ✓' : `Set ${ex.setsDone}/${ex.setsTotal}`; setBtn.classList.toggle('complete', complete);
         };
         renderWMSetUI();
 
-        setBtn.onclick = async () => {
+        setBtn.onclick = () => {
             if(ex.setsDone >= ex.setsTotal) return; 
-            ex.setsDone++;
-            renderWMSetUI();
-            updateWMProgress();
-            await setSetsDone(wmCurrentDayObj.id, ex.originalIdx, ex.setsDone);
+            ex.setsDone++; renderWMSetUI(); updateWMProgress();
+            setSetsDone(wmCurrentDayObj.id, ex.originalIdx, ex.setsDone);
 
             if(ex.setsDone >= ex.setsTotal) {
                 setTimeout(() => {
-                    if(wmActiveIndex < wmState.length - 1) {
-                        wmActiveIndex++;
-                        updateWMCarouselClasses();
-                    } else {
-                        finishWorkoutMode();
-                    }
+                    if(wmActiveIndex < wmState.length - 1) { wmActiveIndex++; updateWMCarouselClasses(); } 
+                    else { finishWorkoutMode(); }
                 }, 800); 
             }
         };
 
-        card.querySelector('.set-reset').onclick = async () => {
-            ex.setsDone = 0;
-            renderWMSetUI();
-            updateWMProgress(); 
-            await setSetsDone(wmCurrentDayObj.id, ex.originalIdx, 0);
-        };
-        
-        card.querySelector('.wm-prev-btn').onclick = () => {
-            if(wmActiveIndex > 0) {
-                wmActiveIndex--;
-                updateWMCarouselClasses();
-            }
-        };
+        card.querySelector('.set-reset').onclick = () => { ex.setsDone = 0; renderWMSetUI(); updateWMProgress(); setSetsDone(wmCurrentDayObj.id, ex.originalIdx, 0); };
+        card.querySelector('.wm-prev-btn').onclick = () => { if(wmActiveIndex > 0) { wmActiveIndex--; updateWMCarouselClasses(); } };
+        card.querySelector('.wm-skip-btn').onclick = () => { if(wmActiveIndex < wmState.length - 1) { wmActiveIndex++; updateWMCarouselClasses(); } else { finishWorkoutMode(); } };
 
-        card.querySelector('.wm-skip-btn').onclick = () => {
-            if(wmActiveIndex < wmState.length - 1) {
-                wmActiveIndex++;
-                updateWMCarouselClasses();
-            } else {
-                finishWorkoutMode();
-            }
-        };
-
-        const timerDisplay = card.querySelector('.timer-display'); 
-        const timerStartBtn = card.querySelector('.timer-btn.start');
+        const timerDisplay = card.querySelector('.timer-display'); const timerStartBtn = card.querySelector('.timer-btn.start');
 
         const renderWMTimer = () => { 
-            timerDisplay.textContent = fmtTime(ex.timeLeft); 
-            timerDisplay.classList.toggle('running', ex.timerRunning); 
-            timerDisplay.classList.toggle('done', ex.timeLeft <= 0); 
+            timerDisplay.textContent = fmtTime(ex.timeLeft); timerDisplay.classList.toggle('running', ex.timerRunning); timerDisplay.classList.toggle('done', ex.timeLeft <= 0); 
         };
         renderWMTimer();
 
         timerStartBtn.onclick = () => {
             if(!ex.timerRunning){ 
                 if(ex.timeLeft <= 0) ex.timeLeft = ex.restSeconds; 
-                ex.timerRunning = true; 
-                timerStartBtn.textContent = 'Durdur'; 
-                timerStartBtn.className = 'timer-btn pause'; 
-                
+                ex.timerRunning = true; timerStartBtn.textContent = 'Durdur'; timerStartBtn.className = 'timer-btn pause'; 
                 ex.targetEndTime = Date.now() + (ex.timeLeft * 1000);
                 ex.timerInterval = setInterval(() => {
                     ex.timeLeft = Math.max(0, Math.ceil((ex.targetEndTime - Date.now()) / 1000));
-                    if(ex.timeLeft <= 0){ 
-                        ex.timeLeft = 0; 
-                        clearInterval(ex.timerInterval); 
-                        ex.timerRunning = false; 
-                        timerStartBtn.textContent = 'Başlat'; 
-                        timerStartBtn.className = 'timer-btn start'; 
-                    }
+                    if(ex.timeLeft <= 0){ clearInterval(ex.timerInterval); ex.timerRunning = false; timerStartBtn.textContent = 'Başlat'; timerStartBtn.className = 'timer-btn start'; }
                     renderWMTimer();
                 }, 1000); 
             } else { 
-                ex.timerRunning = false; 
-                clearInterval(ex.timerInterval); 
+                ex.timerRunning = false; clearInterval(ex.timerInterval); 
                 ex.timeLeft = Math.max(0, Math.ceil((ex.targetEndTime - Date.now()) / 1000));
-                timerStartBtn.textContent = 'Devam'; 
-                timerStartBtn.className = 'timer-btn start'; 
+                timerStartBtn.textContent = 'Devam'; timerStartBtn.className = 'timer-btn start'; 
             }
             renderWMTimer();
         };
         
         card.querySelector('.timer-btn.reset').onclick = () => { 
-            ex.timerRunning = false; 
-            clearInterval(ex.timerInterval); 
-            ex.timeLeft = ex.restSeconds; 
-            timerStartBtn.textContent = 'Sıfırla'; 
-            timerStartBtn.className = 'timer-btn start'; 
-            renderWMTimer(); 
+            ex.timerRunning = false; clearInterval(ex.timerInterval); ex.timeLeft = ex.restSeconds; 
+            timerStartBtn.textContent = 'Sıfırla'; timerStartBtn.className = 'timer-btn start'; renderWMTimer(); 
         };
-
         container.appendChild(card);
     });
 
     updateWMCarouselClasses();
 }
 
-// GPU İVMESİYLE ÇALIŞAN (BATARYA DOSTU) MERKEZLEME FORMÜLÜ
 function alignWMTrack() {
     const track = document.getElementById('wm-track');
     const container = document.getElementById('wm-carousel-container');
@@ -1314,8 +1090,6 @@ function alignWMTrack() {
         const containerCenter = container.offsetHeight / 2;
         const cardCenter = activeCard.offsetTop + (activeCard.offsetHeight / 2);
         const shift = containerCenter - cardCenter;
-        
-        // Pili koruyan ve 60fps donanım ivmesi sağlayan 3D translate
         track.style.transform = `translate3d(0, ${shift}px, 0)`;
     }
 }
@@ -1330,139 +1104,83 @@ function updateWMCarouselClasses() {
 
         if(i === wmActiveIndex) {
             card.classList.add('active');
-            if (i > 0 && wmState[i - 1].setsDone < wmState[i - 1].setsTotal) {
-                if(prevBtn) prevBtn.classList.add('show');
-            } else {
-                if(prevBtn) prevBtn.classList.remove('show');
-            }
+            if (i > 0 && wmState[i - 1].setsDone < wmState[i - 1].setsTotal) { if(prevBtn) prevBtn.classList.add('show'); } 
+            else { if(prevBtn) prevBtn.classList.remove('show'); }
         }
-        else if(i < wmActiveIndex) {
-            card.classList.add('prev');
-            if(prevBtn) prevBtn.classList.remove('show');
-        }
-        else if(i > wmActiveIndex) {
-            card.classList.add('next');
-            if(prevBtn) prevBtn.classList.remove('show');
-        }
+        else if(i < wmActiveIndex) { card.classList.add('prev'); if(prevBtn) prevBtn.classList.remove('show'); }
+        else if(i > wmActiveIndex) { card.classList.add('next'); if(prevBtn) prevBtn.classList.remove('show'); }
     });
-
     requestAnimationFrame(alignWMTrack);
 }
 
 function updateWMProgress() {
-    let totalSec = 0;
-    let doneSec = 0;
+    let totalSec = 0; let doneSec = 0;
     wmState.forEach(ex => {
         let exTotal = (ex.setsTotal * 40) + (Math.max(0, ex.setsTotal - 1) * ex.restSeconds);
         let exDone = (ex.setsDone / ex.setsTotal) * exTotal;
-        
-        totalSec += exTotal;
-        doneSec += exDone;
+        totalSec += exTotal; doneSec += exDone;
     });
-    
-    let perc = totalSec > 0 ? Math.round((doneSec / totalSec) * 100) : 0;
-    if(perc > 100) perc = 100; 
-    
+    let perc = totalSec > 0 ? Math.round((doneSec / totalSec) * 100) : 0; if(perc > 100) perc = 100; 
     document.getElementById('wm-progress-fill').style.width = perc + '%';
     document.getElementById('wm-progress-text').textContent = `Antrenman İlerlemesi: %${perc}`;
 }
 
 async function finishWorkoutMode() {
     const btn = document.getElementById('wm-end-btn');
-    if(btn.disabled) return; 
-    btn.disabled = true;
-    let origText = btn.textContent;
-    btn.textContent = "Kaydediliyor...";
+    if(btn.disabled) return; btn.disabled = true;
+    let origText = btn.textContent; btn.textContent = "Kaydediliyor...";
 
     let finalDuration = "00:00";
-    if(wmGlobalTimerInterval) {
-        clearInterval(wmGlobalTimerInterval);
-        const s = Math.floor((Date.now() - wmGlobalStartTime) / 1000);
-        finalDuration = fmtTime(s);
-    }
-    
+    if(wmGlobalTimerInterval) { clearInterval(wmGlobalTimerInterval); finalDuration = fmtTime(Math.floor((Date.now() - wmGlobalStartTime) / 1000)); }
     wmState.forEach(ex => { if(ex.timerInterval) clearInterval(ex.timerInterval); });
 
-    const doneExercises = wmState.map(s => ({
-      name: s.name,
-      sets: s.setsDone, 
-      setsTotal: s.setsTotal,
-      weight: s.weight
-    })).filter(s => s.sets > 0); 
+    const doneExercises = wmState.map(s => ({ name: s.name, sets: s.setsDone, setsTotal: s.setsTotal, weight: s.weight })).filter(s => s.sets > 0); 
 
     if(doneExercises.length > 0){ 
         const now = new Date();
-        const entry = { 
-            dayLabel: wmCurrentDayObj.title || wmCurrentDayObj.name, 
-            dateStr: now.toLocaleDateString('tr-TR'), 
-            exercises: doneExercises,
-            duration: finalDuration 
-        };
+        const entry = { dayLabel: wmCurrentDayObj.title || wmCurrentDayObj.name, dateStr: now.toLocaleDateString('tr-TR'), exercises: doneExercises, duration: finalDuration };
         await saveHistoryEntryToCloud(entry);
-        
-        for(let ex of wmState){ await setSetsDone(wmCurrentDayObj.id, ex.originalIdx, 0); }
+        for(let ex of wmState){ setSetsDone(wmCurrentDayObj.id, ex.originalIdx, 0); }
         alert("Antrenman tamamlandı ve buluta kaydedildi! Tebrikler 💪");
     } else {
         alert("Yapılmamış antrenman kaydedilmedi.");
-        for(let ex of wmState){ await setSetsDone(wmCurrentDayObj.id, ex.originalIdx, 0); }
+        for(let ex of wmState){ setSetsDone(wmCurrentDayObj.id, ex.originalIdx, 0); }
     }
 
-    document.getElementById('workout-mode-screen').style.display = 'none';
-    document.getElementById('app-screen').style.display = 'block';
-    
-    btn.disabled = false;
-    btn.textContent = origText;
-    
+    if(cloudSaveTimeout) clearTimeout(cloudSaveTimeout);
+    await saveCloudData(); // Antrenman bittiğinde bekleyen verileri anında kaydet
+
+    document.getElementById('workout-mode-screen').style.display = 'none'; document.getElementById('app-screen').style.display = 'block';
+    btn.disabled = false; btn.textContent = origText;
     renderTabs(); renderView();
 }
-
 
 // --- TOPLULUK BÖLÜMÜ ---
 async function renderCommunity(){
   const main = document.getElementById('main'); 
   
   if(viewingCommunityProgram) {
-      const row = viewingCommunityProgram;
-      const prog = row.program_data;
-      const authorName = prog.author_username || row.profiles?.username || 'anonim';
-      
+      const row = viewingCommunityProgram; const prog = row.program_data; const authorName = prog.author_username || row.profiles?.username || 'anonim';
       main.innerHTML = `
           <button class="logout-btn" style="margin-bottom:12px; display:inline-flex; align-items:center; gap:4px; font-size:13px;" onclick="viewingCommunityProgram=null; currentSubDay=0; renderView();">← Topluluğa Dön</button>
           <div class="program-title" style="margin-bottom:4px;">${row.title}</div>
           <div class="comm-author" style="margin-bottom:14px; font-size:14px;">Paylaşan: <b>@${authorName}</b></div>
           <button class="save-btn" style="margin-top:0; margin-bottom:16px;" onclick="cloneCommunityProgram('${row.id}')">Kendi Listeme Kopyala</button>
       `;
-
-      const stContainer = document.createElement('div');
-      stContainer.className = 'sub-tabs-container';
+      const stContainer = document.createElement('div'); stContainer.className = 'sub-tabs-container';
       prog.days.forEach((day, i) => {
-         const st = document.createElement('div');
-         st.className = 'sub-tab' + (i === currentSubDay ? ' active' : '');
-         st.textContent = day.name || `Gün ${i+1}`;
-         st.onclick = () => { currentSubDay = i; renderView(); };
-         stContainer.appendChild(st);
+         const st = document.createElement('div'); st.className = 'sub-tab' + (i === currentSubDay ? ' active' : '');
+         st.textContent = day.name || `Gün ${i+1}`; st.onclick = () => { currentSubDay = i; renderView(); }; stContainer.appendChild(st);
       });
       main.appendChild(stContainer);
-
-      if(prog.days[currentSubDay]) {
-          renderDaySection(prog.days[currentSubDay], main, true);
-      }
-      
-      const analysisContainer = document.createElement('div');
-      main.appendChild(analysisContainer);
-      renderAnalysis(prog, analysisContainer);
-      
+      if(prog.days[currentSubDay]) renderDaySection(prog.days[currentSubDay], main, true);
+      const analysisContainer = document.createElement('div'); main.appendChild(analysisContainer); renderAnalysis(prog, analysisContainer);
       return;
   }
 
   main.innerHTML = `<div class="day-note">Topluluk ağından programlar çekiliyor...</div>`;
-  
   let { data, error } = await supabaseClient.from('programs').select('*, profiles(username)').eq('is_public', true).order('created_at', {ascending: false}).limit(30);
-  if (error) {
-      const fallback = await supabaseClient.from('programs').select('*').eq('is_public', true).order('created_at', {ascending: false}).limit(30);
-      data = fallback.data;
-  }
-  
+  if (error) { const fallback = await supabaseClient.from('programs').select('*').eq('is_public', true).order('created_at', {ascending: false}).limit(30); data = fallback.data; }
   communityListCache = data || []; 
 
   main.innerHTML = `<div class="day-note" style="margin-bottom:16px; font-size:14px;">Diğer sporcuların paylaştığı herkese açık programlar.</div>`;
@@ -1470,28 +1188,16 @@ async function renderCommunity(){
 
   data.forEach(row => {
     const card = document.createElement('div'); card.className = 'comm-card';
-    const dt = new Date(row.created_at);
-    const dateStr = dt.toLocaleDateString('tr-TR');
-    const authorName = row.program_data.author_username || row.profiles?.username || 'anonim';
-    
-    let deleteBtnHtml = '';
-    if (row.user_id === currentUser.id) {
-        deleteBtnHtml = `<button class="comm-btn delete" onclick="deleteCommunityProgram('${row.id}')">Ağdan Sil</button>`;
-    }
+    const dt = new Date(row.created_at); const dateStr = dt.toLocaleDateString('tr-TR'); const authorName = row.program_data.author_username || row.profiles?.username || 'anonim';
+    let deleteBtnHtml = ''; if (row.user_id === currentUser.id) deleteBtnHtml = `<button class="comm-btn delete" onclick="deleteCommunityProgram('${row.id}')">Ağdan Sil</button>`;
     
     card.innerHTML = `
-      <div class="comm-header-row">
-          <div class="comm-author">Paylaşan: <b style="color:var(--accent);">@${authorName}</b></div>
-          <div class="comm-date">${dateStr}</div>
-      </div>
-      <div class="comm-title">${row.title}</div>
-      <div style="font-size:13px; color:var(--text-dim); margin-bottom:6px; font-weight:600;">${row.program_data.days.length} Günlük Program</div>
+      <div class="comm-header-row"><div class="comm-author">Paylaşan: <b style="color:var(--accent);">@${authorName}</b></div><div class="comm-date">${dateStr}</div></div>
+      <div class="comm-title">${row.title}</div><div style="font-size:13px; color:var(--text-dim); margin-bottom:6px; font-weight:600;">${row.program_data.days.length} Günlük Program</div>
       <div class="comm-actions">
           <button class="comm-btn view" onclick="viewingCommunityProgram = communityListCache.find(r=>r.id==='${row.id}'); currentSubDay=0; renderView();">İncele</button>
-          <button class="comm-btn add" onclick="cloneCommunityProgram('${row.id}')">Kopyala</button>
-          ${deleteBtnHtml}
-      </div>
-    `;
+          <button class="comm-btn add" onclick="cloneCommunityProgram('${row.id}')">Kopyala</button>${deleteBtnHtml}
+      </div>`;
     main.appendChild(card);
   });
 }
@@ -1499,138 +1205,36 @@ async function renderCommunity(){
 async function deleteCommunityProgram(programId) {
     if(!confirm("Paylaştığınız bu programı topluluk ağından tamamen silmek istediğinize emin misiniz? (Kendi cihazınızdaki silinmez)")) return;
     const { error } = await supabaseClient.from('programs').delete().eq('id', programId);
-    if(error) alert("Silinirken hata oluştu: " + error.message);
-    else renderCommunity();
+    if(error) alert("Silinirken hata oluştu: " + error.message); else renderCommunity();
 }
 
 async function cloneCommunityProgram(programId) {
-    const row = communityListCache.find(r => r.id === programId);
-    if(!row) return;
-
-    const clonedProg = JSON.parse(JSON.stringify(row.program_data));
-    delete clonedProg.author_username; 
-    clonedProg.id = cpUid();
-    clonedProg.days.forEach(d => { d.id = cpUid(); });
-    
+    const row = communityListCache.find(r => r.id === programId); if(!row) return;
+    const clonedProg = JSON.parse(JSON.stringify(row.program_data)); delete clonedProg.author_username; 
+    clonedProg.id = cpUid(); clonedProg.days.forEach(d => { d.id = cpUid(); });
     if(!cloudData.saved_programs) cloudData.saved_programs = [];
-    cloudData.saved_programs.push(clonedProg);
-    
-    await saveCloudData();
+    cloudData.saved_programs.push(clonedProg); await saveCloudData();
     alert(`"${clonedProg.name}" başarıyla kişisel listenize eklendi!`);
-    
-    const programs = getProgramList();
-    currentDay = programs.length - 1;
-    currentSubDay = 0;
-    viewingCommunityProgram = null;
-    renderTabs(); renderView();
+    const programs = getProgramList(); currentDay = programs.length - 1; currentSubDay = 0; viewingCommunityProgram = null; renderTabs(); renderView();
 }
 
 // --- KAPSAMLI HAREKET VERİTABANI ---
 const MUSCLE_LABELS = { gogus: "Göğüs", sirt: "Sırt", omuz: "Omuz", biceps: "Biceps", triceps: "Triceps", quad: "Ön Bacak", hamstring: "Arka Bacak", kalca: "Kalça", baldir: "Baldır", karin: "Karın" };
 const EXERCISE_DB = {
-  gogus: [
-      {name:"Barbell Bench Press", reps:"6-10", type:"compound"}, {name:"Incline Barbell Bench Press", reps:"6-10", type:"compound"}, {name:"Decline Barbell Bench Press", reps:"6-10", type:"compound"},
-      {name:"Dumbbell Bench Press", reps:"8-12", type:"compound"}, {name:"Incline Dumbbell Press", reps:"8-12", type:"compound"}, {name:"Decline Dumbbell Press", reps:"8-12", type:"compound"},
-      {name:"Smith Machine Bench Press", reps:"8-12", type:"compound"}, {name:"Smith Machine Incline Press", reps:"8-12", type:"compound"}, {name:"Machine Chest Press", reps:"8-12", type:"compound"},
-      {name:"Incline Machine Press", reps:"8-12", type:"compound"}, {name:"Pec Deck / Machine Fly", reps:"10-15", type:"izolasyon"}, {name:"Dumbbell Fly", reps:"10-15", type:"izolasyon"},
-      {name:"Incline Dumbbell Fly", reps:"10-15", type:"izolasyon"}, {name:"Cable Crossover (High to Low)", reps:"12-15", type:"izolasyon"}, {name:"Cable Crossover (Mid)", reps:"12-15", type:"izolasyon"},
-      {name:"Cable Crossover (Low to High)", reps:"12-15", type:"izolasyon"}, {name:"Dips (Chest Focus)", reps:"8-12", type:"compound"}, {name:"Weighted Dips", reps:"6-10", type:"compound"},
-      {name:"Push-up", reps:"10-20", type:"compound"}, {name:"Weighted Push-up", reps:"8-12", type:"compound"}, {name:"Deficit Push-up", reps:"10-15", type:"compound"},
-      {name:"Dumbbell Pullover (Chest)", reps:"10-15", type:"izolasyon"}, {name:"Hex Press", reps:"10-15", type:"izolasyon"}, {name:"Guillotine Press", reps:"6-10", type:"compound"},
-      {name:"Floor Press (Barbell)", reps:"6-10", type:"compound"}, {name:"Floor Press (Dumbbell)", reps:"8-12", type:"compound"}, {name:"Landmine Chest Press", reps:"8-12", type:"compound"},
-      {name:"Svend Press", reps:"12-15", type:"izolasyon"}, {name:"Single-Arm Cable Fly", reps:"12-15", type:"izolasyon"}, {name:"Plate Press", reps:"12-15", type:"izolasyon"}
-  ],
-  sirt: [
-      {name:"Deadlift (Conventional)", reps:"4-6", type:"compound"}, {name:"Sumo Deadlift", reps:"4-6", type:"compound"}, {name:"Rack Pull", reps:"5-8", type:"compound"},
-      {name:"Barbell Row (Overhand)", reps:"6-10", type:"compound"}, {name:"Barbell Row (Underhand/Yates)", reps:"6-10", type:"compound"}, {name:"Pendlay Row", reps:"6-10", type:"compound"},
-      {name:"T-Bar Row (Barbell)", reps:"8-10", type:"compound"}, {name:"T-Bar Row (Machine)", reps:"8-10", type:"compound"}, {name:"Seated Cable Row (Close Grip)", reps:"10-12", type:"compound"},
-      {name:"Seated Cable Row (Wide Grip)", reps:"10-12", type:"compound"}, {name:"Lat Pulldown (Wide Grip)", reps:"8-12", type:"compound"}, {name:"Lat Pulldown (Close Grip/V-Bar)", reps:"8-12", type:"compound"},
-      {name:"Lat Pulldown (Underhand)", reps:"8-12", type:"compound"}, {name:"Lat Pulldown (Neutral Grip)", reps:"8-12", type:"compound"}, {name:"Single-Arm Lat Pulldown", reps:"10-12", type:"compound"},
-      {name:"Pull-up", reps:"6-10", type:"compound"}, {name:"Weighted Pull-up", reps:"5-8", type:"compound"}, {name:"Chin-up", reps:"6-10", type:"compound"},
-      {name:"One-Arm Dumbbell Row", reps:"8-12", type:"compound"}, {name:"Kroc Row", reps:"10-15", type:"compound"}, {name:"Meadows Row", reps:"8-12", type:"compound"},
-      {name:"Chest-Supported Dumbbell Row", reps:"8-12", type:"compound"}, {name:"Machine Row (High)", reps:"10-12", type:"compound"}, {name:"Machine Row (Low)", reps:"10-12", type:"compound"},
-      {name:"Seal Row", reps:"8-12", type:"compound"}, {name:"Inverted Row (Bodyweight)", reps:"10-15", type:"compound"}, {name:"Straight-Arm Lat Pulldown", reps:"12-15", type:"izolasyon"},
-      {name:"Cable Pullover", reps:"12-15", type:"izolasyon"}, {name:"Dumbbell Pullover (Lat Focus)", reps:"10-15", type:"izolasyon"}, {name:"Barbell Shrugs", reps:"10-15", type:"izolasyon"},
-      {name:"Dumbbell Shrugs", reps:"10-15", type:"izolasyon"}, {name:"Trap Bar Shrugs", reps:"10-15", type:"izolasyon"}, {name:"Hyperextension (Back Extension)", reps:"12-15", type:"izolasyon"},
-      {name:"Good Morning", reps:"8-12", type:"compound"}
-  ],
-  omuz: [
-      {name:"Overhead Press (Barbell)", reps:"6-10", type:"compound"}, {name:"Seated Barbell Press", reps:"6-10", type:"compound"}, {name:"Dumbbell Shoulder Press", reps:"8-12", type:"compound"},
-      {name:"Arnold Press", reps:"8-12", type:"compound"}, {name:"Smith Machine Shoulder Press", reps:"8-12", type:"compound"}, {name:"Machine Shoulder Press", reps:"8-12", type:"compound"},
-      {name:"Push Press", reps:"5-8", type:"compound"}, {name:"Bradford Press", reps:"8-12", type:"compound"}, {name:"Landmine Shoulder Press", reps:"8-12", type:"compound"},
-      {name:"Lateral Raise (Dumbbell)", reps:"12-15", type:"izolasyon"}, {name:"Lateral Raise (Cable)", reps:"12-15", type:"izolasyon"}, {name:"Machine Lateral Raise", reps:"12-15", type:"izolasyon"},
-      {name:"Egyptian Lateral Raise (Cable)", reps:"12-15", type:"izolasyon"}, {name:"Lean-Away Lateral Raise", reps:"12-15", type:"izolasyon"}, {name:"Front Raise (Dumbbell)", reps:"12-15", type:"izolasyon"},
-      {name:"Front Raise (Barbell)", reps:"12-15", type:"izolasyon"}, {name:"Front Raise (Cable)", reps:"12-15", type:"izolasyon"}, {name:"Plate Front Raise", reps:"12-15", type:"izolasyon"},
-      {name:"Rear Delt Fly (Dumbbell)", reps:"12-15", type:"izolasyon"}, {name:"Rear Delt Cable Pull", reps:"12-15", type:"izolasyon"}, {name:"Reverse Pec Deck (Machine)", reps:"12-15", type:"izolasyon"},
-      {name:"Face Pull (Cable)", reps:"12-15", type:"izolasyon"}, {name:"Upright Row (Barbell)", reps:"10-12", type:"compound"}, {name:"Upright Row (Dumbbell)", reps:"10-12", type:"compound"},
-      {name:"Upright Row (Cable)", reps:"10-12", type:"compound"}, {name:"Cuban Press", reps:"10-12", type:"compound"}, {name:"Y-Raise", reps:"12-15", type:"izolasyon"},
-      {name:"Pike Push-up", reps:"8-15", type:"compound"}, {name:"Handstand Push-up", reps:"5-10", type:"compound"}
-  ],
-  biceps: [
-      {name:"Barbell Curl", reps:"8-12", type:"izolasyon"}, {name:"EZ Bar Curl", reps:"8-12", type:"izolasyon"}, {name:"Dumbbell Curl (Alternating)", reps:"8-12", type:"izolasyon"},
-      {name:"Dumbbell Curl (Supinated)", reps:"8-12", type:"izolasyon"}, {name:"Incline Dumbbell Curl", reps:"10-12", type:"izolasyon"}, {name:"Hammer Curl (Dumbbell)", reps:"8-12", type:"izolasyon"},
-      {name:"Hammer Curl (Cable Rope)", reps:"10-15", type:"izolasyon"}, {name:"Cross-Body Hammer Curl", reps:"8-12", type:"izolasyon"}, {name:"Preacher Curl (EZ Bar)", reps:"10-12", type:"izolasyon"},
-      {name:"Preacher Curl (Dumbbell)", reps:"10-12", type:"izolasyon"}, {name:"Preacher Curl (Machine)", reps:"10-12", type:"izolasyon"}, {name:"Concentration Curl", reps:"10-15", type:"izolasyon"},
-      {name:"Cable Curl (Straight Bar)", reps:"10-15", type:"izolasyon"}, {name:"Single-Arm Cable Curl", reps:"10-15", type:"izolasyon"}, {name:"Spider Curl", reps:"10-12", type:"izolasyon"},
-      {name:"Zottman Curl", reps:"10-12", type:"izolasyon"}, {name:"Reverse Curl (Barbell/EZ)", reps:"10-15", type:"izolasyon"}, {name:"Drag Curl", reps:"8-12", type:"izolasyon"},
-      {name:"Bayesian Cable Curl", reps:"10-15", type:"izolasyon"}, {name:"21s Curl", reps:"21", type:"izolasyon"}, {name:"High Cable Curl (Crucifix)", reps:"10-15", type:"izolasyon"},
-      {name:"Waiter Curl", reps:"10-15", type:"izolasyon"}
-  ],
-  triceps: [
-      {name:"Triceps Pushdown (Straight Bar)", reps:"10-15", type:"izolasyon"}, {name:"Triceps Pushdown (V-Bar)", reps:"10-15", type:"izolasyon"}, {name:"Triceps Pushdown (Rope)", reps:"10-15", type:"izolasyon"},
-      {name:"Reverse Grip Pushdown", reps:"10-15", type:"izolasyon"}, {name:"Skull Crusher (EZ Bar)", reps:"8-12", type:"izolasyon"}, {name:"Skull Crusher (Dumbbell)", reps:"8-12", type:"izolasyon"},
-      {name:"Overhead Triceps Extension (Dumbbell)", reps:"10-12", type:"izolasyon"}, {name:"Overhead Triceps Extension (Cable Rope)", reps:"10-15", type:"izolasyon"}, {name:"Single-Arm Overhead Extension", reps:"10-12", type:"izolasyon"},
-      {name:"French Press", reps:"8-12", type:"izolasyon"}, {name:"Close-Grip Bench Press", reps:"6-10", type:"compound"}, {name:"JM Press", reps:"8-12", type:"compound"},
-      {name:"Tate Press", reps:"10-12", type:"izolasyon"}, {name:"Dips (Triceps Focus)", reps:"8-12", type:"compound"}, {name:"Weighted Triceps Dips", reps:"6-10", type:"compound"},
-      {name:"Bench Dips", reps:"10-15", type:"izolasyon"}, {name:"Diamond Push-up", reps:"10-15", type:"compound"}, {name:"Triceps Kickback (Dumbbell)", reps:"12-15", type:"izolasyon"},
-      {name:"Triceps Kickback (Cable)", reps:"12-15", type:"izolasyon"}, {name:"Machine Triceps Extension", reps:"10-15", type:"izolasyon"}, {name:"Triceps Dip Machine", reps:"10-15", type:"compound"}
-  ],
-  quad: [
-      {name:"Back Squat (High Bar)", reps:"6-10", type:"compound"}, {name:"Back Squat (Low Bar)", reps:"5-8", type:"compound"}, {name:"Front Squat", reps:"6-10", type:"compound"},
-      {name:"Box Squat", reps:"5-8", type:"compound"}, {name:"Pause Squat", reps:"6-8", type:"compound"}, {name:"Leg Press", reps:"8-12", type:"compound"},
-      {name:"Hack Squat", reps:"8-12", type:"compound"}, {name:"Pendulum Squat", reps:"8-12", type:"compound"}, {name:"Bulgarian Split Squat", reps:"8-12", type:"compound"},
-      {name:"Walking Lunge", reps:"10-12", type:"compound"}, {name:"Forward Lunge", reps:"10-12", type:"compound"}, {name:"Reverse Lunge", reps:"10-12", type:"compound"},
-      {name:"Deficit Lunge", reps:"10-12", type:"compound"}, {name:"Leg Extension", reps:"12-15", type:"izolasyon"}, {name:"Goblet Squat", reps:"10-12", type:"compound"},
-      {name:"Zercher Squat", reps:"6-10", type:"compound"}, {name:"Belt Squat", reps:"8-12", type:"compound"}, {name:"Sissy Squat", reps:"10-15", type:"izolasyon"},
-      {name:"Pistol Squat", reps:"6-10", type:"compound"}, {name:"Step-up", reps:"10-12", type:"compound"}, {name:"Cyclist Squat", reps:"10-12", type:"compound"},
-      {name:"Smith Machine Squat", reps:"8-12", type:"compound"}, {name:"V-Squat Machine", reps:"8-12", type:"compound"}
-  ],
-  hamstring: [
-      {name:"Romanian Deadlift (Barbell)", reps:"8-10", type:"compound"}, {name:"Romanian Deadlift (Dumbbell)", reps:"8-10", type:"compound"}, {name:"Trap Bar RDL", reps:"8-10", type:"compound"},
-      {name:"Stiff-Leg Deadlift", reps:"8-10", type:"compound"}, {name:"Single-Leg RDL", reps:"8-10", type:"compound"}, {name:"B-Stance RDL", reps:"8-12", type:"compound"},
-      {name:"Seated Leg Curl", reps:"10-15", type:"izolasyon"}, {name:"Lying Leg Curl", reps:"10-15", type:"izolasyon"}, {name:"Standing Single-Leg Curl", reps:"10-15", type:"izolasyon"},
-      {name:"Glute-Ham Raise (GHR)", reps:"8-12", type:"compound"}, {name:"Nordic Hamstring Curl", reps:"6-10", type:"izolasyon"}, {name:"Cable Pull-Through", reps:"10-15", type:"compound"},
-      {name:"Reverse Hyper", reps:"10-15", type:"izolasyon"}, {name:"Kettlebell Swing", reps:"12-20", type:"compound"}
-  ],
-  kalca: [
-      {name:"Hip Thrust (Barbell)", reps:"8-12", type:"compound"}, {name:"Hip Thrust (Machine)", reps:"8-12", type:"compound"}, {name:"Single-Leg Hip Thrust", reps:"10-12", type:"compound"},
-      {name:"Glute Bridge", reps:"10-15", type:"compound"}, {name:"Frog Pump", reps:"15-20", type:"izolasyon"}, {name:"Cable Kickback (Glute)", reps:"12-15", type:"izolasyon"},
-      {name:"Hip Abductor Machine", reps:"12-15", type:"izolasyon"}, {name:"Banded Lateral Walk", reps:"12-15", type:"izolasyon"}, {name:"Cable Hip Abduction", reps:"12-15", type:"izolasyon"},
-      {name:"Clamshell", reps:"15-20", type:"izolasyon"}, {name:"Step-up (High Box)", reps:"10-12", type:"compound"}, {name:"Deficit Reverse Lunge", reps:"10-12", type:"compound"},
-      {name:"Curtsy Lunge", reps:"10-12", type:"compound"}, {name:"Sumo Deadlift", reps:"6-10", type:"compound"}, {name:"Glute Focus Back Extension", reps:"12-15", type:"izolasyon"}
-  ],
-  baldir: [
-      {name:"Standing Calf Raise (Machine)", reps:"12-20", type:"izolasyon"}, {name:"Standing Calf Raise (Dumbbell)", reps:"12-20", type:"izolasyon"}, {name:"Standing Calf Raise (Barbell)", reps:"12-20", type:"izolasyon"},
-      {name:"Standing Calf Raise (Smith Machine)", reps:"12-20", type:"izolasyon"}, {name:"Seated Calf Raise (Machine)", reps:"12-20", type:"izolasyon"}, {name:"Donkey Calf Raise", reps:"12-20", type:"izolasyon"},
-      {name:"Leg Press Calf Raise", reps:"12-20", type:"izolasyon"}, {name:"Single-Leg Calf Raise", reps:"12-15", type:"izolasyon"}, {name:"Tibialis Raise", reps:"15-20", type:"izolasyon"},
-      {name:"Jump Rope Calf Pump", reps:"30-60 sn", type:"izolasyon"}
-  ],
-  karin: [
-      {name:"Cable Crunch", reps:"12-15", type:"core"}, {name:"Weighted Cable Crunch", reps:"12-15", type:"core"}, {name:"Hanging Leg Raise", reps:"10-15", type:"core"},
-      {name:"Hanging Knee Raise", reps:"10-15", type:"core"}, {name:"Captain's Chair Leg Raise", reps:"10-15", type:"core"}, {name:"Machine Crunch", reps:"12-15", type:"core"},
-      {name:"Ab Wheel Rollout", reps:"8-12", type:"core"}, {name:"Stability Ball Rollout", reps:"10-12", type:"core"}, {name:"Plank", reps:"60 sn", type:"core"},
-      {name:"Weighted Plank", reps:"45-60 sn", type:"core"}, {name:"Side Plank", reps:"30-45 sn", type:"core"}, {name:"Russian Twist", reps:"12-15", type:"core"},
-      {name:"Cable Woodchopper", reps:"12", type:"core"}, {name:"Pallof Press", reps:"10-12", type:"core"}, {name:"Reverse Crunch", reps:"12-15", type:"core"},
-      {name:"Sit-up", reps:"15-20", type:"core"}, {name:"Decline Sit-up", reps:"12-15", type:"core"}, {name:"V-Up", reps:"12-15", type:"core"},
-      {name:"Bicycle Crunch", reps:"15-20", type:"core"}, {name:"Toes-to-Bar", reps:"8-12", type:"core"}, {name:"Dead Bug", reps:"10-12", type:"core"},
-      {name:"Knee-up", reps:"15-20", type:"core"}, {name:"Ab Coaster Machine", reps:"12-15", type:"core"}, {name:"Landmine Twist", reps:"12/taraf", type:"core"},
-      {name:"Dragon Flag", reps:"5-10", type:"core"}
-  ]
+  gogus: [{name:"Barbell Bench Press", reps:"6-10", type:"compound"}, {name:"Incline Barbell Bench Press", reps:"6-10", type:"compound"}, {name:"Decline Barbell Bench Press", reps:"6-10", type:"compound"}, {name:"Dumbbell Bench Press", reps:"8-12", type:"compound"}, {name:"Incline Dumbbell Press", reps:"8-12", type:"compound"}, {name:"Decline Dumbbell Press", reps:"8-12", type:"compound"}, {name:"Smith Machine Bench Press", reps:"8-12", type:"compound"}, {name:"Smith Machine Incline Press", reps:"8-12", type:"compound"}, {name:"Machine Chest Press", reps:"8-12", type:"compound"}, {name:"Incline Machine Press", reps:"8-12", type:"compound"}, {name:"Pec Deck / Machine Fly", reps:"10-15", type:"izolasyon"}, {name:"Dumbbell Fly", reps:"10-15", type:"izolasyon"}, {name:"Incline Dumbbell Fly", reps:"10-15", type:"izolasyon"}, {name:"Cable Crossover (High to Low)", reps:"12-15", type:"izolasyon"}, {name:"Cable Crossover (Mid)", reps:"12-15", type:"izolasyon"}, {name:"Cable Crossover (Low to High)", reps:"12-15", type:"izolasyon"}, {name:"Dips (Chest Focus)", reps:"8-12", type:"compound"}, {name:"Weighted Dips", reps:"6-10", type:"compound"}, {name:"Push-up", reps:"10-20", type:"compound"}, {name:"Weighted Push-up", reps:"8-12", type:"compound"}, {name:"Deficit Push-up", reps:"10-15", type:"compound"}, {name:"Dumbbell Pullover (Chest)", reps:"10-15", type:"izolasyon"}, {name:"Hex Press", reps:"10-15", type:"izolasyon"}, {name:"Guillotine Press", reps:"6-10", type:"compound"}, {name:"Floor Press (Barbell)", reps:"6-10", type:"compound"}, {name:"Floor Press (Dumbbell)", reps:"8-12", type:"compound"}, {name:"Landmine Chest Press", reps:"8-12", type:"compound"}, {name:"Svend Press", reps:"12-15", type:"izolasyon"}, {name:"Single-Arm Cable Fly", reps:"12-15", type:"izolasyon"}, {name:"Plate Press", reps:"12-15", type:"izolasyon"}],
+  sirt: [{name:"Deadlift (Conventional)", reps:"4-6", type:"compound"}, {name:"Sumo Deadlift", reps:"4-6", type:"compound"}, {name:"Rack Pull", reps:"5-8", type:"compound"}, {name:"Barbell Row (Overhand)", reps:"6-10", type:"compound"}, {name:"Barbell Row (Underhand/Yates)", reps:"6-10", type:"compound"}, {name:"Pendlay Row", reps:"6-10", type:"compound"}, {name:"T-Bar Row (Barbell)", reps:"8-10", type:"compound"}, {name:"T-Bar Row (Machine)", reps:"8-10", type:"compound"}, {name:"Seated Cable Row (Close Grip)", reps:"10-12", type:"compound"}, {name:"Seated Cable Row (Wide Grip)", reps:"10-12", type:"compound"}, {name:"Lat Pulldown (Wide Grip)", reps:"8-12", type:"compound"}, {name:"Lat Pulldown (Close Grip/V-Bar)", reps:"8-12", type:"compound"}, {name:"Lat Pulldown (Underhand)", reps:"8-12", type:"compound"}, {name:"Lat Pulldown (Neutral Grip)", reps:"8-12", type:"compound"}, {name:"Single-Arm Lat Pulldown", reps:"10-12", type:"compound"}, {name:"Pull-up", reps:"6-10", type:"compound"}, {name:"Weighted Pull-up", reps:"5-8", type:"compound"}, {name:"Chin-up", reps:"6-10", type:"compound"}, {name:"One-Arm Dumbbell Row", reps:"8-12", type:"compound"}, {name:"Kroc Row", reps:"10-15", type:"compound"}, {name:"Meadows Row", reps:"8-12", type:"compound"}, {name:"Chest-Supported Dumbbell Row", reps:"8-12", type:"compound"}, {name:"Machine Row (High)", reps:"10-12", type:"compound"}, {name:"Machine Row (Low)", reps:"10-12", type:"compound"}, {name:"Seal Row", reps:"8-12", type:"compound"}, {name:"Inverted Row (Bodyweight)", reps:"10-15", type:"compound"}, {name:"Straight-Arm Lat Pulldown", reps:"12-15", type:"izolasyon"}, {name:"Cable Pullover", reps:"12-15", type:"izolasyon"}, {name:"Dumbbell Pullover (Lat Focus)", reps:"10-15", type:"izolasyon"}, {name:"Barbell Shrugs", reps:"10-15", type:"izolasyon"}, {name:"Dumbbell Shrugs", reps:"10-15", type:"izolasyon"}, {name:"Trap Bar Shrugs", reps:"10-15", type:"izolasyon"}, {name:"Hyperextension (Back Extension)", reps:"12-15", type:"izolasyon"}, {name:"Good Morning", reps:"8-12", type:"compound"}],
+  omuz: [{name:"Overhead Press (Barbell)", reps:"6-10", type:"compound"}, {name:"Seated Barbell Press", reps:"6-10", type:"compound"}, {name:"Dumbbell Shoulder Press", reps:"8-12", type:"compound"}, {name:"Arnold Press", reps:"8-12", type:"compound"}, {name:"Smith Machine Shoulder Press", reps:"8-12", type:"compound"}, {name:"Machine Shoulder Press", reps:"8-12", type:"compound"}, {name:"Push Press", reps:"5-8", type:"compound"}, {name:"Bradford Press", reps:"8-12", type:"compound"}, {name:"Landmine Shoulder Press", reps:"8-12", type:"compound"}, {name:"Lateral Raise (Dumbbell)", reps:"12-15", type:"izolasyon"}, {name:"Lateral Raise (Cable)", reps:"12-15", type:"izolasyon"}, {name:"Machine Lateral Raise", reps:"12-15", type:"izolasyon"}, {name:"Egyptian Lateral Raise (Cable)", reps:"12-15", type:"izolasyon"}, {name:"Lean-Away Lateral Raise", reps:"12-15", type:"izolasyon"}, {name:"Front Raise (Dumbbell)", reps:"12-15", type:"izolasyon"}, {name:"Front Raise (Barbell)", reps:"12-15", type:"izolasyon"}, {name:"Front Raise (Cable)", reps:"12-15", type:"izolasyon"}, {name:"Plate Front Raise", reps:"12-15", type:"izolasyon"}, {name:"Rear Delt Fly (Dumbbell)", reps:"12-15", type:"izolasyon"}, {name:"Rear Delt Cable Pull", reps:"12-15", type:"izolasyon"}, {name:"Reverse Pec Deck (Machine)", reps:"12-15", type:"izolasyon"}, {name:"Face Pull (Cable)", reps:"12-15", type:"izolasyon"}, {name:"Upright Row (Barbell)", reps:"10-12", type:"compound"}, {name:"Upright Row (Dumbbell)", reps:"10-12", type:"compound"}, {name:"Upright Row (Cable)", reps:"10-12", type:"compound"}, {name:"Cuban Press", reps:"10-12", type:"compound"}, {name:"Y-Raise", reps:"12-15", type:"izolasyon"}, {name:"Pike Push-up", reps:"8-15", type:"compound"}, {name:"Handstand Push-up", reps:"5-10", type:"compound"}],
+  biceps: [{name:"Barbell Curl", reps:"8-12", type:"izolasyon"}, {name:"EZ Bar Curl", reps:"8-12", type:"izolasyon"}, {name:"Dumbbell Curl (Alternating)", reps:"8-12", type:"izolasyon"}, {name:"Dumbbell Curl (Supinated)", reps:"8-12", type:"izolasyon"}, {name:"Incline Dumbbell Curl", reps:"10-12", type:"izolasyon"}, {name:"Hammer Curl (Dumbbell)", reps:"8-12", type:"izolasyon"}, {name:"Hammer Curl (Cable Rope)", reps:"10-15", type:"izolasyon"}, {name:"Cross-Body Hammer Curl", reps:"8-12", type:"izolasyon"}, {name:"Preacher Curl (EZ Bar)", reps:"10-12", type:"izolasyon"}, {name:"Preacher Curl (Dumbbell)", reps:"10-12", type:"izolasyon"}, {name:"Preacher Curl (Machine)", reps:"10-12", type:"izolasyon"}, {name:"Concentration Curl", reps:"10-15", type:"izolasyon"}, {name:"Cable Curl (Straight Bar)", reps:"10-15", type:"izolasyon"}, {name:"Single-Arm Cable Curl", reps:"10-15", type:"izolasyon"}, {name:"Spider Curl", reps:"10-12", type:"izolasyon"}, {name:"Zottman Curl", reps:"10-12", type:"izolasyon"}, {name:"Reverse Curl (Barbell/EZ)", reps:"10-15", type:"izolasyon"}, {name:"Drag Curl", reps:"8-12", type:"izolasyon"}, {name:"Bayesian Cable Curl", reps:"10-15", type:"izolasyon"}, {name:"21s Curl", reps:"21", type:"izolasyon"}, {name:"High Cable Curl (Crucifix)", reps:"10-15", type:"izolasyon"}, {name:"Waiter Curl", reps:"10-15", type:"izolasyon"}],
+  triceps: [{name:"Triceps Pushdown (Straight Bar)", reps:"10-15", type:"izolasyon"}, {name:"Triceps Pushdown (V-Bar)", reps:"10-15", type:"izolasyon"}, {name:"Triceps Pushdown (Rope)", reps:"10-15", type:"izolasyon"}, {name:"Reverse Grip Pushdown", reps:"10-15", type:"izolasyon"}, {name:"Skull Crusher (EZ Bar)", reps:"8-12", type:"izolasyon"}, {name:"Skull Crusher (Dumbbell)", reps:"8-12", type:"izolasyon"}, {name:"Overhead Triceps Extension (Dumbbell)", reps:"10-12", type:"izolasyon"}, {name:"Overhead Triceps Extension (Cable Rope)", reps:"10-15", type:"izolasyon"}, {name:"Single-Arm Overhead Extension", reps:"10-12", type:"izolasyon"}, {name:"French Press", reps:"8-12", type:"izolasyon"}, {name:"Close-Grip Bench Press", reps:"6-10", type:"compound"}, {name:"JM Press", reps:"8-12", type:"compound"}, {name:"Tate Press", reps:"10-12", type:"izolasyon"}, {name:"Dips (Triceps Focus)", reps:"8-12", type:"compound"}, {name:"Weighted Triceps Dips", reps:"6-10", type:"compound"}, {name:"Bench Dips", reps:"10-15", type:"izolasyon"}, {name:"Diamond Push-up", reps:"10-15", type:"compound"}, {name:"Triceps Kickback (Dumbbell)", reps:"12-15", type:"izolasyon"}, {name:"Triceps Kickback (Cable)", reps:"12-15", type:"izolasyon"}, {name:"Machine Triceps Extension", reps:"10-15", type:"izolasyon"}, {name:"Triceps Dip Machine", reps:"10-15", type:"compound"}],
+  quad: [{name:"Back Squat (High Bar)", reps:"6-10", type:"compound"}, {name:"Back Squat (Low Bar)", reps:"5-8", type:"compound"}, {name:"Front Squat", reps:"6-10", type:"compound"}, {name:"Box Squat", reps:"5-8", type:"compound"}, {name:"Pause Squat", reps:"6-8", type:"compound"}, {name:"Leg Press", reps:"8-12", type:"compound"}, {name:"Hack Squat", reps:"8-12", type:"compound"}, {name:"Pendulum Squat", reps:"8-12", type:"compound"}, {name:"Bulgarian Split Squat", reps:"8-12", type:"compound"}, {name:"Walking Lunge", reps:"10-12", type:"compound"}, {name:"Forward Lunge", reps:"10-12", type:"compound"}, {name:"Reverse Lunge", reps:"10-12", type:"compound"}, {name:"Deficit Lunge", reps:"10-12", type:"compound"}, {name:"Leg Extension", reps:"12-15", type:"izolasyon"}, {name:"Goblet Squat", reps:"10-12", type:"compound"}, {name:"Zercher Squat", reps:"6-10", type:"compound"}, {name:"Belt Squat", reps:"8-12", type:"compound"}, {name:"Sissy Squat", reps:"10-15", type:"izolasyon"}, {name:"Pistol Squat", reps:"6-10", type:"compound"}, {name:"Step-up", reps:"10-12", type:"compound"}, {name:"Cyclist Squat", reps:"10-12", type:"compound"}, {name:"Smith Machine Squat", reps:"8-12", type:"compound"}, {name:"V-Squat Machine", reps:"8-12", type:"compound"}],
+  hamstring: [{name:"Romanian Deadlift (Barbell)", reps:"8-10", type:"compound"}, {name:"Romanian Deadlift (Dumbbell)", reps:"8-10", type:"compound"}, {name:"Trap Bar RDL", reps:"8-10", type:"compound"}, {name:"Stiff-Leg Deadlift", reps:"8-10", type:"compound"}, {name:"Single-Leg RDL", reps:"8-10", type:"compound"}, {name:"B-Stance RDL", reps:"8-12", type:"compound"}, {name:"Seated Leg Curl", reps:"10-15", type:"izolasyon"}, {name:"Lying Leg Curl", reps:"10-15", type:"izolasyon"}, {name:"Standing Single-Leg Curl", reps:"10-15", type:"izolasyon"}, {name:"Glute-Ham Raise (GHR)", reps:"8-12", type:"compound"}, {name:"Nordic Hamstring Curl", reps:"6-10", type:"izolasyon"}, {name:"Cable Pull-Through", reps:"10-15", type:"compound"}, {name:"Reverse Hyper", reps:"10-15", type:"izolasyon"}, {name:"Kettlebell Swing", reps:"12-20", type:"compound"}],
+  kalca: [{name:"Hip Thrust (Barbell)", reps:"8-12", type:"compound"}, {name:"Hip Thrust (Machine)", reps:"8-12", type:"compound"}, {name:"Single-Leg Hip Thrust", reps:"10-12", type:"compound"}, {name:"Glute Bridge", reps:"10-15", type:"compound"}, {name:"Frog Pump", reps:"15-20", type:"izolasyon"}, {name:"Cable Kickback (Glute)", reps:"12-15", type:"izolasyon"}, {name:"Hip Abductor Machine", reps:"12-15", type:"izolasyon"}, {name:"Banded Lateral Walk", reps:"12-15", type:"izolasyon"}, {name:"Cable Hip Abduction", reps:"12-15", type:"izolasyon"}, {name:"Clamshell", reps:"15-20", type:"izolasyon"}, {name:"Step-up (High Box)", reps:"10-12", type:"compound"}, {name:"Deficit Reverse Lunge", reps:"10-12", type:"compound"}, {name:"Curtsy Lunge", reps:"10-12", type:"compound"}, {name:"Sumo Deadlift", reps:"6-10", type:"compound"}, {name:"Glute Focus Back Extension", reps:"12-15", type:"izolasyon"}],
+  baldir: [{name:"Standing Calf Raise (Machine)", reps:"12-20", type:"izolasyon"}, {name:"Standing Calf Raise (Dumbbell)", reps:"12-20", type:"izolasyon"}, {name:"Standing Calf Raise (Barbell)", reps:"12-20", type:"izolasyon"}, {name:"Standing Calf Raise (Smith Machine)", reps:"12-20", type:"izolasyon"}, {name:"Seated Calf Raise (Machine)", reps:"12-20", type:"izolasyon"}, {name:"Donkey Calf Raise", reps:"12-20", type:"izolasyon"}, {name:"Leg Press Calf Raise", reps:"12-20", type:"izolasyon"}, {name:"Single-Leg Calf Raise", reps:"12-15", type:"izolasyon"}, {name:"Tibialis Raise", reps:"15-20", type:"izolasyon"}, {name:"Jump Rope Calf Pump", reps:"30-60 sn", type:"izolasyon"}],
+  karin: [{name:"Cable Crunch", reps:"12-15", type:"core"}, {name:"Weighted Cable Crunch", reps:"12-15", type:"core"}, {name:"Hanging Leg Raise", reps:"10-15", type:"core"}, {name:"Hanging Knee Raise", reps:"10-15", type:"core"}, {name:"Captain's Chair Leg Raise", reps:"10-15", type:"core"}, {name:"Machine Crunch", reps:"12-15", type:"core"}, {name:"Ab Wheel Rollout", reps:"8-12", type:"core"}, {name:"Stability Ball Rollout", reps:"10-12", type:"core"}, {name:"Plank", reps:"60 sn", type:"core"}, {name:"Weighted Plank", reps:"45-60 sn", type:"core"}, {name:"Side Plank", reps:"30-45 sn", type:"core"}, {name:"Russian Twist", reps:"12-15", type:"core"}, {name:"Cable Woodchopper", reps:"12", type:"core"}, {name:"Pallof Press", reps:"10-12", type:"core"}, {name:"Reverse Crunch", reps:"12-15", type:"core"}, {name:"Sit-up", reps:"15-20", type:"core"}, {name:"Decline Sit-up", reps:"12-15", type:"core"}, {name:"V-Up", reps:"12-15", type:"core"}, {name:"Bicycle Crunch", reps:"15-20", type:"core"}, {name:"Toes-to-Bar", reps:"8-12", type:"core"}, {name:"Dead Bug", reps:"10-12", type:"core"}, {name:"Knee-up", reps:"15-20", type:"core"}, {name:"Ab Coaster Machine", reps:"12-15", type:"core"}, {name:"Landmine Twist", reps:"12/taraf", type:"core"}, {name:"Dragon Flag", reps:"5-10", type:"core"}]
 };
 
 let builderOpenPicker = JSON.parse(sessionStorage.getItem('openPicker') || '{}');
 
-// --- OLUŞTURUCU YAPI ---
 async function renderBuilder(){
   const main = document.getElementById('main');
   main.innerHTML = `<div class="day-note" style="margin-bottom:20px;">Özel programınızı oluşturun. Aşağıdan gün sayısını seçip hareketleri ekleyebilirsiniz.</div>`;
@@ -1638,76 +1242,45 @@ async function renderBuilder(){
   const analysisContainer = document.createElement('div');
 
   const countRow = document.createElement('div'); countRow.className = 'count-row';
-  countRow.innerHTML = `
-    <div class="count-label">Program Gün Sayısı</div>
-    <div class="count-stepper">
-      <button class="cs-minus">−</button><div class="count-num">${prog.days.length}</div><button class="cs-plus">+</button>
-    </div>
-  `;
+  countRow.innerHTML = `<div class="count-label">Program Gün Sayısı</div><div class="count-stepper"><button class="cs-minus">−</button><div class="count-num">${prog.days.length}</div><button class="cs-plus">+</button></div>`;
   countRow.querySelector('.cs-minus').onclick = async () => { if(prog.days.length > 1){ prog.days.pop(); await saveCustomProgram(prog); currentSubDay = Math.max(0, currentSubDay - 1); renderBuilder(); } };
   countRow.querySelector('.cs-plus').onclick = async () => { if(prog.days.length < 7){ prog.days.push({ id: cpUid(), name:`Gün ${prog.days.length+1}`, exercises: [] }); await saveCustomProgram(prog); currentSubDay = prog.days.length - 1; renderBuilder(); } };
   main.appendChild(countRow);
 
-  const stContainer = document.createElement('div');
-  stContainer.className = 'sub-tabs-container';
+  const stContainer = document.createElement('div'); stContainer.className = 'sub-tabs-container';
   prog.days.forEach((d, i) => {
-     const st = document.createElement('div');
-     st.className = 'sub-tab' + (i === currentSubDay ? ' active' : '');
-     st.textContent = d.name || `Gün ${i+1}`;
-     st.onclick = () => { currentSubDay = i; renderBuilder(); };
-     stContainer.appendChild(st);
+     const st = document.createElement('div'); st.className = 'sub-tab' + (i === currentSubDay ? ' active' : '');
+     st.textContent = d.name || `Gün ${i+1}`; st.onclick = () => { currentSubDay = i; renderBuilder(); }; stContainer.appendChild(st);
   });
   main.appendChild(stContainer);
 
   const day = prog.days[currentSubDay];
   if(day) {
       const card = document.createElement('div'); card.className = 'day-card';
-      
       const head = document.createElement('div'); head.className = 'day-card-head';
-      head.innerHTML = `
-          <input class="day-name-input" value="${day.name}" placeholder="Gün Adı (Örn: İtiş)" />
-          <div class="day-time-badge" style="font-family:'IBM Plex Mono'; font-weight:700; color:var(--accent); font-size:16px; white-space:nowrap; margin-left:12px;">⏱ ~${calcDayTime(day)} dk</div>
-      `;
+      head.innerHTML = `<input class="day-name-input" value="${day.name}" placeholder="Gün Adı (Örn: İtiş)" /><div class="day-time-badge" style="font-family:'IBM Plex Mono'; font-weight:700; color:var(--accent); font-size:16px; white-space:nowrap; margin-left:12px;">⏱ ~${calcDayTime(day)} dk</div>`;
       head.querySelector('.day-name-input').oninput = async (e) => { day.name = e.target.value; await saveCustomProgram(prog); renderTabs(); };
       card.appendChild(head);
 
       const updateTimesUI = () => {
           head.querySelector('.day-time-badge').textContent = `⏱ ~${calcDayTime(day)} dk`;
-          card.querySelectorAll('.ex-time-badge').forEach((el, i) => {
-              el.textContent = `Süre: ~${calcExTime(day.exercises[i].sets, day.exercises[i].rest)} dk`;
-          });
+          card.querySelectorAll('.ex-time-badge').forEach((el, i) => { el.textContent = `Süre: ~${calcExTime(day.exercises[i].sets, day.exercises[i].rest)} dk`; });
       };
 
       day.exercises.forEach((ex, exIdx) => {
         const row = document.createElement('div'); row.className = 'added-ex-row';
-        
-        let safeRest = ex.rest || '90';
-        if(typeof safeRest === 'string') safeRest = safeRest.replace(/sn/gi, '').trim();
-        if(!safeRest) safeRest = '90';
-        
-        let safeReps = ex.reps;
-        if (safeReps === undefined && ex.sr) {
-            let parts = String(ex.sr).split('x');
-            safeReps = parts.length > 1 ? parts[1].trim() : '';
-        }
+        let safeRest = ex.rest || '90'; if(typeof safeRest === 'string') safeRest = safeRest.replace(/sn/gi, '').trim(); if(!safeRest) safeRest = '90';
+        let safeReps = ex.reps; if (safeReps === undefined && ex.sr) { let parts = String(ex.sr).split('x'); safeReps = parts.length > 1 ? parts[1].trim() : ''; }
         if (safeReps === undefined || safeReps === 'undefined') safeReps = '';
-        
-        ex.reps = safeReps;
-        ex.rest = safeRest + ' sn';
+        ex.reps = safeReps; ex.rest = safeRest + ' sn';
 
-        const isFirst = exIdx === 0;
-        const isLast = exIdx === day.exercises.length - 1;
-        const upBtnHtml = isFirst ? '' : `<button class="move-btn up-btn">↑</button>`;
-        const downBtnHtml = isLast ? '' : `<button class="move-btn down-btn">↓</button>`;
+        const upBtnHtml = exIdx === 0 ? '' : `<button class="move-btn up-btn">↑</button>`;
+        const downBtnHtml = exIdx === day.exercises.length - 1 ? '' : `<button class="move-btn down-btn">↓</button>`;
 
         row.innerHTML = `
           <div class="added-ex-top">
               <div><div class="added-ex-name">${ex.name}</div><div class="added-ex-muscle">${MUSCLE_LABELS[ex.muscleKey] || ''} <span class="ex-time-badge" style="color:var(--accent); font-weight:700; margin-left:8px;">Süre: ~${calcExTime(ex.sets, ex.rest)} dk</span></div></div>
-              <div class="added-ex-actions">
-                  ${upBtnHtml}
-                  ${downBtnHtml}
-                  <button class="ex-remove">✕</button>
-              </div>
+              <div class="added-ex-actions">${upBtnHtml}${downBtnHtml}<button class="ex-remove">✕</button></div>
           </div>
           <div class="added-ex-controls">
             <label class="muscle-sets-mini">Set <input type="number" min="1" max="10" class="mini-input sets-input" value="${ex.sets}"/></label>
@@ -1717,48 +1290,17 @@ async function renderBuilder(){
           </div>
         `;
         row.querySelector('.picker-ex-preview').onclick = () => openImg(ex.name);
-        
         row.querySelector('.sets-input').oninput = async (e) => { ex.sets = parseFloat(e.target.value) || 0; await saveCustomProgram(prog); renderAnalysis(prog, analysisContainer); updateTimesUI(); };
         row.querySelector('.reps-input').oninput = async (e) => { ex.reps = e.target.value; await saveCustomProgram(prog); };
         row.querySelector('.rest-input').oninput = async (e) => { ex.rest = e.target.value ? e.target.value + ' sn' : '90 sn'; await saveCustomProgram(prog); updateTimesUI(); };
-        
-        row.querySelector('.ex-remove').onclick = () => { 
-            day.exercises.splice(exIdx, 1); 
-            renderBuilder(); 
-            saveCustomProgram(prog); 
-        };
-        
-        const upBtn = row.querySelector('.up-btn');
-        if(upBtn) {
-            upBtn.onclick = () => {
-                const temp = day.exercises[exIdx];
-                day.exercises[exIdx] = day.exercises[exIdx - 1];
-                day.exercises[exIdx - 1] = temp;
-                renderBuilder(); 
-                saveCustomProgram(prog); 
-            };
-        }
-        
-        const downBtn = row.querySelector('.down-btn');
-        if(downBtn) {
-            downBtn.onclick = () => {
-                const temp = day.exercises[exIdx];
-                day.exercises[exIdx] = day.exercises[exIdx + 1];
-                day.exercises[exIdx + 1] = temp;
-                renderBuilder(); 
-                saveCustomProgram(prog); 
-            };
-        }
-
+        row.querySelector('.ex-remove').onclick = () => { day.exercises.splice(exIdx, 1); renderBuilder(); saveCustomProgram(prog); };
+        const upBtn = row.querySelector('.up-btn'); if(upBtn) { upBtn.onclick = () => { const temp = day.exercises[exIdx]; day.exercises[exIdx] = day.exercises[exIdx - 1]; day.exercises[exIdx - 1] = temp; renderBuilder(); saveCustomProgram(prog); }; }
+        const downBtn = row.querySelector('.down-btn'); if(downBtn) { downBtn.onclick = () => { const temp = day.exercises[exIdx]; day.exercises[exIdx] = day.exercises[exIdx + 1]; day.exercises[exIdx + 1] = temp; renderBuilder(); saveCustomProgram(prog); }; }
         card.appendChild(row);
       });
 
       const addBtn = document.createElement('button'); addBtn.className = 'add-ex-btn'; addBtn.textContent = builderOpenPicker[day.id] ? '− Menüyü Kapat' : '+ Bu Güne Egzersiz Ekle';
-      addBtn.onclick = () => {
-        builderOpenPicker[day.id] = !builderOpenPicker[day.id];
-        sessionStorage.setItem('openPicker', JSON.stringify(builderOpenPicker));
-        renderBuilder();
-      };
+      addBtn.onclick = () => { builderOpenPicker[day.id] = !builderOpenPicker[day.id]; sessionStorage.setItem('openPicker', JSON.stringify(builderOpenPicker)); renderBuilder(); };
       card.appendChild(addBtn);
 
       if(builderOpenPicker[day.id]){
@@ -1767,11 +1309,7 @@ async function renderBuilder(){
           const groupKey = `group_${day.id}`;
           const groupHead = document.createElement('div'); groupHead.className = 'picker-group-head';
           groupHead.innerHTML = `<span>${MUSCLE_LABELS[muscleKey]}</span><span class="picker-group-count">${EXERCISE_DB[muscleKey].length} hareket</span>`;
-          groupHead.onclick = () => {
-            builderOpenPicker[groupKey] = (builderOpenPicker[groupKey] === muscleKey) ? null : muscleKey;
-            sessionStorage.setItem('openPicker', JSON.stringify(builderOpenPicker));
-            renderBuilder();
-          };
+          groupHead.onclick = () => { builderOpenPicker[groupKey] = (builderOpenPicker[groupKey] === muscleKey) ? null : muscleKey; sessionStorage.setItem('openPicker', JSON.stringify(builderOpenPicker)); renderBuilder(); };
           picker.appendChild(groupHead);
 
           const list = document.createElement('div'); list.className = 'picker-ex-list' + (builderOpenPicker[groupKey] === muscleKey ? ' open' : '');
@@ -1779,11 +1317,7 @@ async function renderBuilder(){
             const item = document.createElement('div'); item.className = 'picker-ex-item';
             item.innerHTML = `<span>${dbEx.name}</span><div style="display:flex; gap:10px; align-items:center;"><button class="picker-ex-preview">Görsel</button><span class="picker-ex-reps">${dbEx.reps}</span></div>`;
             item.querySelector('.picker-ex-preview').addEventListener('click', (e) => { e.stopPropagation(); openImg(dbEx.name); });
-            item.addEventListener('click', async () => {
-              day.exercises.push({ name: dbEx.name, muscleKey: muscleKey, sets: 3, reps: dbEx.reps, rest: dbEx.rest || '90 sn' });
-              await saveCustomProgram(prog);
-              renderBuilder();
-            });
+            item.addEventListener('click', async () => { day.exercises.push({ name: dbEx.name, muscleKey: muscleKey, sets: 3, reps: dbEx.reps, rest: dbEx.rest || '90 sn' }); await saveCustomProgram(prog); renderBuilder(); });
             list.appendChild(item);
           });
           picker.appendChild(list);
@@ -1799,131 +1333,66 @@ async function renderBuilder(){
   renderAnalysis(prog, analysisContainer);
 
   const saveRow = document.createElement('div'); saveRow.className = 'save-name-row';
-  
-  let isEditing = !!prog.editing_id;
-  let saveBtnText = isEditing ? 'Değişiklikleri Kaydet' : 'Listeme Ekle';
+  let isEditing = !!prog.editing_id; let saveBtnText = isEditing ? 'Değişiklikleri Kaydet' : 'Listeme Ekle';
+  saveRow.innerHTML = `<input type="text" class="save-name-input" placeholder="Program İsmi (Örn: Hipertrofi)" value="${prog.name || ''}" />`;
 
-  saveRow.innerHTML = `
-    <input type="text" class="save-name-input" placeholder="Program İsmi (Örn: Hipertrofi)" value="${prog.name || ''}" />
-  `;
-
-  const btnContainer = document.createElement('div');
-  btnContainer.className = 'editor-btn-container';
-
-  const clearBtn = document.createElement('button');
-  clearBtn.className = 'clear-draft-btn';
-  clearBtn.textContent = 'İptal Et / Sıfırla';
+  const btnContainer = document.createElement('div'); btnContainer.className = 'editor-btn-container';
+  const clearBtn = document.createElement('button'); clearBtn.className = 'clear-draft-btn'; clearBtn.textContent = 'İptal Et / Sıfırla';
   clearBtn.onclick = async () => {
       if(confirm('Taslağı tamamen silmek ve sıfırdan başlamak istediğinize emin misiniz?')) {
           cloudData.custom_program = { name: "", editing_id: null, days: [ { id: cpUid(), name:"Gün 1", exercises: [] } ] };
-          await saveCloudData();
-          currentSubDay = 0;
-          renderBuilder();
+          await saveCloudData(); currentSubDay = 0; renderBuilder();
       }
   };
   btnContainer.appendChild(clearBtn);
 
-  const saveBtnNode = document.createElement('button');
-  saveBtnNode.className = 'save-name-btn';
-  saveBtnNode.textContent = saveBtnText;
-  btnContainer.appendChild(saveBtnNode);
-
+  const saveBtnNode = document.createElement('button'); saveBtnNode.className = 'save-name-btn'; saveBtnNode.textContent = saveBtnText; btnContainer.appendChild(saveBtnNode);
   saveRow.appendChild(btnContainer);
 
   const saveToast2 = document.createElement('div'); saveToast2.className = 'save-toast';
 
-  saveRow.querySelector('.save-name-input').addEventListener('input', (e) => {
-      prog.name = e.target.value;
-      saveCustomProgram(prog);
-  });
+  saveRow.querySelector('.save-name-input').addEventListener('input', (e) => { prog.name = e.target.value; saveCustomProgram(prog); });
 
   saveBtnNode.onclick = async () => {
-    const nameInput = saveRow.querySelector('.save-name-input');
-    const progName = nameInput.value.trim();
-    const hasAny = prog.days.some(d => d.exercises.length > 0);
-
+    const nameInput = saveRow.querySelector('.save-name-input'); const progName = nameInput.value.trim(); const hasAny = prog.days.some(d => d.exercises.length > 0);
     if(!progName){ saveToast2.textContent = 'Lütfen programa bir isim verin.'; setTimeout(()=>{ saveToast2.textContent=''; }, 2200); return; }
     if(!hasAny){ saveToast2.textContent = 'Kaydetmeden önce en az bir güne hareket ekleyin.'; setTimeout(()=>{ saveToast2.textContent=''; }, 2200); return; }
 
     const newProgram = {
-      id: prog.editing_id || cpUid(), 
-      name: progName,
+      id: prog.editing_id || cpUid(), name: progName,
       days: prog.days.map(d => ({
-        id: cpUid(),
-        shortLabel: d.name,
-        title: d.name,
-        note: '',
-        exercises: d.exercises.map(ex => ({
-          blok: MUSCLE_LABELS[ex.muscleKey] || '',
-          name: ex.name,
-          sr: ex.reps ? `${ex.sets}x${ex.reps}` : `${ex.sets} Set`,
-          sets: ex.sets, 
-          reps: ex.reps,
-          muscleKey: ex.muscleKey,
-          rest: ex.rest || '90 sn',
-          start: 0,
-        })),
+        id: cpUid(), shortLabel: d.name, title: d.name, note: '',
+        exercises: d.exercises.map(ex => ({ blok: MUSCLE_LABELS[ex.muscleKey] || '', name: ex.name, sr: ex.reps ? `${ex.sets}x${ex.reps}` : `${ex.sets} Set`, sets: ex.sets, reps: ex.reps, muscleKey: ex.muscleKey, rest: ex.rest || '90 sn', start: 0, }))
       })),
     };
 
     if(!cloudData.saved_programs) cloudData.saved_programs = [];
-
     if(prog.editing_id) {
         const pIndex = cloudData.saved_programs.findIndex(p => p.id === prog.editing_id);
-        if(pIndex !== -1) {
-            cloudData.saved_programs[pIndex] = newProgram;
-        } else {
-            cloudData.saved_programs.push(newProgram);
-        }
-    } else {
-        cloudData.saved_programs.push(newProgram);
-    }
+        if(pIndex !== -1) cloudData.saved_programs[pIndex] = newProgram; else cloudData.saved_programs.push(newProgram);
+    } else { cloudData.saved_programs.push(newProgram); }
 
     saveToast2.textContent = 'Kaydediliyor...';
-    
     cloudData.custom_program = { name: "", editing_id: null, days: [ { id: cpUid(), name:"Gün 1", exercises: [] } ] };
     await saveCloudData();
-
     saveToast2.textContent = `"${progName}" başarıyla kaydedildi ✓`;
     setTimeout(() => {
       const programs = getProgramList();
-      if(prog.editing_id) {
-          const idx = programs.findIndex(p => p.id === prog.editing_id);
-          currentDay = idx !== -1 ? idx : programs.length - 1;
-      } else {
-          currentDay = programs.length - 1; 
-      }
-      currentSubDay = 0;
-      renderTabs(); renderView();
+      if(prog.editing_id) { const idx = programs.findIndex(p => p.id === prog.editing_id); currentDay = idx !== -1 ? idx : programs.length - 1; } 
+      else { currentDay = programs.length - 1; }
+      currentSubDay = 0; renderTabs(); renderView();
     }, 700);
   };
-
-  main.appendChild(saveRow);
-  main.appendChild(saveToast2);
+  main.appendChild(saveRow); main.appendChild(saveToast2);
 }
 
 function renderAnalysis(prog, container){
-  container.className = 'analysis-section';
-  const totals = {}; Object.keys(MUSCLE_LABELS).forEach(k => totals[k] = 0);
-  
+  container.className = 'analysis-section'; const totals = {}; Object.keys(MUSCLE_LABELS).forEach(k => totals[k] = 0);
   prog.days.forEach(d => {
       if(!d.exercises) return;
       d.exercises.forEach(ex => {
-          let sets = ex.sets;
-          if(sets === undefined && ex.sr) {
-              let m = String(ex.sr).match(/^(\d+)/);
-              if(m) sets = parseInt(m[1]);
-          }
-          sets = parseFloat(sets) || 0;
-
-          let mk = ex.muscleKey;
-          if(!mk) {
-              for(let k in EXERCISE_DB) {
-                  if(EXERCISE_DB[k].find(dbEx => dbEx.name === ex.name)) {
-                      mk = k; break;
-                  }
-              }
-          }
+          let sets = ex.sets; if(sets === undefined && ex.sr) { let m = String(ex.sr).match(/^(\d+)/); if(m) sets = parseInt(m[1]); } sets = parseFloat(sets) || 0;
+          let mk = ex.muscleKey; if(!mk) { for(let k in EXERCISE_DB) { if(EXERCISE_DB[k].find(dbEx => dbEx.name === ex.name)) { mk = k; break; } } }
           if(mk && totals[mk] !== undefined) totals[mk] += sets;
       });
   });

@@ -256,16 +256,24 @@
   .wm-end-btn:disabled { opacity:0.6; cursor:not-allowed;}
 
   .wm-carousel { flex:1; position:relative; overflow:hidden; display:flex; align-items:center; justify-content:center; }
+  
+  /* YENİ: Kartlar için max-height eklendi. Bu sayede aktif kart çok uzayıp alttakini ezemez. */
   .wm-card {
       position: absolute; width: 92%; max-width: 450px;
       background: var(--surface); border-radius:20px; padding:24px;
       box-shadow: 0 10px 40px rgba(0,0,0,0.1);
       transition: transform 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94), opacity 0.5s ease;
       border: 1px solid var(--line); border-left:6px solid var(--accent);
+      max-height: 72vh; overflow-y: auto; scrollbar-width: none;
   }
+  .wm-card::-webkit-scrollbar { display: none; }
+  
   .wm-card.active { transform: translateY(0) scale(1); opacity:1; z-index:3; pointer-events:auto; }
-  .wm-card.prev { transform: translateY(-125%) scale(0.85); opacity:0.4; z-index:1; pointer-events:none; }
-  .wm-card.next { transform: translateY(125%) scale(0.85); opacity:0.4; z-index:1; pointer-events:none; }
+  
+  /* YENİ: Mesafeler 110%'a çekildi ve görünürlük (opacity) artırıldı. */
+  .wm-card.prev { transform: translateY(-110%) scale(0.88); opacity:0.3; z-index:1; pointer-events:none; }
+  .wm-card.next { transform: translateY(110%) scale(0.88); opacity:0.75; z-index:1; pointer-events:none; }
+  
   .wm-card.hidden { opacity:0; pointer-events:none; z-index:0; }
 
   .wm-skip-btn { display:flex; align-items:center; justify-content:center; width:100%; margin-top:20px; padding:12px; background:var(--surface-2); color:var(--text-dim); border:1px dashed var(--line); border-radius:12px; font-family:'Inter'; font-weight:600; font-size:13px; cursor:pointer; transition:0.2s; letter-spacing:0.5px; text-transform:uppercase; }
@@ -505,7 +513,7 @@ async function resetPassword() {
     }
 }
 
-// ŞİFREYİ GÜNCELLEME İŞLEMİ (ŞİFRE KONTROLÜ EKLENDİ)
+// ŞİFREYİ GÜNCELLEME İŞLEMİ
 async function updatePassword() {
   const newPassword = document.getElementById('new-password').value;
   const newPasswordConfirm = document.getElementById('new-password-confirm').value;

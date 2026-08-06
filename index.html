@@ -334,6 +334,8 @@
     <div id="update-password-form" style="display:none;">
       <div style="font-size:14px; margin-bottom:12px; font-weight:600; text-align:center; color:var(--accent);">Lütfen yeni şifrenizi belirleyin.</div>
       <input type="password" id="new-password" class="auth-input" placeholder="Yeni Şifre (En az 6 karakter)" />
+      <!-- YENİ EKLENEN ŞİFRE TEKRARI KUTUSU -->
+      <input type="password" id="new-password-confirm" class="auth-input" placeholder="Yeni Şifre (Tekrar)" />
       <button class="auth-btn-primary" onclick="updatePassword()">Şifreyi Güncelle</button>
     </div>
 
@@ -503,10 +505,13 @@ async function resetPassword() {
     }
 }
 
-// ŞİFREYİ GÜNCELLEME İŞLEMİ
+// ŞİFREYİ GÜNCELLEME İŞLEMİ (ŞİFRE KONTROLÜ EKLENDİ)
 async function updatePassword() {
   const newPassword = document.getElementById('new-password').value;
+  const newPasswordConfirm = document.getElementById('new-password-confirm').value;
+  
   if (!newPassword || newPassword.length < 6) return showMsg('Şifre en az 6 karakter olmalıdır.', true);
+  if (newPassword !== newPasswordConfirm) return showMsg('Şifreler eşleşmiyor, lütfen kontrol edin.', true);
   
   authMsg.textContent = 'Şifreniz güncelleniyor...';
   const { error } = await supabaseClient.auth.updateUser({ password: newPassword });
@@ -539,13 +544,11 @@ async function signOut() {
 
 let hasInitialized = false;
 
-// YENİ: URL'de 'recovery' varsa sistemi baştan kilitler.
 let isRecoveryMode = window.location.hash.includes('type=recovery') || window.location.search.includes('type=recovery');
 
 supabaseClient.auth.onAuthStateChange(async (event, session) => {
-  // ŞİFRE SIFIRLAMA EKRANINI YAKALA VE KİLİTLE
   if (event === 'PASSWORD_RECOVERY' || isRecoveryMode) {
-      isRecoveryMode = true; // Supabase'in uygulamaya atlamasını yasaklar
+      isRecoveryMode = true; 
       authScreen.style.display = 'block';
       appScreen.style.display = 'none';
       document.querySelector('.auth-tabs-container').style.display = 'none';
@@ -557,7 +560,6 @@ supabaseClient.auth.onAuthStateChange(async (event, session) => {
       return;
   }
 
-  // EĞER SIFIRLAMA MODUNDAYSA UYGULAMAYA GİRMESİNİ ENGELLE
   if (session && session.user && !isRecoveryMode) {
     currentUser = session.user;
 

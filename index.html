@@ -210,12 +210,11 @@
   .picker-ex-preview:hover { border-color:var(--accent); color:var(--accent); background:var(--surface);}
   .picker-close{ display:block; width:100%; text-align:center; padding:16px; font-size:13px; font-weight:700; color:var(--text); background:var(--surface-2); border:none; border-top:1px solid var(--line); cursor:pointer; text-transform:uppercase; letter-spacing:0.5px;}
 
-  /* YENİ: MOBİL İÇİN DİKEY (ALT ALTA) HİZALANMIŞ BUTONLAR */
   .save-name-row{ display:flex; flex-direction:column; gap:12px; margin-top:28px; padding-top:24px; border-top:2px solid var(--line);}
   .save-name-input{ width:100%; padding:14px; border:1px solid var(--line); border-radius:14px; font-family:'Inter'; font-size:15px; font-weight:500; background:var(--surface); color:var(--text); outline:none;}
   .save-name-input:focus { border-color:var(--accent); box-shadow:0 0 0 3px rgba(13, 148, 136, 0.15);}
   
-  .editor-btn-container { display:flex; flex-direction:column; gap:10px; width:100%; } /* DİKEY STACK */
+  .editor-btn-container { display:flex; flex-direction:column; gap:10px; width:100%; }
   
   .save-name-btn{ width:100%; background:var(--accent); color:var(--btn-text); border:none; border-radius:14px; padding:14px 16px; font-weight:700; font-family:'Barlow Condensed', sans-serif; font-size:17px; letter-spacing:0.5px; text-transform:uppercase; cursor:pointer; text-align:center; transition:0.2s; box-shadow:0 4px 12px rgba(13, 148, 136, 0.2);}
   .save-name-btn:active { transform:scale(0.96); }
@@ -514,7 +513,6 @@ let wmCurrentDayObj = null;
 
 let currentImgQuery = '';
 
-// Telefon uyku modundan uyanınca veya ekrana dönünce global zamanlayıcıyı tazele (Zaman kaymasını önler)
 document.addEventListener("visibilitychange", () => {
     if (!document.hidden && document.getElementById('workout-mode-screen').style.display === 'flex') {
         const s = Math.floor((Date.now() - wmGlobalStartTime) / 1000);
@@ -635,7 +633,8 @@ function cpUid(){ return 'id' + Math.random().toString(36).slice(2,9) + Date.now
 function openImageModal(name) {
     currentImgQuery = name;
     document.getElementById('ex-modal-title').textContent = name;
-    document.getElementById('ex-modal-iframe').src = "https://www.google.com/search?igu=1&gl=us&hl=en&tbm=isch&q=" + encodeURIComponent(name + " exercise form anatomy");
+    // Senin harika tespitin: gl=us ve hl=en parametrelerini kaldırdık!
+    document.getElementById('ex-modal-iframe').src = "https://www.google.com/search?igu=1&tbm=isch&q=" + encodeURIComponent(name + " exercise form anatomy");
     document.getElementById('ex-modal').classList.add('active');
 }
 function closeImageModal() {
@@ -1540,7 +1539,6 @@ async function renderBuilder(){
         }
         if (safeReps === undefined || safeReps === 'undefined') safeReps = '';
         
-        // MÜDAHALE: ex objesindeki eksikleri kalıcı olarak onar
         ex.reps = safeReps;
         ex.rest = safeRest + ' sn';
 
@@ -1583,8 +1581,8 @@ async function renderBuilder(){
                 const temp = day.exercises[exIdx];
                 day.exercises[exIdx] = day.exercises[exIdx - 1];
                 day.exercises[exIdx - 1] = temp;
-                renderBuilder(); // Anında Ekranı Yenile
-                saveCustomProgram(prog); // Arka Planda Kaydet
+                renderBuilder(); 
+                saveCustomProgram(prog); 
             };
         }
         
@@ -1594,8 +1592,8 @@ async function renderBuilder(){
                 const temp = day.exercises[exIdx];
                 day.exercises[exIdx] = day.exercises[exIdx + 1];
                 day.exercises[exIdx + 1] = temp;
-                renderBuilder(); // Anında Ekranı Yenile
-                saveCustomProgram(prog); // Arka Planda Kaydet
+                renderBuilder(); 
+                saveCustomProgram(prog); 
             };
         }
 

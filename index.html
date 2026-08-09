@@ -1260,7 +1260,9 @@ async function renderCommunity(){
       const stContainer = document.createElement('div'); stContainer.className = 'sub-tabs-container';
       prog.days.forEach((day, i) => {
          const st = document.createElement('div'); st.className = 'sub-tab' + (i === currentSubDay ? ' active' : '');
-         st.textContent = day.name || `Gün ${i+1}`; st.onclick = () => { currentSubDay = i; renderView(); }; stContainer.appendChild(stContainer);
+         st.textContent = day.name || `Gün ${i+1}`; 
+         st.onclick = () => { currentSubDay = i; renderView(); }; 
+         stContainer.appendChild(st);
       });
       main.appendChild(stContainer);
       if(prog.days[currentSubDay]) renderDaySection(prog.days[currentSubDay], main, true);

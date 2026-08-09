@@ -3,17 +3,17 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>Ant. Takip</title>
+<title>TRAK FITNESS</title>
 
 <!-- iOS ve Android Ana Ekran Uygulaması (PWA) Ayarları -->
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<meta name="apple-mobile-web-app-title" content="Ant. Takip">
+<meta name="apple-mobile-web-app-title" content="TRAK FITNESS">
 <meta name="mobile-web-app-capable" content="yes">
 
-<!-- Apple SVG desteklemediği için dinamik ve temaya uygun PNG üreten API kullanıldı -->
-<link rel="apple-touch-icon" href="https://ui-avatars.com/api/?name=Ant+Takip&background=0f172a&color=0d9488&size=512&font-size=0.4&bold=true">
-<link rel="icon" type="image/png" href="https://ui-avatars.com/api/?name=Ant+Takip&background=0f172a&color=0d9488&size=512&font-size=0.4&bold=true">
+<!-- Supabase'den kopyaladığın logonun linki buraya eklendi -->
+<link rel="apple-touch-icon" href="https://luhjxfpnhszoptusadwl.supabase.co/storage/v1/object/public/Logo/IMG_6105.jpeg">
+<link rel="icon" type="image/jpeg" href="https://luhjxfpnhszoptusadwl.supabase.co/storage/v1/object/public/Logo/IMG_6105.jpeg">
 
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700&family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@500;600;700&display=swap" rel="stylesheet">
@@ -294,7 +294,7 @@
 
 <div id="auth-screen">
   <div class="auth-header">
-    <div class="auth-title">Antrenman Takip Pro</div>
+    <div class="auth-title">TRAK FITNESS</div>
     <div class="auth-sub">Premium Bulut Altyapısı</div>
   </div>
   
@@ -325,7 +325,7 @@
 <div id="app-screen" style="display: none;">
   <header>
     <div class="header-top">
-      <h1>Antrenman Takip Pro</h1>
+      <h1>TRAK FITNESS</h1>
       <button class="logout-btn" onclick="signOut()">Çıkış Yap</button>
     </div>
     <div class="sub" id="user-greeting">Hoş geldin</div>
@@ -411,7 +411,7 @@ async function signUp() {
   const password = document.getElementById('signup-password').value;
   const confirmPassword = document.getElementById('signup-password-confirm').value;
   
-  if (!username || !email || password.length < 6) return showMsg('Lütfen tüm alanları eksiksiz doldurun.', true);
+  if (!username || !email || password.length < 6) return showMsg('Lütfen tüm alanları eksikosiz doldurun.', true);
   if (password !== confirmPassword) return showMsg('Şifreler eşleşmiyor, lütfen kontrol edin.', true);
   
   authMsg.textContent = 'Kayıt yapılıyor, lütfen bekleyin...';

@@ -3,12 +3,12 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>TRAK FITNESS</title>
+<title>Trak Fitness</title>
 
 <!-- iOS ve Android Ana Ekran Uygulaması (PWA) Ayarları -->
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<meta name="apple-mobile-web-app-title" content="TRAK FITNESS">
+<meta name="apple-mobile-web-app-title" content="Trak Fitness">
 <meta name="mobile-web-app-capable" content="yes">
 
 <!-- Supabase'den kopyaladığın logonun linki buraya eklendi -->
@@ -103,7 +103,7 @@
   .card{ background:var(--surface); border:1px solid var(--line); border-radius:16px; padding:16px; margin-bottom:12px; box-shadow:0 4px 12px rgba(0,0,0,0.04); transition:transform 0.2s; }
   .card.superset{ border-left:4px solid var(--accent); }
   .row-top{ display:flex; justify-content:space-between; align-items:flex-start; gap:10px; }
-  .ex-name{ font-size:16px; font-weight:600; line-height:1.3; color:var(--text); }
+  .ex-name{ font-size:16px; font-weight:600; line-height:1.4; color:var(--text); word-break: break-word; }
   .meta{ display:flex; gap:16px; margin-top:8px; align-items:center; flex-wrap:wrap;}
   .meta-item{ font-family:'IBM Plex Mono', monospace; font-size:12px; color:var(--text-dim); }
   .meta-item b{ color:var(--accent); font-weight:700; }
@@ -146,7 +146,7 @@
   
   .save-toast{ text-align:center; color:var(--accent); font-size:13px; font-weight:600; margin-top:10px; height:18px; }
 
-  /* GEÇMİŞ & TOPLULUK KARTLARI */
+  /* GEÇMİŞ KARTLARI */
   .hist-empty{ text-align:center; color:var(--text-dim); font-size:14px; margin-top:40px; padding:0 20px; }
   .hist-card{ background:var(--surface); border:1px solid var(--line); border-radius:16px; padding:16px; margin-bottom:16px; box-shadow:0 4px 12px rgba(0,0,0,0.04); }
   .hist-head{ display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:12px; border-bottom:1px solid var(--surface-2); padding-bottom:10px;}
@@ -155,11 +155,11 @@
   .hist-duration{ font-size:12px; color:var(--accent); font-weight:700; font-family:'IBM Plex Mono', monospace;}
   .hist-del{ border:1px solid var(--line); background:var(--surface-2); color:var(--warn); border-radius:8px; font-size:12px; font-weight:600; cursor:pointer; padding:6px 10px; transition:0.2s;}
   .hist-del:hover { background:var(--warn); color:#fff; border-color:var(--warn);}
-  .hist-ex-row{ display:flex; justify-content:space-between; align-items:center; font-size:13.5px; padding:8px 0; border-top:1px dashed var(--line); }
-  .hist-ex-row:first-of-type { border-top:none; }
+  .hist-ex-row{ display:flex; justify-content:space-between; align-items:center; font-size:13.5px; padding:8px 0; border-top:1px dashed var(--line); border-top:none; }
   .hist-ex-name{ color:var(--text); font-weight:500;}
   .hist-ex-stats{ font-family:'IBM Plex Mono', monospace; color:var(--accent); font-weight:600; font-size:13px; white-space:nowrap; margin-left:10px; }
   
+  /* TOPLULUK KARTLARI */
   .comm-card { background:var(--surface); border:1px solid var(--line); border-radius:16px; padding:16px; margin-bottom:16px; box-shadow:0 4px 12px rgba(0,0,0,0.04); }
   .comm-header-row { display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;}
   .comm-author { font-size:13px; color:var(--text-dim); font-weight:500;}
@@ -195,8 +195,13 @@
   .mini-input{ font-family:'IBM Plex Mono', monospace; font-size:14px; font-weight:600; border:1px solid var(--line); border-radius:8px; padding:8px 6px; width:52px; text-align:center; background:var(--surface); color:var(--text); outline:none;}
   .mini-input:focus { border-color:var(--accent); }
   .reps-input{ width:66px; }
-  .ex-remove{ border:1px solid var(--warn); background:transparent; color:var(--warn); border-radius:8px; font-size:12px; font-weight:600; cursor:pointer; padding:6px 12px; transition:0.2s;}
+  
+  .added-ex-actions { display:flex; gap:6px; align-items:center; }
+  .move-btn { background:var(--surface-2); border:1px solid var(--line); color:var(--text-dim); border-radius:8px; font-size:16px; font-weight:bold; cursor:pointer; width:34px; height:32px; display:flex; align-items:center; justify-content:center; transition:0.2s; }
+  .move-btn:hover { background:var(--line); color:var(--text); border-color:var(--text-dim); }
+  .ex-remove { width:34px; height:32px; padding:0; display:flex; align-items:center; justify-content:center; border:1px solid var(--warn); background:transparent; color:var(--warn); border-radius:8px; font-size:14px; font-weight:600; cursor:pointer; transition:0.2s;}
   .ex-remove:hover { background:var(--warn); color:#fff; }
+
   .add-ex-btn{ display:block; width:100%; margin-top:16px; padding:16px; background:transparent; border:2px dashed var(--line); border-radius:14px; color:var(--text-dim); font-weight:700; font-size:14px; cursor:pointer; transition:0.2s; text-transform:uppercase; letter-spacing:0.5px;}
   .add-ex-btn:hover { border-color:var(--accent); color:var(--accent); background:var(--surface);}
 
@@ -215,18 +220,25 @@
   .picker-ex-preview:hover { border-color:var(--accent); color:var(--accent); background:var(--surface);}
   .picker-close{ display:block; width:100%; text-align:center; padding:16px; font-size:13px; font-weight:700; color:var(--text); background:var(--surface-2); border:none; border-top:1px solid var(--line); cursor:pointer; text-transform:uppercase; letter-spacing:0.5px;}
 
-  .save-name-row{ display:flex; gap:10px; margin-top:28px; padding-top:24px; border-top:2px solid var(--line);}
-  .save-name-input{ flex:1; padding:16px; border:1px solid var(--line); border-radius:14px; font-family:'Inter'; font-size:15px; font-weight:500; background:var(--surface); color:var(--text); outline:none;}
+  /* DİKEY BUTONLAR */
+  .save-name-row{ display:flex; flex-direction:column; gap:12px; margin-top:28px; padding-top:24px; border-top:2px solid var(--line);}
+  .save-name-input{ width:100%; padding:14px; border:1px solid var(--line); border-radius:14px; font-family:'Inter'; font-size:15px; font-weight:500; background:var(--surface); color:var(--text); outline:none;}
   .save-name-input:focus { border-color:var(--accent); box-shadow:0 0 0 3px rgba(13, 148, 136, 0.15);}
-  .save-name-btn{ background:var(--accent); color:var(--btn-text); border:none; border-radius:14px; padding:0 24px; font-weight:700; font-family:'Barlow Condensed', sans-serif; font-size:18px; letter-spacing:0.5px; text-transform:uppercase; cursor:pointer; white-space:nowrap; transition:0.2s; box-shadow:0 4px 12px rgba(13, 148, 136, 0.2);}
+  
+  .editor-btn-container { display:flex; flex-direction:column; gap:10px; width:100%; } 
+  
+  .save-name-btn{ width:100%; background:var(--accent); color:var(--btn-text); border:none; border-radius:14px; padding:14px 16px; font-weight:700; font-family:'Barlow Condensed', sans-serif; font-size:17px; letter-spacing:0.5px; text-transform:uppercase; cursor:pointer; text-align:center; transition:0.2s; box-shadow:0 4px 12px rgba(13, 148, 136, 0.2);}
   .save-name-btn:active { transform:scale(0.96); }
   .save-name-btn:disabled { opacity:0.6; cursor:not-allowed; }
+  
+  .clear-draft-btn { width:100%; background:var(--surface-2); color:var(--text-dim); border:1px solid var(--line); border-radius:14px; padding:14px 16px; font-weight:700; font-family:'Barlow Condensed', sans-serif; font-size:16px; text-transform:uppercase; cursor:pointer; transition:0.2s; text-align:center;}
+  .clear-draft-btn:hover { background:var(--line); color:var(--text); }
 
   /* GÖRSEL ANALİZ */
   .analysis-section{ margin-top:28px; margin-bottom:24px;}
   .analysis-title{ font-family:'Barlow Condensed', sans-serif; font-size:22px; font-weight:700; color:var(--text); text-transform:uppercase; margin-bottom:16px; letter-spacing:0.5px;}
   .svg-container { display: flex; flex-wrap: wrap; justify-content: center; gap: 16px; margin-bottom: 16px;}
-  .svg-box { flex: 1 1 300px; max-width: 360px; background: var(--surface); border: 1px solid var(--line); border-radius: 16px; padding: 20px 12px; box-shadow:0 4px 12px rgba(0,0,0,0.04); }
+  .svg-box { flex: 1 1 300px; max-width: 360px; background: var(--surface); border: 1px solid var(--line); border-radius: 16px; padding: 20px 12px; box-shadow:0 4px 12px rgba(0,0,0,0.04); display:flex; flex-direction:column; align-items:center; justify-content:flex-start; }
   .anatomy-label-title { text-align: center; font-family: 'Barlow Condensed', sans-serif; font-size: 18px; font-weight: 700; color: var(--accent); margin-bottom: 16px; letter-spacing: 1px;}
   .human-shape { stroke: #ffffff; stroke-width: 2.5; transition: fill 0.3s ease; }
   .svg-text { font-family: 'Inter', sans-serif; font-size: 11px; font-weight: 700; }
@@ -253,20 +265,59 @@
   .wm-end-btn:active { transform:scale(0.95);}
   .wm-end-btn:disabled { opacity:0.6; cursor:not-allowed;}
 
-  .wm-carousel { flex:1; position:relative; overflow:hidden; display:flex; align-items:center; justify-content:center; }
-  .wm-card {
-      position: absolute; width: 92%; max-width: 450px;
-      background: var(--surface); border-radius:20px; padding:24px;
-      box-shadow: 0 10px 40px rgba(0,0,0,0.1);
-      transition: transform 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94), opacity 0.5s ease;
-      border: 1px solid var(--line); border-left:6px solid var(--accent);
+  /* --- BATARYA VE PERFORMANS İÇİN OPTİMİZE ŞERİT MANTIĞI --- */
+  .wm-carousel { 
+      flex: 1; 
+      position: relative; 
+      overflow: hidden; 
+      width: 100%;
   }
-  .wm-card.active { transform: translateY(0) scale(1); opacity:1; z-index:3; pointer-events:auto; }
-  .wm-card.prev { transform: translateY(-110%) scale(0.85); opacity:0.4; z-index:1; pointer-events:none; }
-  .wm-card.next { transform: translateY(110%) scale(0.85); opacity:0.4; z-index:1; pointer-events:none; }
-  .wm-card.hidden { opacity:0; pointer-events:none; z-index:0; }
+  .wm-track {
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 50px; 
+      /* Sadece GPU ile çalışan translate3d animasyonu */
+      transition: transform 0.45s cubic-bezier(0.25, 1, 0.5, 1);
+      will-change: transform;
+      transform: translate3d(0, 0, 0); 
+      padding: 50vh 0; 
+  }
+  
+  .wm-card {
+      position: relative; 
+      width: 92%; max-width: 450px;
+      background: var(--surface); border-radius:20px; padding:24px;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.05); 
+      transition: transform 0.45s cubic-bezier(0.25, 1, 0.5, 1), opacity 0.45s ease; 
+      border: 1px solid var(--line); border-left:6px solid var(--accent);
+      flex-shrink: 0;
+  }
+  
+  .wm-card.active { transform: scale(1); pointer-events:auto; opacity: 1; z-index: 3;}
+  .wm-card.prev { transform: scale(0.9); pointer-events:none; opacity: 0.35; z-index: 1;}
+  .wm-card.next { transform: scale(0.9); pointer-events:none; opacity: 0.35; z-index: 1;}
 
-  /* Hareketi Atla Butonu */
+  /* YIRTILMAYI ÖNLEYEN MUTLAK KONUMLU BUTON */
+  .wm-prev-btn { 
+      position: absolute;
+      top: -38px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 80%; 
+      height: 32px;
+      background: var(--text); color: var(--surface); 
+      border: none; border-radius: 16px; 
+      font-family:'Inter'; font-weight:600; font-size:12px; cursor:pointer; 
+      letter-spacing:0.5px; text-transform:uppercase; 
+      display: flex; align-items: center; justify-content: center;
+      opacity: 0; pointer-events: none; z-index: 0;
+      transition: opacity 0.3s ease;
+  }
+  .wm-prev-btn.show { opacity: 1; pointer-events: auto; z-index: 5;}
+
   .wm-skip-btn { display:flex; align-items:center; justify-content:center; width:100%; margin-top:20px; padding:12px; background:var(--surface-2); color:var(--text-dim); border:1px dashed var(--line); border-radius:12px; font-family:'Inter'; font-weight:600; font-size:13px; cursor:pointer; transition:0.2s; letter-spacing:0.5px; text-transform:uppercase; }
   .wm-skip-btn:hover { border-color:var(--accent); color:var(--text); background:var(--line);}
 
@@ -275,7 +326,7 @@
   .wm-progress-bar-fill { height:100%; background:var(--accent); width:0%; transition:width 0.5s cubic-bezier(0.4, 0, 0.2, 1); }
   .wm-progress-text { text-align:center; font-size:14px; font-weight:700; color:var(--text); margin-top:10px; transition:0.2s;}
 
-  /* --- YENİ: UYGULAMA İÇİ GÖRSEL ARAMA PENCERESİ (MODAL) --- */
+  /* --- UYGULAMA İÇİ GÖRSEL ARAMA PENCERESİ VE KURTARMA MODAL'I --- */
   .ex-modal { position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(15,23,42,0.85); backdrop-filter:blur(6px); z-index:100000; display:none; align-items:center; justify-content:center; padding:20px; }
   .ex-modal.active { display:flex; animation: fadeIn 0.3s ease; }
   .ex-modal-content { width:100%; max-width:500px; height:85%; background:var(--bg); border-radius:20px; display:flex; flex-direction:column; overflow:hidden; box-shadow:0 10px 40px rgba(0,0,0,0.3); border:1px solid var(--line);}
@@ -294,7 +345,7 @@
 
 <div id="auth-screen">
   <div class="auth-header">
-    <div class="auth-title">TRAK FITNESS</div>
+    <div class="auth-title">Trak Fitness</div>
     <div class="auth-sub">Premium Bulut Altyapısı</div>
   </div>
   
@@ -307,25 +358,42 @@
     <div id="login-form">
       <input type="email" id="login-email" class="auth-input" placeholder="E-posta Adresiniz" />
       <input type="password" id="login-password" class="auth-input" placeholder="Şifreniz" />
+      
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:14px; font-size:13px; color:var(--text-dim); padding: 0 4px;">
+          <label style="display:flex; align-items:center; gap:6px; cursor:pointer;">
+              <input type="checkbox" id="remember-me" style="margin:0; width:16px; height:16px; accent-color:var(--accent);" /> Beni Hatırla
+          </label>
+          <span style="color:var(--accent); cursor:pointer; font-weight:600; text-decoration:underline;" onclick="resetPassword()">Şifremi Unuttum</span>
+      </div>
+
       <button class="auth-btn-primary" onclick="signIn()">Giriş Yap</button>
     </div>
 
     <div id="signup-form" style="display:none;">
-      <input type="text" id="signup-username" class="auth-input" placeholder="Kullanıcı Adı (Örn: haktaner)" />
+      <input type="text" id="signup-username" class="auth-input" placeholder="Kullanıcı Adı" />
       <input type="email" id="signup-email" class="auth-input" placeholder="E-posta Adresiniz" />
       <input type="password" id="signup-password" class="auth-input" placeholder="Şifre (En az 6 karakter)" />
       <input type="password" id="signup-password-confirm" class="auth-input" placeholder="Şifre (Tekrar)" />
       <button class="auth-btn-primary" onclick="signUp()">Hesap Oluştur</button>
     </div>
 
+    <!-- ŞİFRE SIFIRLAMA FORMU -->
+    <div id="update-password-form" style="display:none;">
+      <div style="font-size:14px; margin-bottom:12px; font-weight:600; text-align:center; color:var(--accent);">Lütfen yeni şifrenizi belirleyin.</div>
+      <input type="password" id="new-password" class="auth-input" placeholder="Yeni Şifre (En az 6 karakter)" />
+      <input type="password" id="new-password-confirm" class="auth-input" placeholder="Yeni Şifre (Tekrar)" />
+      <button class="auth-btn-primary" onclick="updatePassword()">Şifreyi Güncelle</button>
+    </div>
+
     <div id="auth-msg"></div>
+    <button id="back-to-login-btn" class="auth-btn-primary" style="display:none; margin-top:14px; background:var(--text);" onclick="resetAuthUI()">← Giriş Ekranına Dön</button>
   </div>
 </div>
 
 <div id="app-screen" style="display: none;">
   <header>
     <div class="header-top">
-      <h1>TRAK FITNESS</h1>
+      <h1>Trak Fitness</h1>
       <button class="logout-btn" onclick="signOut()">Çıkış Yap</button>
     </div>
     <div class="sub" id="user-greeting">Hoş geldin</div>
@@ -335,7 +403,6 @@
   <footer>Tüm antrenman verileriniz şifrelenmiş %100 bulut altyapısında saklanır.</footer>
 </div>
 
-<!-- ODAKLI ANTRENMAN EKRANI -->
 <div id="workout-mode-screen" style="display: none;">
     <div class="wm-top">
         <div class="wm-global-timer-container">
@@ -345,7 +412,7 @@
         <button class="wm-end-btn" id="wm-end-btn" onclick="finishWorkoutMode()">Bitir & Kaydet</button>
     </div>
     <div class="wm-carousel" id="wm-carousel-container">
-        <!-- Kartlar Buraya Gelecek -->
+        <div class="wm-track" id="wm-track"></div>
     </div>
     <div class="wm-progress-container">
         <div class="wm-progress-bar-bg"><div class="wm-progress-bar-fill" id="wm-progress-fill"></div></div>
@@ -353,7 +420,6 @@
     </div>
 </div>
 
-<!-- GÖRSEL ARAMA PENCERESİ (MODAL) -->
 <div id="ex-modal" class="ex-modal">
     <div class="ex-modal-content">
         <div class="ex-modal-header">
@@ -369,17 +435,25 @@
     </div>
 </div>
 
+<!-- YENİ: YARIM KALAN ANTRENMAN KURTARMA PENCERESİ -->
+<div id="recovery-modal" class="ex-modal">
+    <div class="ex-modal-content" style="height:auto; max-width:340px; text-align:center; padding:24px; background:var(--surface);">
+        <h3 style="margin:0 0 16px 0; color:var(--accent); font-family:'Barlow Condensed'; font-size:24px; text-transform:uppercase;">Yarım Kalan Antrenman</h3>
+        <p style="font-size:14px; color:var(--text); margin-bottom:24px; line-height:1.5;">Devam etmekte olan bir antrenmanınız algılandı. Kaldığınız yerden devam etmek ister misiniz?</p>
+        <div style="display:flex; gap:12px;">
+            <button class="ex-modal-btn" style="flex:1;" onclick="discardActiveWorkout()">İptal Et</button>
+            <button class="ex-modal-btn" style="flex:1; background:var(--accent); color:#fff; border:none;" onclick="resumeActiveWorkout()">Devam Et</button>
+        </div>
+    </div>
+</div>
+
 <script>
-// ==========================================
-// SUPABASE BAĞLANTISI
-// ==========================================
 const SUPABASE_URL = 'https://luhjxfpnhszoptusadwl.supabase.co';
 const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imx1aGp4ZnBuaHN6b3B0dXNhZHdsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODU4MTA1NDksImV4cCI6MjEwMTM4NjU0OX0.bbZky4piJuYWDORymhZi-t7C4aDBbqDHbOCMLq7TAag';
 
 const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 let currentUser = null;
 let currentUsername = "";
-
 let cloudData = { weights: {}, custom_program: null, saved_programs: [], session_state: {} };
 
 const authScreen = document.getElementById('auth-screen');
@@ -392,6 +466,7 @@ function showMsg(text, isError = false) {
 
 function switchAuth(mode) {
   authMsg.textContent = '';
+  document.getElementById('back-to-login-btn').style.display = 'none';
   if(mode === 'login') {
     document.getElementById('tab-login').classList.add('active');
     document.getElementById('tab-signup').classList.remove('active');
@@ -405,13 +480,26 @@ function switchAuth(mode) {
   }
 }
 
+function resetAuthUI() {
+    document.getElementById('back-to-login-btn').style.display = 'none';
+    switchAuth('login');
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+    const savedEmail = localStorage.getItem('rememberedEmail');
+    if(savedEmail) {
+        document.getElementById('login-email').value = savedEmail;
+        document.getElementById('remember-me').checked = true;
+    }
+});
+
 async function signUp() {
   const username = document.getElementById('signup-username').value.trim();
   const email = document.getElementById('signup-email').value.trim();
   const password = document.getElementById('signup-password').value;
   const confirmPassword = document.getElementById('signup-password-confirm').value;
   
-  if (!username || !email || password.length < 6) return showMsg('Lütfen tüm alanları eksikosiz doldurun.', true);
+  if (!username || !email || password.length < 6) return showMsg('Lütfen tüm alanları eksiksiz doldurun.', true);
   if (password !== confirmPassword) return showMsg('Şifreler eşleşmiyor, lütfen kontrol edin.', true);
   
   authMsg.textContent = 'Kayıt yapılıyor, lütfen bekleyin...';
@@ -420,7 +508,7 @@ async function signUp() {
   if (error) { 
     showMsg('Kayıt Hatası: ' + error.message, true); 
   } else {
-    showMsg('Kayıt başarılı! Otomatik giriş yapılıyor...');
+    showMsg('Kayıt başarılı! Otomatik giriş yapılıyor...', false);
     if(data.user) {
       await supabaseClient.from('profiles').upsert([{ id: data.user.id, username: username, email: email }]);
       await supabaseClient.auth.signInWithPassword({ email: email, password: password });
@@ -431,23 +519,82 @@ async function signUp() {
 async function signIn() {
   const email = document.getElementById('login-email').value.trim();
   const password = document.getElementById('login-password').value;
+  const remember = document.getElementById('remember-me').checked;
   
   if (!email || !password) return showMsg('Lütfen e-posta ve şifrenizi girin.', true);
 
-  authMsg.textContent = 'Giriş yapılıyor...';
+  if (remember) {
+      localStorage.setItem('rememberedEmail', email);
+  } else {
+      localStorage.removeItem('rememberedEmail');
+  }
 
+  authMsg.textContent = 'Giriş yapılıyor...';
   const { error } = await supabaseClient.auth.signInWithPassword({ email, password });
   if (error) showMsg('Hatalı e-posta veya şifre.', true);
 }
 
-async function signOut() { await supabaseClient.auth.signOut(); }
+async function resetPassword() {
+    const email = document.getElementById('login-email').value.trim();
+    if (!email) {
+        return showMsg('Lütfen şifresini unuttuğunuz e-posta adresini yukarıya yazın.', true);
+    }
+    authMsg.textContent = 'Sıfırlama bağlantısı gönderiliyor...';
+    const { error } = await supabaseClient.auth.resetPasswordForEmail(email, { redirectTo: window.location.href });
+
+    if (error) {
+        showMsg('Hata: ' + error.message, true);
+    } else {
+        showMsg('Şifre sıfırlama bağlantısı gönderildi! Lütfen e-postanızı kontrol edin.', false);
+        document.getElementById('login-form').style.display = 'none';
+        document.getElementById('back-to-login-btn').style.display = 'block'; 
+    }
+}
+
+async function updatePassword() {
+  const newPassword = document.getElementById('new-password').value;
+  const newPasswordConfirm = document.getElementById('new-password-confirm').value;
+  
+  if (!newPassword || newPassword.length < 6) return showMsg('Şifre en az 6 karakter olmalıdır.', true);
+  if (newPassword !== newPasswordConfirm) return showMsg('Şifreler eşleşmiyor, lütfen kontrol edin.', true);
+  
+  authMsg.textContent = 'Şifreniz güncelleniyor...';
+  const { error } = await supabaseClient.auth.updateUser({ password: newPassword });
+  
+  if (error) {
+    showMsg('Hata: ' + error.message, true);
+  } else {
+    showMsg('Şifreniz başarıyla güncellendi! Sayfa yenileniyor...', false);
+    setTimeout(() => { window.location.href = window.location.pathname; }, 1500);
+  }
+}
+
+async function signOut() { 
+  await supabaseClient.auth.signOut(); 
+  document.getElementById('login-password').value = '';
+  if (!document.getElementById('remember-me').checked) { document.getElementById('login-email').value = ''; }
+  document.getElementById('signup-username').value = ''; document.getElementById('signup-email').value = '';
+  document.getElementById('signup-password').value = ''; document.getElementById('signup-password-confirm').value = '';
+  authMsg.textContent = ''; 
+  document.getElementById('back-to-login-btn').style.display = 'none';
+}
 
 let hasInitialized = false;
+let isRecoveryMode = window.location.hash.includes('type=recovery') || window.location.search.includes('type=recovery');
 
 supabaseClient.auth.onAuthStateChange(async (event, session) => {
-  if (session && session.user) {
-    currentUser = session.user;
+  if (event === 'PASSWORD_RECOVERY' || isRecoveryMode) {
+      isRecoveryMode = true; 
+      authScreen.style.display = 'block'; appScreen.style.display = 'none';
+      document.querySelector('.auth-tabs-container').style.display = 'none';
+      document.getElementById('login-form').style.display = 'none'; document.getElementById('signup-form').style.display = 'none';
+      document.getElementById('back-to-login-btn').style.display = 'none'; document.getElementById('update-password-form').style.display = 'block';
+      showMsg('Lütfen yeni şifrenizi belirleyip kaydedin.', false);
+      return;
+  }
 
+  if (session && session.user && !isRecoveryMode) {
+    currentUser = session.user;
     if (hasInitialized) return;
     hasInitialized = true;
 
@@ -458,45 +605,28 @@ supabaseClient.auth.onAuthStateChange(async (event, session) => {
     
     if(uDataArray && uDataArray.length > 0) {
       const uData = uDataArray[0];
-      cloudData = {
-        weights: uData.weights || {},
-        custom_program: uData.custom_program || null,
-        saved_programs: uData.saved_programs || [],
-        session_state: uData.session_state || {}
-      };
+      cloudData = { weights: uData.weights || {}, custom_program: uData.custom_program || null, saved_programs: uData.saved_programs || [], session_state: uData.session_state || {} };
     } else {
       cloudData = { weights: {}, custom_program: null, saved_programs: [], session_state: {} };
     }
 
-    authScreen.style.display = 'none';
-    appScreen.style.display = 'block';
+    authScreen.style.display = 'none'; appScreen.style.display = 'block';
     
     const displayUser = currentUsername || currentUser.email.split('@')[0];
     document.getElementById('user-greeting').innerHTML = `Hoş geldin, <b style="color:var(--accent); font-family:'IBM Plex Mono'; font-size:14px;">@${displayUser}</b>`;
     
     let savedTab = parseInt(sessionStorage.getItem('currentTab'));
     if (isNaN(savedTab)) {
-        if (!cloudData.saved_programs || cloudData.saved_programs.length === 0) {
-            currentDay = 1; 
-        } else {
-            currentDay = 0; 
-        }
+        if (!cloudData.saved_programs || cloudData.saved_programs.length === 0) currentDay = 1; else currentDay = 0; 
     } else {
         currentDay = Math.min(savedTab, getTabLabels().length - 1);
     }
     
-    initApp();
-  } else {
-    currentUser = null;
-    hasInitialized = false;
-    authScreen.style.display = 'block';
-    appScreen.style.display = 'none';
+    checkActiveWorkout(); // YENİ: Başlarken yarım kalan antrenman var mı kontrol et
+  } else if (!isRecoveryMode) {
+    currentUser = null; hasInitialized = false; authScreen.style.display = 'block'; appScreen.style.display = 'none';
   }
 });
-
-// ==========================================
-// ANA UYGULAMA MANTIĞI VE UI YÖNETİMİ
-// ==========================================
 
 let currentSubDay = 0; 
 let communityListCache = []; 
@@ -507,49 +637,106 @@ let wmState = [];
 let wmGlobalTimerInterval = null;
 let wmGlobalStartTime = 0;
 let wmCurrentDayObj = null;
-
 let currentImgQuery = '';
 
-// Telefon uyku modundan uyanınca veya ekrana dönünce global zamanlayıcıyı tazele (Zaman kaymasını önler)
-document.addEventListener("visibilitychange", () => {
-    if (!document.hidden && document.getElementById('workout-mode-screen').style.display === 'flex') {
-        const s = Math.floor((Date.now() - wmGlobalStartTime) / 1000);
-        document.getElementById('wm-global-timer').textContent = fmtTime(s);
+let resizeTimeout;
+window.addEventListener('resize', () => {
+    if(document.getElementById('workout-mode-screen').style.display === 'flex') {
+        clearTimeout(resizeTimeout);
+        resizeTimeout = setTimeout(alignWMTrack, 100);
     }
 });
 
+let cloudSaveTimeout = null;
+function requestCloudSave() {
+    if(cloudSaveTimeout) clearTimeout(cloudSaveTimeout);
+    cloudSaveTimeout = setTimeout(() => {
+        saveCloudData();
+    }, 2500); 
+}
+
+// YENİ: YEREL HAFIZA KURTARMA (CRASH RECOVERY) FONKSİYONLARI
+function saveActiveWorkoutState() {
+    if (document.getElementById('workout-mode-screen').style.display === 'flex' && currentUser) {
+        const data = {
+            dayObj: wmCurrentDayObj,
+            activeIndex: wmActiveIndex,
+            // Interval id'lerini temizle ki hata vermesin
+            state: wmState.map(s => ({...s, timerInterval: null})), 
+            startTime: wmGlobalStartTime
+        };
+        localStorage.setItem('activeWorkout_' + currentUser.id, JSON.stringify(data));
+    }
+}
+
+function checkActiveWorkout() {
+    const saved = localStorage.getItem('activeWorkout_' + currentUser.id);
+    if (saved) {
+        document.getElementById('recovery-modal').classList.add('active');
+    } else {
+        initApp();
+    }
+}
+
+function resumeActiveWorkout() {
+    document.getElementById('recovery-modal').classList.remove('active');
+    const saved = JSON.parse(localStorage.getItem('activeWorkout_' + currentUser.id));
+    if(!saved) { initApp(); return; }
+    
+    wmCurrentDayObj = saved.dayObj;
+    wmActiveIndex = saved.activeIndex;
+    wmGlobalStartTime = saved.startTime;
+    wmState = saved.state;
+    
+    // Güvenlik: Aktif dinlenme sayaçlarını durdur, kullanıcı kendisi devam ettirsin.
+    wmState.forEach(ex => {
+       ex.timerRunning = false;
+       ex.timeLeft = ex.restSeconds;
+    });
+    
+    document.getElementById('app-screen').style.display = 'none';
+    document.getElementById('workout-mode-screen').style.display = 'flex';
+    
+    if(wmGlobalTimerInterval) clearInterval(wmGlobalTimerInterval);
+    wmGlobalTimerInterval = setInterval(() => {
+        const s = Math.floor((Date.now() - wmGlobalStartTime) / 1000);
+        document.getElementById('wm-global-timer').textContent = fmtTime(s);
+    }, 1000);
+
+    buildWMCarousel();
+    updateWMProgress();
+}
+
+async function discardActiveWorkout() {
+    document.getElementById('recovery-modal').classList.remove('active');
+    const saved = JSON.parse(localStorage.getItem('activeWorkout_' + currentUser.id));
+    if(saved && saved.dayObj) {
+        // İptal ediliyorsa buluttaki yarım kalan setleri de sıfırla
+        for(let ex of saved.state){ setSetsDone(saved.dayObj.id, ex.originalIdx, 0); }
+    }
+    localStorage.removeItem('activeWorkout_' + currentUser.id);
+    initApp();
+}
+
 function initApp() { renderTabs(); renderView(); }
-
 function getProgramList(){ return cloudData.saved_programs || []; }
-
 function getCustomProgram(){
   if(cloudData.custom_program && cloudData.custom_program.days) return cloudData.custom_program;
-  cloudData.custom_program = { days: [ { id: cpUid(), name:"Gün 1", exercises: [] } ] };
+  cloudData.custom_program = { name: "", editing_id: null, days: [ { id: cpUid(), name:"Gün 1", exercises: [] } ] };
   if(currentUser) saveCloudData();
   return cloudData.custom_program;
 }
 
 async function saveCloudData() {
   try {
-    const payload = {
-      weights: cloudData.weights,
-      custom_program: cloudData.custom_program,
-      saved_programs: cloudData.saved_programs,
-      session_state: cloudData.session_state
-    };
-    const { data: existing } = await supabaseClient.from('user_data').select('user_id').eq('user_id', currentUser.id);
-    
-    if (existing && existing.length > 0) {
-      await supabaseClient.from('user_data').update(payload).eq('user_id', currentUser.id);
-    } else {
-      await supabaseClient.from('user_data').insert([{ user_id: currentUser.id, ...payload }]);
-    }
+    const payload = { weights: cloudData.weights, custom_program: cloudData.custom_program, saved_programs: cloudData.saved_programs, session_state: cloudData.session_state };
+    await supabaseClient.from('user_data').upsert([{ user_id: currentUser.id, ...payload }]);
   } catch (err) { console.error('Cloud güncelleme hatası:', err); }
 }
 
 async function saveCustomProgram(prog) {
   cloudData.custom_program = prog;
-  await saveCloudData();
+  await saveCloudData(); 
 }
 
 function getTabLabels(){
@@ -566,13 +753,7 @@ function renderTabs(){
   labels.forEach((label, i) => {
     const t = document.createElement('div'); t.className = 'tab' + (i === currentDay ? ' active' : '');
     t.textContent = label;
-    t.onclick = () => { 
-        currentDay = i; 
-        currentSubDay = 0; 
-        viewingCommunityProgram = null; 
-        renderTabs(); 
-        renderView(); 
-    };
+    t.onclick = () => { currentDay = i; currentSubDay = 0; viewingCommunityProgram = null; renderTabs(); renderView(); };
     tabsEl.appendChild(t);
   });
 }
@@ -587,10 +768,8 @@ function renderView(){
   else { renderCommunity(); }
 }
 
-// Zaman Algoritmaları
 function parseSetsTotal(sr){ 
-    if(!sr) return 3;
-    if(typeof sr === 'number') return sr;
+    if(!sr) return 3; if(typeof sr === 'number') return sr;
     const m = String(sr).match(/^(\d+)\s*x/i) || String(sr).match(/^(\d+)/); 
     return m ? parseInt(m[1], 10) : 3; 
 }
@@ -600,26 +779,18 @@ function parseRestSeconds(rt){
     return nums.length?Math.round(nums.reduce((a,b)=>a+b,0)/nums.length):parseFloat(rt) || 90; 
 }
 function fmtTime(s){ 
-    s=Math.max(0,Math.round(s)); 
-    const h = Math.floor(s/3600);
-    const m=Math.floor((s%3600)/60); 
-    const sec = s%60;
+    s=Math.max(0,Math.round(s)); const h = Math.floor(s/3600); const m=Math.floor((s%3600)/60); const sec = s%60;
     if (h > 0) return `${String(h).padStart(2,'0')}:${String(m).padStart(2,'0')}:${String(sec).padStart(2,'0')}`;
     return `${String(m).padStart(2,'0')}:${String(sec).padStart(2,'0')}`; 
 }
-
 function calcExTime(setsInput, restInput) {
-    let sets = parseSetsTotal(setsInput);
-    let restSec = parseRestSeconds(restInput || '90 sn');
-    let workSec = sets * 40; 
-    let totalRest = Math.max(0, sets - 1) * restSec;
+    let sets = parseSetsTotal(setsInput); let restSec = parseRestSeconds(restInput || '90 sn');
+    let workSec = sets * 40; let totalRest = Math.max(0, sets - 1) * restSec;
     return Math.ceil((workSec + totalRest) / 60); 
 }
 function calcDayTime(dayObj) {
     let total = 0;
-    if(dayObj && dayObj.exercises) {
-        dayObj.exercises.forEach(ex => { total += calcExTime(ex.sets || ex.sr, ex.rest); });
-    }
+    if(dayObj && dayObj.exercises) { dayObj.exercises.forEach(ex => { total += calcExTime(ex.sets || ex.sr, ex.rest); }); }
     return total;
 }
 
@@ -627,44 +798,30 @@ const STEP = 2.5;
 function fmt(w){ return (Number.isInteger(w) ? w : w.toFixed(1)); }
 function cpUid(){ return 'id' + Math.random().toString(36).slice(2,9) + Date.now().toString(36); }
 
-// --- YENİ GÖRSEL PENCERESİ (MODAL) - GOOGLE GÖRSELLER ÇÖZÜMÜ ---
-// 'igu=1' Google'ın iframe içinde çalışmasına izin verir.
-// 'gl=us&hl=en' ise lokasyonu Amerika göstererek çerez sorma (GDPR) ekranını devredışı bırakır.
 function openImageModal(name) {
-    currentImgQuery = name;
-    document.getElementById('ex-modal-title').textContent = name;
-    document.getElementById('ex-modal-iframe').src = "https://www.google.com/search?igu=1&gl=us&hl=en&tbm=isch&q=" + encodeURIComponent(name + " exercise form anatomy");
+    currentImgQuery = name; document.getElementById('ex-modal-title').textContent = name;
+    document.getElementById('ex-modal-iframe').src = "https://www.google.com/search?igu=1&tbm=isch&q=" + encodeURIComponent(name + " exercise form anatomy");
     document.getElementById('ex-modal').classList.add('active');
 }
-function closeImageModal() {
-    document.getElementById('ex-modal').classList.remove('active');
-    document.getElementById('ex-modal-iframe').src = ""; 
-}
-function openExternalImg() {
-    window.open("https://www.google.com/search?q=" + encodeURIComponent(currentImgQuery + " exercise form anatomy") + "&tbm=isch", '_blank');
-}
-function openImg(name) { 
-    openImageModal(name); 
-}
+function closeImageModal() { document.getElementById('ex-modal').classList.remove('active'); document.getElementById('ex-modal-iframe').src = ""; }
+function openExternalImg() { window.open("https://www.google.com/search?q=" + encodeURIComponent(currentImgQuery + " exercise form anatomy") + "&tbm=isch", '_blank'); }
+function openImg(name) { openImageModal(name); }
 
 function getSetsDone(dayId, idx) { const key = `${dayId}_${idx}`; return cloudData.session_state[key] || 0; }
-async function setSetsDone(dayId, idx, value) { const key = `${dayId}_${idx}`; cloudData.session_state[key] = value; await saveCloudData(); }
+function setSetsDone(dayId, idx, value) { const key = `${dayId}_${idx}`; cloudData.session_state[key] = value; requestCloudSave(); }
 
 function getWeight(dayId, idx, fallback){ const key = `${dayId}_${idx}`; if(cloudData.weights && cloudData.weights[key] !== undefined) return cloudData.weights[key]; return fallback; }
-async function setWeight(dayId, idx, value){ const key = `${dayId}_${idx}`; if(!cloudData.weights) cloudData.weights = {}; cloudData.weights[key] = value; await saveCloudData(); }
+function setWeight(dayId, idx, value){ const key = `${dayId}_${idx}`; if(!cloudData.weights) cloudData.weights = {}; cloudData.weights[key] = value; requestCloudSave(); }
 
-// --- GEÇMİŞ BÖLÜMÜ ---
 async function saveHistoryEntryToCloud(entry){
   const { error } = await supabaseClient.from("workouts").insert([{ user_id: currentUser.id, workout_data: entry }]);
-  if(error) return { error };
-  return { error: null };
+  return { error: error || null };
 }
 
 async function deleteHistory(id) {
     if(!confirm("Bu antrenmanı geçmişinizden silmek istediğinize emin misiniz?")) return;
     const { error } = await supabaseClient.from('workouts').delete().eq('id', id);
-    if(error) alert("Silinirken hata oluştu: " + error.message);
-    else renderHistory();
+    if(error) alert("Silinirken hata oluştu: " + error.message); else renderHistory();
 }
 
 async function renderHistory(){
@@ -678,17 +835,12 @@ async function renderHistory(){
     if(!entry || !entry.exercises) return;
     const dt = new Date(row.created_at);
     const dateStr = dt.toLocaleDateString('tr-TR') + " " + dt.toLocaleTimeString('tr-TR', {hour:'2-digit', minute:'2-digit'});
-    
-    // Geçmişte toplam süreyi göster (varsa)
     const durationStr = entry.duration ? `<span class="hist-duration">⏱ ${entry.duration}</span>` : '';
 
     const card = document.createElement('div'); card.className = 'hist-card';
     card.innerHTML = `
       <div class="hist-head">
-          <div>
-            <div class="hist-day">${(entry.dayLabel || 'Antrenman').split('—')[0].trim()} ${durationStr}</div>
-            <div class="hist-datetime">${dateStr}</div>
-          </div>
+          <div><div class="hist-day">${(entry.dayLabel || 'Antrenman').split('—')[0].trim()} ${durationStr}</div><div class="hist-datetime">${dateStr}</div></div>
           <button class="hist-del" onclick="deleteHistory('${row.id}')">Sil ✕</button>
       </div>
       ${entry.exercises.map(ex => `<div class="hist-ex-row"><span class="hist-ex-name">${ex.name}</span><span class="hist-ex-stats">${ex.sets}/${ex.setsTotal} SET <span style="color:var(--line);">|</span> ${fmt(ex.weight)} KG</span></div>`).join('')}
@@ -697,34 +849,26 @@ async function renderHistory(){
   });
 }
 
-// --- KULLANICI PROGRAMI GÖRÜNÜMÜ ---
 function renderProgramView(program){
   const main = document.getElementById('main');
-
-  const headerDiv = document.createElement('div');
-  headerDiv.className = 'program-header';
-  
+  const headerDiv = document.createElement('div'); headerDiv.className = 'program-header';
   const pencilSvg = `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 3a2.828 2.828 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z"></path></svg>`;
   
   headerDiv.innerHTML = `
-    <div class="program-title">
-        ${program.name} 
-        <span class="edit-btn" title="İsmi Düzenle">${pencilSvg}</span>
-    </div>
-    <div class="program-controls">
-        <button class="btn-share" id="share-prog-btn">Topluluğa Yolla</button>
-        <button class="btn-del" id="del-prog-btn">Sil</button>
-    </div>
+    <div class="program-title">${program.name} <span class="edit-btn" title="Programı Düzenle">${pencilSvg}</span></div>
+    <div class="program-controls"><button class="btn-share" id="share-prog-btn">Topluluğa Yolla</button><button class="btn-del" id="del-prog-btn">Sil</button></div>
   `;
   main.appendChild(headerDiv);
 
   headerDiv.querySelector('.edit-btn').onclick = async () => {
-      let newName = prompt("Programın yeni adını girin:", program.name);
-      if(newName && newName.trim() !== "") {
-          program.name = newName.trim();
+      if(confirm("Bu programı düzenlemek için 'Oluştur' (Editör) sekmesine yüklemek istiyor musunuz? (Mevcut taslağınızın üzerine yazılacaktır)")) {
+          const progClone = JSON.parse(JSON.stringify(program));
+          progClone.days.forEach(d => { d.name = d.name || d.title || d.shortLabel || ''; });
+          
+          cloudData.custom_program = progClone;
+          cloudData.custom_program.editing_id = program.id; 
           await saveCloudData();
-          renderTabs();
-          renderView();
+          currentDay = getProgramList().length + 1; currentSubDay = 0; renderTabs(); renderView();
       }
   };
 
@@ -732,102 +876,75 @@ function renderProgramView(program){
       this.textContent = "Gönderiliyor...";
       const progDataToShare = JSON.parse(JSON.stringify(program));
       progDataToShare.author_username = currentUsername || currentUser.email.split('@')[0];
-      
       await supabaseClient.from('programs').insert([{ user_id: currentUser.id, title: program.name, is_public: true, program_data: progDataToShare }]);
-      this.textContent = "Paylaşıldı ✓";
-      this.disabled = true;
+      this.textContent = "Paylaşıldı ✓"; this.disabled = true;
   };
 
   headerDiv.querySelector('#del-prog-btn').onclick = async () => {
       if(!confirm(`"${program.name}" programını tamamen silmek istediğinize emin misiniz?`)) return;
       cloudData.saved_programs = cloudData.saved_programs.filter(p => p.id !== program.id);
-      await saveCloudData();
-      currentDay = getProgramList().length + 1;
-      currentSubDay = 0;
-      renderTabs(); renderView();
+      await saveCloudData(); currentDay = getProgramList().length + 1; currentSubDay = 0; renderTabs(); renderView();
   };
 
-  const stContainer = document.createElement('div');
-  stContainer.className = 'sub-tabs-container';
+  const stContainer = document.createElement('div'); stContainer.className = 'sub-tabs-container';
   program.days.forEach((day, i) => {
-     const st = document.createElement('div');
-     st.className = 'sub-tab' + (i === currentSubDay ? ' active' : '');
-     st.textContent = day.name || `Gün ${i+1}`;
-     st.onclick = () => { currentSubDay = i; renderView(); };
-     stContainer.appendChild(st);
+     const st = document.createElement('div'); st.className = 'sub-tab' + (i === currentSubDay ? ' active' : '');
+     st.textContent = day.name || `Gün ${i+1}`; st.onclick = () => { currentSubDay = i; renderView(); }; stContainer.appendChild(st);
   });
   main.appendChild(stContainer);
-
-  if(program.days[currentSubDay]) {
-      renderDaySection(program.days[currentSubDay], main, false);
-  }
+  if(program.days[currentSubDay]) renderDaySection(program.days[currentSubDay], main, false);
 }
 
 function renderDaySection(day, main, isReadOnly){
   if(!isReadOnly && day.exercises && day.exercises.length > 0) {
-      const startBtn = document.createElement('button');
-      startBtn.className = 'start-workout-btn';
-      startBtn.innerHTML = '▶ Antrenmanı Başlat';
-      startBtn.onclick = () => openWorkoutMode(day);
-      main.appendChild(startBtn);
+      const startBtn = document.createElement('button'); startBtn.className = 'start-workout-btn';
+      startBtn.innerHTML = '▶ Antrenmanı Başlat'; startBtn.onclick = () => openWorkoutMode(day); main.appendChild(startBtn);
   }
 
-  const dayTitleDiv = document.createElement('div');
-  dayTitleDiv.className = 'day-section-title';
+  const dayTitleDiv = document.createElement('div'); dayTitleDiv.className = 'day-section-title';
   dayTitleDiv.innerHTML = `<span>${day.title || day.shortLabel || day.name || 'Antrenman'}</span> <span style="font-size:14px; color:var(--accent); font-family:'IBM Plex Mono'; font-weight:600;">⏱ ~${calcDayTime(day)} dk</span>`;
   main.appendChild(dayTitleDiv);
 
-  if(day.note){
-    const noteEl = document.createElement('div'); noteEl.className = 'day-note'; noteEl.textContent = day.note;
-    main.appendChild(noteEl);
-  }
-  const dayState = [];
-  let lastBlok = null;
+  if(day.note){ const noteEl = document.createElement('div'); noteEl.className = 'day-note'; noteEl.textContent = day.note; main.appendChild(noteEl); }
+  const dayState = []; let lastBlok = null;
 
   for(let idx=0; idx<day.exercises.length; idx++){
     const ex = day.exercises[idx];
     if(ex.blok && ex.blok !== lastBlok){
-      const label = document.createElement('div'); label.className = 'block-label'; label.textContent = ex.blok;
-      main.appendChild(label); lastBlok = ex.blok;
+      const label = document.createElement('div'); label.className = 'block-label'; label.textContent = ex.blok; main.appendChild(label); lastBlok = ex.blok;
     }
 
     const card = document.createElement('div'); card.className = 'card' + (ex.superset ? ' superset' : '');
     const weight = getWeight(day.id, idx, ex.start || 0);
     const exMin = calcExTime(ex.sets || ex.sr, ex.rest);
 
+    let restValueForDisplay = String(ex.rest).toLowerCase().includes('sn') ? ex.rest : ex.rest + ' sn';
+
     if(isReadOnly) {
         card.innerHTML = `
           <div class="row-top"><div class="ex-name">${ex.name}</div><button class="link-btn" onclick="openImg('${ex.name}')">Görsel</button></div>
           <div class="meta">
               <div class="meta-item">Hedef Set: <b>${ex.sr || (ex.sets+'x'+ex.reps)}</b></div>
-              <div class="meta-item">Dinlenme: <b>${ex.rest}</b></div>
+              <div class="meta-item">Dinlenme: <b>${restValueForDisplay}</b></div>
               <div class="meta-item" style="color:var(--accent);">Süre: <b>~${exMin} dk</b></div>
           </div>
         `;
-        main.appendChild(card);
-        continue;
+        main.appendChild(card); continue;
     }
 
-    // List Görünümü
-    let restValueForDisplay = ex.rest;
-    if(!isNaN(parseFloat(ex.rest))) restValueForDisplay = ex.rest + " sn";
+    let displaySr = ex.sr || (ex.sets+'x'+ex.reps);
+    if(displaySr && displaySr.includes('undefined')) displaySr = displaySr.replace('undefined', '');
 
     card.innerHTML = `
-      <div class="row-top">
-        <div class="ex-name">${ex.name}</div>
-        <button class="link-btn" onclick="openImg('${ex.name}')">Görsel</button>
-      </div>
+      <div class="row-top"><div class="ex-name">${ex.name}</div><button class="link-btn" onclick="openImg('${ex.name}')">Görsel</button></div>
       <div class="meta">
-          <div class="meta-item">Set: <b>${ex.sr || (ex.sets+'x'+ex.reps)}</b></div>
+          <div class="meta-item">Set: <b>${displaySr}</b></div>
           <div class="meta-item">Dinlenme: <b>${restValueForDisplay}</b></div>
           <div class="meta-item" style="color:var(--accent);">Süre: <b>~${exMin} dk</b></div>
       </div>
       <div class="stepper">
         <button class="minus">−</button>
-        <div class="weight-display">
-          <input type="number" inputmode="decimal" class="wnum-input" value="${fmt(weight)}" step="0.5" min="0"/>
-          <span class="weight-unit">kg</span>
-        </div>
+        <div class="weight-display"><input type="number" inputmode="decimal" class="wnum-input" value="${fmt(weight)}" step="0.5" min="0"/><span class="weight-unit">kg</span></div>
         <button class="plus">+</button>
       </div>
       <div class="sets-row"><button class="set-btn"><span class="dots"></span><span class="set-label"></span></button><button class="set-reset">↺</button></div>
@@ -835,22 +952,13 @@ function renderDaySection(day, main, isReadOnly){
       <div class="timer-row"><div class="timer-display">00:00</div><button class="timer-btn start">Başlat</button><button class="timer-btn reset">↺</button></div>
     `;
 
-    const wInput = card.querySelector('.wnum-input'); 
-    let current = weight;
+    const wInput = card.querySelector('.wnum-input'); let current = weight;
+    const updateWeightUI = (newVal) => { current = Math.max(0, parseFloat(newVal) || 0); wInput.value = fmt(current); setWeight(day.id, idx, current); };
 
-    const updateWeightUI = async (newVal) => {
-        current = Math.max(0, parseFloat(newVal) || 0);
-        wInput.value = fmt(current);
-        await setWeight(day.id, idx, current);
-    };
+    card.querySelector('.minus').onclick = () => updateWeightUI(current - STEP); card.querySelector('.plus').onclick = () => updateWeightUI(current + STEP);
+    wInput.addEventListener('change', (e) => updateWeightUI(e.target.value)); wInput.addEventListener('focus', (e) => e.target.select());
 
-    card.querySelector('.minus').onclick = () => updateWeightUI(current - STEP);
-    card.querySelector('.plus').onclick = () => updateWeightUI(current + STEP);
-    wInput.addEventListener('change', (e) => updateWeightUI(e.target.value));
-    wInput.addEventListener('focus', (e) => e.target.select());
-
-    const setsTotal = parseSetsTotal(ex.sr || ex.sets);
-    let setsDone = getSetsDone(day.id, idx);
+    const setsTotal = parseSetsTotal(ex.sr || ex.sets); let setsDone = getSetsDone(day.id, idx);
     const setBtn = card.querySelector('.set-btn'); const dotsEl = card.querySelector('.dots'); const setLabelEl = card.querySelector('.set-label');
 
     function renderSets(){
@@ -859,17 +967,8 @@ function renderDaySection(day, main, isReadOnly){
     }
     renderSets();
 
-    setBtn.onclick = async () => {
-      setsDone = setsDone >= setsTotal ? 0 : setsDone + 1;
-      await setSetsDone(day.id, idx, setsDone);
-      renderSets();
-    };
-
-    card.querySelector('.set-reset').onclick = async () => {
-      setsDone = 0;
-      await setSetsDone(day.id, idx, setsDone);
-      renderSets();
-    };
+    setBtn.onclick = () => { setsDone = setsDone >= setsTotal ? 0 : setsDone + 1; setSetsDone(day.id, idx, setsDone); renderSets(); };
+    card.querySelector('.set-reset').onclick = () => { setsDone = 0; setSetsDone(day.id, idx, setsDone); renderSets(); };
 
     dayState.push({ name: ex.name, setsTotal, getSetsDone: () => setsDone, getWeight: () => current });
 
@@ -882,27 +981,16 @@ function renderDaySection(day, main, isReadOnly){
     timerStartBtn.onclick = () => {
       if(!running){ 
           if(timeLeft <= 0) timeLeft = restSeconds; 
-          running = true; 
-          timerStartBtn.textContent = 'Durdur'; 
-          timerStartBtn.className = 'timer-btn pause'; 
-          
+          running = true; timerStartBtn.textContent = 'Durdur'; timerStartBtn.className = 'timer-btn pause'; 
           let targetEndTime = Date.now() + (timeLeft * 1000);
           timerInterval = setInterval(() => {
               timeLeft = Math.max(0, Math.ceil((targetEndTime - Date.now()) / 1000));
-              if(timeLeft <= 0){ 
-                  timeLeft = 0; 
-                  clearInterval(timerInterval); 
-                  running = false; 
-                  timerStartBtn.textContent = 'Başlat'; 
-                  timerStartBtn.className = 'timer-btn start'; 
-              }
+              if(timeLeft <= 0){ clearInterval(timerInterval); running = false; timerStartBtn.textContent = 'Başlat'; timerStartBtn.className = 'timer-btn start'; }
               renderTimer();
           }, 1000); 
       } else { 
-          running = false; 
-          clearInterval(timerInterval); 
-          timerStartBtn.textContent = 'Devam'; 
-          timerStartBtn.className = 'timer-btn start'; 
+          running = false; clearInterval(timerInterval); 
+          timerStartBtn.textContent = 'Devam'; timerStartBtn.className = 'timer-btn start'; 
       }
       renderTimer();
     };
@@ -916,24 +1004,10 @@ function renderDaySection(day, main, isReadOnly){
   const saveBtn = document.createElement('button'); saveBtn.className = 'save-btn'; saveBtn.textContent = `Aşağıdan Elle Bitir & Kaydet`;
   const toast = document.createElement('div'); saveBtn.style.marginBottom = '4px'; toast.className = 'save-toast';
   
-  // YENİ ELLE KAYDETME SİSTEMİ
   saveBtn.onclick = async () => {
-    if(saveBtn.disabled) return;
-    saveBtn.disabled = true;
-
-    const doneExercises = dayState.map(s => ({
-      name: s.name,
-      sets: s.getSetsDone(), // Sadece işaretlenen seti alır
-      setsTotal: s.setsTotal,
-      weight: s.getWeight()
-    })).filter(s => s.sets > 0); // Hiç yapılmayan hareketleri atla
-
-    if(doneExercises.length === 0){ 
-        toast.textContent = 'Yapılmamış antrenman kaydedilmedi.'; 
-        setTimeout(()=>{ toast.textContent=''; }, 2500); 
-        saveBtn.disabled = false;
-        return; 
-    }
+    if(saveBtn.disabled) return; saveBtn.disabled = true;
+    const doneExercises = dayState.map(s => ({ name: s.name, sets: s.getSetsDone(), setsTotal: s.setsTotal, weight: s.getWeight() })).filter(s => s.sets > 0); 
+    if(doneExercises.length === 0){ toast.textContent = 'Yapılmamış antrenman kaydedilmedi.'; setTimeout(()=>{ toast.textContent=''; }, 2500); saveBtn.disabled = false; return; }
     
     const now = new Date();
     const entry = { dayLabel: day.title || day.shortLabel || day.name, dateStr: now.toLocaleDateString('tr-TR'), exercises: doneExercises };
@@ -941,18 +1015,11 @@ function renderDaySection(day, main, isReadOnly){
     saveBtn.textContent = "Kaydediliyor...";
     const result = await saveHistoryEntryToCloud(entry);
     
-    if (result.error) {
-      toast.textContent = 'Kayıt başarısız!';
-      saveBtn.textContent = 'Aşağıdan Elle Bitir & Kaydet';
-      saveBtn.disabled = false;
-      setTimeout(()=>{ toast.textContent=''; }, 3000);
-      return;
-    }
+    if (result.error) { toast.textContent = 'Kayıt başarısız!'; saveBtn.textContent = 'Aşağıdan Elle Bitir & Kaydet'; saveBtn.disabled = false; setTimeout(()=>{ toast.textContent=''; }, 3000); return; }
 
-    for(let idx=0; idx<day.exercises.length; idx++){ await setSetsDone(day.id, idx, 0); }
+    for(let idx=0; idx<day.exercises.length; idx++){ setSetsDone(day.id, idx, 0); }
     toast.textContent = 'Buluta başarıyla kaydedildi ✓';
-    saveBtn.textContent = 'Aşağıdan Elle Bitir & Kaydet';
-    saveBtn.disabled = false;
+    saveBtn.textContent = 'Aşağıdan Elle Bitir & Kaydet'; saveBtn.disabled = false;
     setTimeout(()=>{ toast.textContent=''; renderTabs(); renderView(); }, 1200);
   };
   main.appendChild(saveBtn); main.appendChild(toast);
@@ -963,23 +1030,14 @@ function renderDaySection(day, main, isReadOnly){
 // ==========================================
 
 function openWorkoutMode(dayObj) {
-    wmCurrentDayObj = dayObj;
-    wmActiveIndex = 0;
+    wmCurrentDayObj = dayObj; wmActiveIndex = 0;
     
     wmState = dayObj.exercises.map((ex, idx) => {
         return {
-            originalIdx: idx,
-            name: ex.name,
-            sr: ex.sr || (ex.sets+'x'+ex.reps),
-            rest: ex.rest,
-            setsTotal: parseSetsTotal(ex.sr || ex.sets),
-            setsDone: getSetsDone(dayObj.id, idx), 
-            weight: getWeight(dayObj.id, idx, ex.start || 0),
-            restSeconds: parseRestSeconds(ex.rest),
-            timeLeft: parseRestSeconds(ex.rest),
-            timerRunning: false,
-            timerInterval: null,
-            targetEndTime: 0
+            originalIdx: idx, name: ex.name, sr: ex.sr || (ex.sets+'x'+ex.reps), rest: ex.rest,
+            setsTotal: parseSetsTotal(ex.sr || ex.sets), setsDone: getSetsDone(dayObj.id, idx), 
+            weight: getWeight(dayObj.id, idx, ex.start || 0), restSeconds: parseRestSeconds(ex.rest),
+            timeLeft: parseRestSeconds(ex.rest), timerRunning: false, timerInterval: null, targetEndTime: 0
         };
     });
 
@@ -995,302 +1053,223 @@ function openWorkoutMode(dayObj) {
 
     buildWMCarousel();
     updateWMProgress();
+    saveActiveWorkoutState(); // YENİ: Başlar başlamaz kaydet
 }
 
 function buildWMCarousel() {
-    const container = document.getElementById('wm-carousel-container');
+    const container = document.getElementById('wm-track');
     container.innerHTML = '';
 
     wmState.forEach((ex, i) => {
-        const card = document.createElement('div');
-        card.className = 'wm-card';
-        card.id = 'wm-card-' + i;
-
-        let restValueForDisplay = ex.rest;
-        if(!isNaN(parseFloat(ex.rest))) restValueForDisplay = ex.rest + " sn";
+        const card = document.createElement('div'); card.className = 'wm-card'; card.id = 'wm-card-' + i;
+        let restValueForDisplay = String(ex.rest).toLowerCase().includes('sn') ? ex.rest : ex.rest + ' sn';
+        let displaySr = ex.sr; if(displaySr && displaySr.includes('undefined')) displaySr = displaySr.replace('undefined', '');
 
         card.innerHTML = `
-          <div class="row-top">
-            <div class="ex-name" style="font-size:20px;">${ex.name}</div>
-            <button class="link-btn" onclick="openImg('${ex.name}')">Görsel</button>
-          </div>
+          <button class="wm-prev-btn">↑ Eksİk Kalan Öncekİ Harekete Dön</button>
+          
+          <div class="row-top"><div class="ex-name" style="font-size:20px;">${ex.name}</div><button class="link-btn" onclick="openImg('${ex.name}')">Görsel</button></div>
           <div class="meta" style="margin-top:12px; margin-bottom:20px;">
-              <div class="meta-item" style="font-size:14px;">Set: <b style="font-size:16px;">${ex.sr}</b></div>
+              <div class="meta-item" style="font-size:14px;">Set: <b style="font-size:16px;">${displaySr}</b></div>
               <div class="meta-item" style="font-size:14px;">Dinlenme: <b>${restValueForDisplay}</b></div>
           </div>
           <div class="stepper" style="padding:8px; border-radius:16px;">
             <button class="minus" style="width:60px; height:50px;">−</button>
-            <div class="weight-display">
-              <input type="number" inputmode="decimal" class="wnum-input" style="font-size:28px; width:80px;" value="${fmt(ex.weight)}" step="0.5" min="0"/>
-              <span class="weight-unit" style="font-size:16px;">kg</span>
-            </div>
+            <div class="weight-display"><input type="number" inputmode="decimal" class="wnum-input" style="font-size:28px; width:80px;" value="${fmt(ex.weight)}" step="0.5" min="0"/><span class="weight-unit" style="font-size:16px;">kg</span></div>
             <button class="plus" style="width:60px; height:50px;">+</button>
           </div>
           <div class="sets-row" style="margin-top:20px;">
-              <button class="set-btn" style="height:60px; font-size:16px; border-radius:16px;">
-                  <span class="dots" style="gap:8px;"></span><span class="set-label"></span>
-              </button>
+              <button class="set-btn" style="height:60px; font-size:16px; border-radius:16px;"><span class="dots" style="gap:8px;"></span><span class="set-label"></span></button>
               <button class="set-reset" style="height:60px; width:60px; border-radius:16px;">↺</button>
           </div>
           <div style="font-size:12px; color:var(--text-dim); text-transform:uppercase; letter-spacing:1.5px; margin-top:24px; margin-bottom:6px; font-weight:700; text-align:center;">Dinlenme Sayacı</div>
           <div class="timer-row" style="padding:10px; border-radius:16px;">
               <div class="timer-display" style="font-size:28px; width:90px;">00:00</div>
-              <button class="timer-btn start" style="height:48px; font-size:15px; border-radius:12px;">Başlat</button>
-              <button class="timer-btn reset" style="height:48px; font-size:16px;">↺</button>
+              <button class="timer-btn start" style="height:48px; font-size:15px; border-radius:12px;">Başlat</button><button class="timer-btn reset" style="height:48px; font-size:16px;">↺</button>
           </div>
           <button class="wm-skip-btn">↓ Mevcut Hareketi Atla</button>
         `;
 
         const wInput = card.querySelector('.wnum-input'); 
-        const updateWeight = async (newVal) => {
-            ex.weight = Math.max(0, parseFloat(newVal) || 0);
-            wInput.value = fmt(ex.weight);
-            await setWeight(wmCurrentDayObj.id, ex.originalIdx, ex.weight);
+        const updateWeight = (newVal) => { 
+            ex.weight = Math.max(0, parseFloat(newVal) || 0); wInput.value = fmt(ex.weight); 
+            setWeight(wmCurrentDayObj.id, ex.originalIdx, ex.weight); 
+            saveActiveWorkoutState(); // YENİ: Kiloyu kaydedince lokale de yaz
         };
-        card.querySelector('.minus').onclick = () => updateWeight(ex.weight - STEP);
+        card.querySelector('.minus').onclick = () => updateWeight(ex.weight - STEP); 
         card.querySelector('.plus').onclick = () => updateWeight(ex.weight + STEP);
         wInput.addEventListener('change', (e) => updateWeight(e.target.value));
 
-        const setBtn = card.querySelector('.set-btn'); 
-        const dotsEl = card.querySelector('.dots'); 
-        const setLabelEl = card.querySelector('.set-label');
+        const setBtn = card.querySelector('.set-btn'); const dotsEl = card.querySelector('.dots'); const setLabelEl = card.querySelector('.set-label');
 
         const renderWMSetUI = () => {
             dotsEl.innerHTML = ''; 
             for(let j=0; j<ex.setsTotal; j++){ 
-                const d = document.createElement('span'); 
-                d.className = 'set-dot' + (j < ex.setsDone ? ' filled' : ''); 
-                d.style.width = '14px'; d.style.height = '14px';
-                dotsEl.appendChild(d); 
+                const d = document.createElement('span'); d.className = 'set-dot' + (j < ex.setsDone ? ' filled' : ''); 
+                d.style.width = '14px'; d.style.height = '14px'; dotsEl.appendChild(d); 
             }
             const complete = ex.setsDone >= ex.setsTotal; 
-            setLabelEl.textContent = complete ? 'Tamamlandı ✓' : `Set ${ex.setsDone}/${ex.setsTotal}`; 
-            setBtn.classList.toggle('complete', complete);
+            setLabelEl.textContent = complete ? 'Tamamlandı ✓' : `Set ${ex.setsDone}/${ex.setsTotal}`; setBtn.classList.toggle('complete', complete);
         };
         renderWMSetUI();
 
-        // TIKLANDIĞI ANDA BARI DOLDURAN SİSTEM
-        setBtn.onclick = async () => {
+        setBtn.onclick = () => {
             if(ex.setsDone >= ex.setsTotal) return; 
-            ex.setsDone++;
-            renderWMSetUI();
-            updateWMProgress(); // Anında yüzdelik güncellenir
-            await setSetsDone(wmCurrentDayObj.id, ex.originalIdx, ex.setsDone);
+            ex.setsDone++; renderWMSetUI(); updateWMProgress();
+            setSetsDone(wmCurrentDayObj.id, ex.originalIdx, ex.setsDone);
+            saveActiveWorkoutState(); // YENİ: Set işaretlenince lokale yaz
 
             if(ex.setsDone >= ex.setsTotal) {
                 setTimeout(() => {
-                    if(wmActiveIndex < wmState.length - 1) {
-                        wmActiveIndex++;
-                        updateWMCarouselClasses();
-                    } else {
-                        finishWorkoutMode();
-                    }
+                    if(wmActiveIndex < wmState.length - 1) { wmActiveIndex++; updateWMCarouselClasses(); saveActiveWorkoutState(); } 
+                    else { finishWorkoutMode(); }
                 }, 800); 
             }
         };
 
-        card.querySelector('.set-reset').onclick = async () => {
-            ex.setsDone = 0;
-            renderWMSetUI();
-            updateWMProgress(); 
-            await setSetsDone(wmCurrentDayObj.id, ex.originalIdx, 0);
-        };
-        
-        // HAREKETİ ATLA İŞLEVİ
-        card.querySelector('.wm-skip-btn').onclick = () => {
-            if(wmActiveIndex < wmState.length - 1) {
-                wmActiveIndex++;
-                updateWMCarouselClasses();
-            } else {
-                finishWorkoutMode();
-            }
-        };
+        card.querySelector('.set-reset').onclick = () => { ex.setsDone = 0; renderWMSetUI(); updateWMProgress(); setSetsDone(wmCurrentDayObj.id, ex.originalIdx, 0); saveActiveWorkoutState(); };
+        card.querySelector('.wm-prev-btn').onclick = () => { if(wmActiveIndex > 0) { wmActiveIndex--; updateWMCarouselClasses(); saveActiveWorkoutState(); } };
+        card.querySelector('.wm-skip-btn').onclick = () => { if(wmActiveIndex < wmState.length - 1) { wmActiveIndex++; updateWMCarouselClasses(); saveActiveWorkoutState(); } else { finishWorkoutMode(); } };
 
-        const timerDisplay = card.querySelector('.timer-display'); 
-        const timerStartBtn = card.querySelector('.timer-btn.start');
+        const timerDisplay = card.querySelector('.timer-display'); const timerStartBtn = card.querySelector('.timer-btn.start');
 
         const renderWMTimer = () => { 
-            timerDisplay.textContent = fmtTime(ex.timeLeft); 
-            timerDisplay.classList.toggle('running', ex.timerRunning); 
-            timerDisplay.classList.toggle('done', ex.timeLeft <= 0); 
+            timerDisplay.textContent = fmtTime(ex.timeLeft); timerDisplay.classList.toggle('running', ex.timerRunning); timerDisplay.classList.toggle('done', ex.timeLeft <= 0); 
         };
         renderWMTimer();
 
-        // ARKA PLANDA DONMAYAN DİNLENME SAYACI
         timerStartBtn.onclick = () => {
             if(!ex.timerRunning){ 
                 if(ex.timeLeft <= 0) ex.timeLeft = ex.restSeconds; 
-                ex.timerRunning = true; 
-                timerStartBtn.textContent = 'Durdur'; 
-                timerStartBtn.className = 'timer-btn pause'; 
-                
+                ex.timerRunning = true; timerStartBtn.textContent = 'Durdur'; timerStartBtn.className = 'timer-btn pause'; 
                 ex.targetEndTime = Date.now() + (ex.timeLeft * 1000);
-                ex.timerInterval = setInterval(() => {
+                timerInterval = setInterval(() => {
                     ex.timeLeft = Math.max(0, Math.ceil((ex.targetEndTime - Date.now()) / 1000));
-                    if(ex.timeLeft <= 0){ 
-                        ex.timeLeft = 0; 
-                        clearInterval(ex.timerInterval); 
-                        ex.timerRunning = false; 
-                        timerStartBtn.textContent = 'Başlat'; 
-                        timerStartBtn.className = 'timer-btn start'; 
-                    }
+                    if(ex.timeLeft <= 0){ clearInterval(timerInterval); ex.timerRunning = false; timerStartBtn.textContent = 'Başlat'; timerStartBtn.className = 'timer-btn start'; }
                     renderWMTimer();
                 }, 1000); 
             } else { 
-                ex.timerRunning = false; 
-                clearInterval(ex.timerInterval); 
-                ex.timeLeft = Math.max(0, Math.ceil((ex.targetEndTime - Date.now()) / 1000));
-                timerStartBtn.textContent = 'Devam'; 
-                timerStartBtn.className = 'timer-btn start'; 
+                running = false; clearInterval(timerInterval); 
+                timerStartBtn.textContent = 'Devam'; timerStartBtn.className = 'timer-btn start'; 
             }
             renderWMTimer();
         };
         
         card.querySelector('.timer-btn.reset').onclick = () => { 
-            ex.timerRunning = false; 
-            clearInterval(ex.timerInterval); 
-            ex.timeLeft = ex.restSeconds; 
-            timerStartBtn.textContent = 'Sıfırla'; 
-            timerStartBtn.className = 'timer-btn start'; 
-            renderWMTimer(); 
+            ex.timerRunning = false; clearInterval(ex.timerInterval); ex.timeLeft = ex.restSeconds; 
+            timerStartBtn.textContent = 'Sıfırla'; timerStartBtn.className = 'timer-btn start'; renderWMTimer(); 
         };
-
         container.appendChild(card);
     });
 
     updateWMCarouselClasses();
 }
 
+function alignWMTrack() {
+    const track = document.getElementById('wm-track');
+    const container = document.getElementById('wm-carousel-container');
+    const activeCard = document.getElementById('wm-card-' + wmActiveIndex);
+    
+    if(activeCard && track && container) {
+        const containerCenter = container.offsetHeight / 2;
+        const cardCenter = activeCard.offsetTop + (activeCard.offsetHeight / 2);
+        const shift = containerCenter - cardCenter;
+        track.style.transform = `translate3d(0, ${shift}px, 0)`;
+    }
+}
+
 function updateWMCarouselClasses() {
     wmState.forEach((ex, i) => {
         const card = document.getElementById('wm-card-' + i);
         if(!card) return;
+        
         card.className = 'wm-card'; 
-        if(i === wmActiveIndex) card.classList.add('active');
-        else if(i < wmActiveIndex) card.classList.add('prev');
-        else if(i > wmActiveIndex) card.classList.add('next');
+        const prevBtn = card.querySelector('.wm-prev-btn');
+
+        if(i === wmActiveIndex) {
+            card.classList.add('active');
+            if (i > 0 && wmState[i - 1].setsDone < wmState[i - 1].setsTotal) { if(prevBtn) prevBtn.classList.add('show'); } 
+            else { if(prevBtn) prevBtn.classList.remove('show'); }
+        }
+        else if(i < wmActiveIndex) { card.classList.add('prev'); if(prevBtn) prevBtn.classList.remove('show'); }
+        else if(i > wmActiveIndex) { card.classList.add('next'); if(prevBtn) prevBtn.classList.remove('show'); }
     });
+    requestAnimationFrame(alignWMTrack);
 }
 
-// ZAMAN BAZLI KUSURSUZ İLERLEME YÜZDESİ
 function updateWMProgress() {
-    let totalSec = 0;
-    let doneSec = 0;
+    let totalSec = 0; let doneSec = 0;
     wmState.forEach(ex => {
-        // Her hareketin saniyesi saniyesine total ağırlığı hesaplanır
         let exTotal = (ex.setsTotal * 40) + (Math.max(0, ex.setsTotal - 1) * ex.restSeconds);
-        // Yapılan set, o hareketin toplam süresinin yüzde kaçıysa o kadar saniye eklenir
-        // Bu sayede çubuk 1 set bitince "dinlenmeyi de bitirmiş gibi" fırlamaz, mantıklı ilerler.
         let exDone = (ex.setsDone / ex.setsTotal) * exTotal;
-        
-        totalSec += exTotal;
-        doneSec += exDone;
+        totalSec += exTotal; doneSec += exDone;
     });
-    
-    let perc = totalSec > 0 ? Math.round((doneSec / totalSec) * 100) : 0;
-    if(perc > 100) perc = 100; 
-    
+    let perc = totalSec > 0 ? Math.round((doneSec / totalSec) * 100) : 0; if(perc > 100) perc = 100; 
     document.getElementById('wm-progress-fill').style.width = perc + '%';
     document.getElementById('wm-progress-text').textContent = `Antrenman İlerlemesi: %${perc}`;
 }
 
 async function finishWorkoutMode() {
     const btn = document.getElementById('wm-end-btn');
-    if(btn.disabled) return; // Çift tıklama (Spam) koruması
-    btn.disabled = true;
-    let origText = btn.textContent;
-    btn.textContent = "Kaydediliyor...";
+    if(btn.disabled) return; btn.disabled = true;
+    let origText = btn.textContent; btn.textContent = "Kaydediliyor...";
 
     let finalDuration = "00:00";
-    if(wmGlobalTimerInterval) {
-        clearInterval(wmGlobalTimerInterval);
-        const s = Math.floor((Date.now() - wmGlobalStartTime) / 1000);
-        finalDuration = fmtTime(s);
-    }
-    
+    if(wmGlobalTimerInterval) { clearInterval(wmGlobalTimerInterval); finalDuration = fmtTime(Math.floor((Date.now() - wmGlobalStartTime) / 1000)); }
     wmState.forEach(ex => { if(ex.timerInterval) clearInterval(ex.timerInterval); });
 
-    const doneExercises = wmState.map(s => ({
-      name: s.name,
-      sets: s.setsDone, 
-      setsTotal: s.setsTotal,
-      weight: s.weight
-    })).filter(s => s.sets > 0); 
+    const doneExercises = wmState.map(s => ({ name: s.name, sets: s.setsDone, setsTotal: s.setsTotal, weight: s.weight })).filter(s => s.sets > 0); 
 
     if(doneExercises.length > 0){ 
         const now = new Date();
         const entry = { 
-            dayLabel: wmCurrentDayObj.title || wmCurrentDayObj.name, 
-            dateStr: now.toLocaleDateString('tr-TR'), 
-            exercises: doneExercises,
-            duration: finalDuration // Toplam süreyi kaydet
+            dayLabel: wmCurrentDayObj.title || wmCurrentDayObj.name, dateStr: now.toLocaleDateString('tr-TR'), exercises: doneExercises, duration: finalDuration 
         };
         await saveHistoryEntryToCloud(entry);
-        
-        for(let ex of wmState){ await setSetsDone(wmCurrentDayObj.id, ex.originalIdx, 0); }
+        for(let ex of wmState){ setSetsDone(wmCurrentDayObj.id, ex.originalIdx, 0); }
         alert("Antrenman tamamlandı ve buluta kaydedildi! Tebrikler 💪");
     } else {
-        // HİÇ SET YAPILMAMIŞSA
         alert("Yapılmamış antrenman kaydedilmedi.");
-        for(let ex of wmState){ await setSetsDone(wmCurrentDayObj.id, ex.originalIdx, 0); }
+        for(let ex of wmState){ setSetsDone(wmCurrentDayObj.id, ex.originalIdx, 0); }
     }
 
-    document.getElementById('workout-mode-screen').style.display = 'none';
-    document.getElementById('app-screen').style.display = 'block';
-    
-    btn.disabled = false;
-    btn.textContent = origText;
-    
+    // YENİ: Başarıyla bitince yerel hafızadan kurtarma dosyasını sil
+    localStorage.removeItem('activeWorkout_' + currentUser.id);
+
+    if(cloudSaveTimeout) clearTimeout(cloudSaveTimeout);
+    await saveCloudData(); 
+
+    document.getElementById('workout-mode-screen').style.display = 'none'; document.getElementById('app-screen').style.display = 'block';
+    btn.disabled = false; btn.textContent = origText;
     renderTabs(); renderView();
 }
-
 
 // --- TOPLULUK BÖLÜMÜ ---
 async function renderCommunity(){
   const main = document.getElementById('main'); 
   
   if(viewingCommunityProgram) {
-      const row = viewingCommunityProgram;
-      const prog = row.program_data;
-      const authorName = prog.author_username || row.profiles?.username || 'anonim';
-      
+      const row = viewingCommunityProgram; const prog = row.program_data; const authorName = prog.author_username || row.profiles?.username || 'anonim';
       main.innerHTML = `
           <button class="logout-btn" style="margin-bottom:12px; display:inline-flex; align-items:center; gap:4px; font-size:13px;" onclick="viewingCommunityProgram=null; currentSubDay=0; renderView();">← Topluluğa Dön</button>
           <div class="program-title" style="margin-bottom:4px;">${row.title}</div>
           <div class="comm-author" style="margin-bottom:14px; font-size:14px;">Paylaşan: <b>@${authorName}</b></div>
           <button class="save-btn" style="margin-top:0; margin-bottom:16px;" onclick="cloneCommunityProgram('${row.id}')">Kendi Listeme Kopyala</button>
       `;
-
-      const stContainer = document.createElement('div');
-      stContainer.className = 'sub-tabs-container';
+      const stContainer = document.createElement('div'); stContainer.className = 'sub-tabs-container';
       prog.days.forEach((day, i) => {
-         const st = document.createElement('div');
-         st.className = 'sub-tab' + (i === currentSubDay ? ' active' : '');
-         st.textContent = day.name || `Gün ${i+1}`;
-         st.onclick = () => { currentSubDay = i; renderView(); };
-         stContainer.appendChild(st);
+         const st = document.createElement('div'); st.className = 'sub-tab' + (i === currentSubDay ? ' active' : '');
+         st.textContent = day.name || `Gün ${i+1}`; st.onclick = () => { currentSubDay = i; renderView(); }; stContainer.appendChild(st);
       });
       main.appendChild(stContainer);
-
-      if(prog.days[currentSubDay]) {
-          renderDaySection(prog.days[currentSubDay], main, true);
-      }
-      
-      const analysisContainer = document.createElement('div');
-      main.appendChild(analysisContainer);
-      renderAnalysis(prog, analysisContainer);
-      
+      if(prog.days[currentSubDay]) renderDaySection(prog.days[currentSubDay], main, true);
+      const analysisContainer = document.createElement('div'); main.appendChild(analysisContainer); renderAnalysis(prog, analysisContainer);
       return;
   }
 
   main.innerHTML = `<div class="day-note">Topluluk ağından programlar çekiliyor...</div>`;
-  
   let { data, error } = await supabaseClient.from('programs').select('*, profiles(username)').eq('is_public', true).order('created_at', {ascending: false}).limit(30);
-  if (error) {
-      const fallback = await supabaseClient.from('programs').select('*').eq('is_public', true).order('created_at', {ascending: false}).limit(30);
-      data = fallback.data;
-  }
-  
+  if (error) { const fallback = await supabaseClient.from('programs').select('*').eq('is_public', true).order('created_at', {ascending: false}).limit(30); data = fallback.data; }
   communityListCache = data || []; 
 
   main.innerHTML = `<div class="day-note" style="margin-bottom:16px; font-size:14px;">Diğer sporcuların paylaştığı herkese açık programlar.</div>`;
@@ -1298,28 +1277,16 @@ async function renderCommunity(){
 
   data.forEach(row => {
     const card = document.createElement('div'); card.className = 'comm-card';
-    const dt = new Date(row.created_at);
-    const dateStr = dt.toLocaleDateString('tr-TR');
-    const authorName = row.program_data.author_username || row.profiles?.username || 'anonim';
-    
-    let deleteBtnHtml = '';
-    if (row.user_id === currentUser.id) {
-        deleteBtnHtml = `<button class="comm-btn delete" onclick="deleteCommunityProgram('${row.id}')">Ağdan Sil</button>`;
-    }
+    const dt = new Date(row.created_at); const dateStr = dt.toLocaleDateString('tr-TR'); const authorName = row.program_data.author_username || row.profiles?.username || 'anonim';
+    let deleteBtnHtml = ''; if (row.user_id === currentUser.id) deleteBtnHtml = `<button class="comm-btn delete" onclick="deleteCommunityProgram('${row.id}')">Ağdan Sil</button>`;
     
     card.innerHTML = `
-      <div class="comm-header-row">
-          <div class="comm-author">Paylaşan: <b style="color:var(--accent);">@${authorName}</b></div>
-          <div class="comm-date">${dateStr}</div>
-      </div>
-      <div class="comm-title">${row.title}</div>
-      <div style="font-size:13px; color:var(--text-dim); margin-bottom:6px; font-weight:600;">${row.program_data.days.length} Günlük Program</div>
+      <div class="comm-header-row"><div class="comm-author">Paylaşan: <b style="color:var(--accent);">@${authorName}</b></div><div class="comm-date">${dateStr}</div></div>
+      <div class="comm-title">${row.title}</div><div style="font-size:13px; color:var(--text-dim); margin-bottom:6px; font-weight:600;">${row.program_data.days.length} Günlük Program</div>
       <div class="comm-actions">
           <button class="comm-btn view" onclick="viewingCommunityProgram = communityListCache.find(r=>r.id==='${row.id}'); currentSubDay=0; renderView();">İncele</button>
-          <button class="comm-btn add" onclick="cloneCommunityProgram('${row.id}')">Kopyala</button>
-          ${deleteBtnHtml}
-      </div>
-    `;
+          <button class="comm-btn add" onclick="cloneCommunityProgram('${row.id}')">Kopyala</button>${deleteBtnHtml}
+      </div>`;
     main.appendChild(card);
   });
 }
@@ -1327,154 +1294,793 @@ async function renderCommunity(){
 async function deleteCommunityProgram(programId) {
     if(!confirm("Paylaştığınız bu programı topluluk ağından tamamen silmek istediğinize emin misiniz? (Kendi cihazınızdaki silinmez)")) return;
     const { error } = await supabaseClient.from('programs').delete().eq('id', programId);
-    if(error) alert("Silinirken hata oluştu: " + error.message);
-    else renderCommunity();
+    if(error) alert("Silinirken hata oluştu: " + error.message); else renderCommunity();
 }
 
 async function cloneCommunityProgram(programId) {
-    const row = communityListCache.find(r => r.id === programId);
-    if(!row) return;
-
-    const clonedProg = JSON.parse(JSON.stringify(row.program_data));
-    delete clonedProg.author_username; 
-    clonedProg.id = cpUid();
-    clonedProg.days.forEach(d => { d.id = cpUid(); });
-    
+    const row = communityListCache.find(r => r.id === programId); if(!row) return;
+    const clonedProg = JSON.parse(JSON.stringify(row.program_data)); delete clonedProg.author_username; 
+    clonedProg.id = cpUid(); clonedProg.days.forEach(d => { d.id = cpUid(); });
     if(!cloudData.saved_programs) cloudData.saved_programs = [];
-    cloudData.saved_programs.push(clonedProg);
-    
-    await saveCloudData();
+    cloudData.saved_programs.push(clonedProg); await saveCloudData();
     alert(`"${clonedProg.name}" başarıyla kişisel listenize eklendi!`);
+    const programs = getProgramList(); currentDay = programs.length - 1; currentSubDay = 0; viewingCommunityProgram = null; renderTabs(); renderView();
+}
+
+// --- KAPSAMLI HAREKET VERİTABANI ---
+const MUSCLE_LABELS = { gogus: "Göğüs", sirt: "Sırt", omuz: "Omuz", biceps: "Biceps", triceps: "Triceps", quad: "Ön Bacak", hamstring: "Arka Bacak", kalca: "Kalça", baldir: "Baldır", karin: "Karın" };
+const EXERCISE_DB = {
+  gogus: [{name:"Barbell Bench Press", reps:"6-10", type:"compound"}, {name:"Incline Barbell Bench Press", reps:"6-10", type:"compound"}, {name:"Decline Barbell Bench Press", reps:"6-10", type:"compound"}, {name:"Dumbbell Bench Press", reps:"8-12", type:"compound"}, {name:"Incline Dumbbell Press", reps:"8-12", type:"compound"}, {name:"Decline Dumbbell Press", reps:"8-12", type:"compound"}, {name:"Smith Machine Bench Press", reps:"8-12", type:"compound"}, {name:"Smith Machine Incline Press", reps:"8-12", type:"compound"}, {name:"Machine Chest Press", reps:"8-12", type:"compound"}, {name:"Incline Machine Press", reps:"8-12", type:"compound"}, {name:"Pec Deck / Machine Fly", reps:"10-15", type:"izolasyon"}, {name:"Dumbbell Fly", reps:"10-15", type:"izolasyon"}, {name:"Incline Dumbbell Fly", reps:"10-15", type:"izolasyon"}, {name:"Cable Crossover (High to Low)", reps:"12-15", type:"izolasyon"}, {name:"Cable Crossover (Mid)", reps:"12-15", type:"izolasyon"}, {name:"Cable Crossover (Low to High)", reps:"12-15", type:"izolasyon"}, {name:"Dips (Chest Focus)", reps:"8-12", type:"compound"}, {name:"Weighted Dips", reps:"6-10", type:"compound"}, {name:"Push-up", reps:"10-20", type:"compound"}, {name:"Weighted Push-up", reps:"8-12", type:"compound"}, {name:"Deficit Push-up", reps:"10-15", type:"compound"}, {name:"Dumbbell Pullover (Chest)", reps:"10-15", type:"izolasyon"}, {name:"Hex Press", reps:"10-15", type:"izolasyon"}, {name:"Guillotine Press", reps:"6-10", type:"compound"}, {name:"Floor Press (Barbell)", reps:"6-10", type:"compound"}, {name:"Floor Press (Dumbbell)", reps:"8-12", type:"compound"}, {name:"Landmine Chest Press", reps:"8-12", type:"compound"}, {name:"Svend Press", reps:"12-15", type:"izolasyon"}, {name:"Single-Arm Cable Fly", reps:"12-15", type:"izolasyon"}, {name:"Plate Press", reps:"12-15", type:"izolasyon"}],
+  sirt: [{name:"Deadlift (Conventional)", reps:"4-6", type:"compound"}, {name:"Sumo Deadlift", reps:"4-6", type:"compound"}, {name:"Rack Pull", reps:"5-8", type:"compound"}, {name:"Barbell Row (Overhand)", reps:"6-10", type:"compound"}, {name:"Barbell Row (Underhand/Yates)", reps:"6-10", type:"compound"}, {name:"Pendlay Row", reps:"6-10", type:"compound"}, {name:"T-Bar Row (Barbell)", reps:"8-10", type:"compound"}, {name:"T-Bar Row (Machine)", reps:"8-10", type:"compound"}, {name:"Seated Cable Row (Close Grip)", reps:"10-12", type:"compound"}, {name:"Seated Cable Row (Wide Grip)", reps:"10-12", type:"compound"}, {name:"Lat Pulldown (Wide Grip)", reps:"8-12", type:"compound"}, {name:"Lat Pulldown (Close Grip/V-Bar)", reps:"8-12", type:"compound"}, {name:"Lat Pulldown (Underhand)", reps:"8-12", type:"compound"}, {name:"Lat Pulldown (Neutral Grip)", reps:"8-12", type:"compound"}, {name:"Single-Arm Lat Pulldown", reps:"10-12", type:"compound"}, {name:"Pull-up", reps:"6-10", type:"compound"}, {name:"Weighted Pull-up", reps:"5-8", type:"compound"}, {name:"Chin-up", reps:"6-10", type:"compound"}, {name:"One-Arm Dumbbell Row", reps:"8-12", type:"compound"}, {name:"Kroc Row", reps:"10-15", type:"compound"}, {name:"Meadows Row", reps:"8-12", type:"compound"}, {name:"Chest-Supported Dumbbell Row", reps:"8-12", type:"compound"}, {name:"Machine Row (High)", reps:"10-12", type:"compound"}, {name:"Machine Row (Low)", reps:"10-12", type:"compound"}, {name:"Seal Row", reps:"8-12", type:"compound"}, {name:"Inverted Row (Bodyweight)", reps:"10-15", type:"compound"}, {name:"Straight-Arm Lat Pulldown", reps:"12-15", type:"izolasyon"}, {name:"Cable Pullover", reps:"12-15", type:"izolasyon"}, {name:"Dumbbell Pullover (Lat Focus)", reps:"10-15", type:"izolasyon"}, {name:"Barbell Shrugs", reps:"10-15", type<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Trak Fitness</title>
+
+<!-- iOS ve Android Ana Ekran Uygulaması (PWA) Ayarları -->
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Trak Fitness">
+<meta name="mobile-web-app-capable" content="yes">
+
+<!-- Supabase'den kopyaladığın logonun linki buraya eklendi -->
+<link rel="apple-touch-icon" href="https://luhjxfpnhszoptusadwl.supabase.co/storage/v1/object/public/Logo/IMG_6105.jpeg">
+<link rel="icon" type="image/jpeg" href="https://luhjxfpnhszoptusadwl.supabase.co/storage/v1/object/public/Logo/IMG_6105.jpeg">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700&family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@500;600;700&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<style>
+  /* --- MODERN SLATE & TEAL THEME --- */
+  :root{
+    --bg: #e2e8f0;          
+    --surface: #ffffff;     
+    --surface-2: #f1f5f9;   
+    --line: #cbd5e1;        
+    --text: #0f172a;        
+    --text-dim: #64748b;    
     
-    const programs = getProgramList();
-    currentDay = programs.length - 1;
-    currentSubDay = 0;
-    viewingCommunityProgram = null;
-    renderTabs(); renderView();
-}
-
-// YENİ: Akıllı Satır Kırma Sistemi
-function makeLabel(x, y, align, key, sets) {
-  const color = getTextColor(sets); 
-  const anchor = align === 'left' ? 'end' : 'start';
-  const words = MUSCLE_LABELS[key].split(' ');
+    --accent: #0d9488;      
+    --accent-dim: #ccfbf1;  
+    --btn-text: #ffffff;    
+    
+    --warn: #ef4444;        
+    --status-zero: #cbd5e1; 
+    --status-low: #f87171;  
+    --status-ok: #10b981;   
+    --status-high: #0284c7; 
+  }
   
-  let tspanHTML = '';
-  let currentDy = -8; // İlk satır y eksenini merkezlemek için yukarı kaydırılır
+  *{box-sizing:border-box; -webkit-tap-highlight-color:transparent;}
+  body{ margin:0; background:var(--bg); color:var(--text); font-family:'Inter', sans-serif; padding-bottom:40px; }
+
+  /* --- AUTH EKRANI --- */
+  #auth-screen { max-width: 400px; margin: 60px auto; background: var(--surface); border-radius: 20px; border: 1px solid var(--line); box-shadow: 0 10px 30px rgba(0,0,0,0.06); overflow:hidden; }
+  .auth-header { background:var(--surface-2); padding: 24px; text-align:center; border-bottom:1px solid var(--line); }
+  .auth-title { font-family: 'Barlow Condensed', sans-serif; font-size: 26px; font-weight:700; text-transform: uppercase; color: var(--accent); margin-bottom: 6px; letter-spacing:1px;}
+  .auth-sub { font-size: 13px; color: var(--text-dim); }
+  .auth-tabs-container { display:flex; border-bottom:1px solid var(--line); }
+  .auth-tab { flex:1; text-align:center; padding:14px; font-weight:600; font-size:14px; cursor:pointer; color:var(--text-dim); transition:0.3s; background:var(--surface-2); }
+  .auth-tab.active { color:var(--accent); border-bottom:3px solid var(--accent); background:var(--surface); }
+  .auth-body { padding: 28px 24px; }
+  .auth-input { width: 100%; padding: 14px; margin-bottom: 14px; border: 1px solid var(--line); border-radius: 12px; font-family: 'Inter'; font-size: 14px; background:var(--surface); color:var(--text); transition:0.3s;}
+  .auth-input:focus { outline:none; border-color:var(--accent); box-shadow: 0 0 0 3px rgba(13, 148, 136, 0.15); }
+  .auth-btn-primary { width: 100%; padding: 14px; background: var(--accent); color: var(--btn-text); border: none; border-radius: 12px; font-weight: 700; cursor: pointer; font-size:15px; transition:0.2s; text-transform:uppercase; letter-spacing:0.5px;}
+  .auth-btn-primary:active { transform:scale(0.98); }
+  #auth-msg { text-align: center; font-size: 13px; margin-top: 14px; font-weight: 500; }
+  .msg-error { color: var(--warn); }
+  .msg-success { color: var(--status-ok); }
+
+  /* --- ANA UYGULAMA --- */
+  header{ position:sticky; top:0; z-index:10; background:rgba(226, 232, 240, 0.95); backdrop-filter:blur(10px); padding:20px 16px 0 16px; border-bottom:1px solid var(--line); display: flex; flex-direction: column; }
+  .header-top { display: flex; justify-content: space-between; align-items: center; }
+  h1{ font-family:'Barlow Condensed', sans-serif; font-weight:700; font-size:26px; letter-spacing:1px; margin:0 0 2px 0; text-transform:uppercase; color:var(--text); }
+  .logout-btn { background: var(--surface); border: 1px solid var(--line); color: var(--text-dim); padding: 6px 12px; border-radius: 8px; font-size: 12px; font-weight:600; cursor: pointer; font-family: 'Inter'; transition:0.2s; }
+  .logout-btn:hover { border-color:var(--text-dim); color:var(--text); }
+  .sub{ color:var(--accent); font-size:13px; font-weight:600; margin-bottom:16px;}
+  .tabs{ display:flex; gap:4px; margin-bottom:0; overflow-x:auto; scrollbar-width:none; }
+  .tabs::-webkit-scrollbar{ display:none; }
+  .tab{ flex:0 0 auto; text-align:center; padding:12px 14px 14px 14px; font-family:'Barlow Condensed', sans-serif; font-weight:600; font-size:15px; color:var(--text-dim); border-bottom:3px solid transparent; cursor:pointer; letter-spacing:0.5px; text-transform:uppercase; white-space:nowrap; transition:0.2s; }
+  .tab.active{ color:var(--accent); border-bottom:3px solid var(--accent); }
+
+  main{ padding:16px 16px 0 16px; max-width:540px; margin:0 auto; }
+  .day-note{ color:var(--text-dim); font-size:12.5px; margin:12px 2px 16px 2px; line-height:1.6;}
   
-  // Kas adındaki her kelimeyi ayrı bir satıra yaz
-  words.forEach((word) => {
-      tspanHTML += `<tspan x="${x}" dy="${currentDy}">${word}</tspan>`;
-      currentDy = 14; // Sonraki satırlar için boşluk
-  });
+  /* ALT SEKMELER */
+  .sub-tabs-container { display:flex; gap:10px; margin: 4px 0 20px 0; overflow-x:auto; scrollbar-width:none; padding-bottom:8px; border-bottom:1px solid var(--line); }
+  .sub-tabs-container::-webkit-scrollbar{ display:none; }
+  .sub-tab { flex:0 0 auto; padding: 8px 18px; background:var(--surface); border:1px solid var(--line); border-radius:24px; font-size:13px; font-weight:600; color:var(--text-dim); cursor:pointer; white-space:nowrap; transition:0.2s; box-shadow:0 1px 2px rgba(0,0,0,0.02);}
+  .sub-tab.active { background:var(--accent); color:var(--btn-text); border-color:var(--accent); box-shadow:0 2px 6px rgba(13, 148, 136, 0.25);}
+
+  .program-header { display:flex; justify-content:space-between; align-items:flex-end; margin:6px 2px 16px 2px; }
   
-  // Set bilgisini ve durumu ayrı satırlara ekle
-  tspanHTML += `<tspan x="${x}" dy="14">${Math.round(sets*10)/10} Set</tspan>`;
-  tspanHTML += `<tspan x="${x}" dy="14" class="svg-subtext">(${statWord(sets)})</tspan>`;
-
-  return `<text x="${x}" y="${y}" text-anchor="${anchor}" class="svg-text" fill="${color}">${tspanHTML}</text>`;
-}
-
-const getTextColor = (s) => { if(s<=0) return 'var(--text-dim)'; if(s<10) return 'var(--status-low)'; if(s<=20) return 'var(--status-ok)'; return 'var(--status-high)'; };
-const getColor = (s) => { if(s<=0) return 'var(--status-zero)'; if(s<10) return 'var(--status-low)'; if(s<=20) return 'var(--status-ok)'; return 'var(--status-high)'; };
-const statWord = (s) => { if(s<=0) return 'Çalışılmadı'; if(s<10) return 'Yetersiz'; if(s<=20) return 'İdeal'; return 'Yüksek'; };
-
-function renderAnalysis(prog, container){
-  container.className = 'analysis-section';
-  const totals = {}; Object.keys(MUSCLE_LABELS).forEach(k => totals[k] = 0);
+  .program-title{ font-family:'Barlow Condensed', sans-serif; font-size:26px; font-weight:700; color:var(--text); text-transform:uppercase; letter-spacing:0.5px; display:flex; align-items:center; gap:8px;}
+  .program-title .edit-btn { font-size:16px; cursor:pointer; color:var(--text-dim); transition:0.2s; display:flex; align-items:center; justify-content:center; border:1px solid transparent; border-radius:6px; padding:4px;}
+  .program-title .edit-btn:hover { color:var(--accent); border-color:var(--line); background:var(--surface); }
   
-  prog.days.forEach(d => {
-      if(!d.exercises) return;
-      d.exercises.forEach(ex => {
-          let sets = ex.sets;
-          if(sets === undefined && ex.sr) {
-              let m = String(ex.sr).match(/^(\d+)/);
-              if(m) sets = parseInt(m[1]);
-          }
-          sets = parseFloat(sets) || 0;
+  .program-controls { display:flex; gap:8px; }
+  .program-controls button { background:var(--surface); border:1px solid var(--line); border-radius:8px; padding:6px 12px; font-size:11px; cursor:pointer; font-weight:600; color:var(--text-dim); transition:0.2s; text-transform:uppercase;}
+  .program-controls .btn-share { color:var(--btn-text); border-color:var(--accent); background:var(--accent); }
+  .program-controls .btn-share:active { transform:scale(0.95); }
+  .program-controls .btn-del:hover { background:var(--warn); color:#fff; border-color:var(--warn);}
 
-          let mk = ex.muscleKey;
-          if(!mk) {
-              for(let k in EXERCISE_DB) {
-                  if(EXERCISE_DB[k].find(dbEx => dbEx.name === ex.name)) {
-                      mk = k; break;
-                  }
-              }
-          }
-          if(mk && totals[mk] !== undefined) totals[mk] += sets;
-      });
-  });
+  /* ANTRENMANI BAŞLAT BUTONU */
+  .start-workout-btn { display:flex; align-items:center; justify-content:center; width:100%; margin-bottom:20px; padding:16px; background:var(--text); color:var(--surface); border:none; border-radius:16px; font-family:'Barlow Condensed', sans-serif; font-weight:700; font-size:18px; letter-spacing:1px; text-transform:uppercase; cursor:pointer; transition:0.2s; box-shadow:0 4px 12px rgba(0,0,0,0.15);}
+  .start-workout-btn:active { transform:scale(0.98); }
 
-  container.innerHTML = `
-    <div class="analysis-title">Hacim Analizi (Tüm Program)</div>
-    <div class="svg-container">
-      <div class="svg-box">
-        <div class="anatomy-label-title">ÖN ANATOMİ</div>
-        <svg viewBox="0 0 400 380" width="100%" style="display:block; height:auto;">
-          <circle cx="200" cy="40" r="22" fill="var(--surface-2)"/>
-          <rect x="193" y="60" width="14" height="20" fill="var(--surface-2)"/>
-          <circle cx="150" cy="90" r="16" fill="${getColor(totals.omuz)}" class="human-shape"/>
-          <circle cx="250" cy="90" r="16" fill="${getColor(totals.omuz)}" class="human-shape"/>
-          <rect x="165" y="80" width="33" height="35" rx="5" fill="${getColor(totals.gogus)}" class="human-shape"/>
-          <rect x="202" y="80" width="33" height="35" rx="5" fill="${getColor(totals.gogus)}" class="human-shape"/>
-          <rect x="130" y="110" width="18" height="45" rx="9" fill="${getColor(totals.biceps)}" class="human-shape"/>
-          <rect x="252" y="110" width="18" height="45" rx="9" fill="${getColor(totals.biceps)}" class="human-shape"/>
-          <rect x="170" y="120" width="60" height="60" rx="8" fill="${getColor(totals.karin)}" class="human-shape"/>
-          
-          <!-- YENİ EŞİTLENMİŞ BÖLÜM: Ön Bacak / Quads -->
-          <rect x="165" y="190" width="30" height="100" rx="12" fill="${getColor(totals.quad)}" class="human-shape"/>
-          <rect x="205" y="190" width="30" height="100" rx="12" fill="${getColor(totals.quad)}" class="human-shape"/>
-          <!-- Alt Bacak (Shins/Calves) - Nötr Renk -->
-          <rect x="168" y="300" width="24" height="50" rx="10" fill="var(--surface-2)" class="human-shape"/>
-          <rect x="208" y="300" width="24" height="50" rx="10" fill="var(--surface-2)" class="human-shape"/>
+  .day-section-title { font-family:'Barlow Condensed', sans-serif; font-size:18px; font-weight:700; color:var(--text); text-transform:uppercase; margin:8px 2px 12px 2px; padding-bottom:8px; border-bottom:2px solid var(--line); display:flex; justify-content:space-between; align-items:center;}
 
-          <path d="M 165 95 L 95 80" stroke="${getTextColor(totals.gogus)}" class="svg-line"/>
-          ${makeLabel(90, 75, 'left', 'gogus', totals.gogus)}
-          <path d="M 170 150 L 95 150" stroke="${getTextColor(totals.karin)}" class="svg-line"/>
-          ${makeLabel(90, 145, 'left', 'karin', totals.karin)}
-          <path d="M 165 240 L 95 240" stroke="${getTextColor(totals.quad)}" class="svg-line"/>
-          ${makeLabel(90, 235, 'left', 'quad', totals.quad)}
-          <path d="M 250 90 L 305 80" stroke="${getTextColor(totals.omuz)}" class="svg-line"/>
-          ${makeLabel(310, 75, 'right', 'omuz', totals.omuz)}
-          <path d="M 270 130 L 305 130" stroke="${getTextColor(totals.biceps)}" class="svg-line"/>
-          ${makeLabel(310, 125, 'right', 'biceps', totals.biceps)}
-        </svg>
+  .block-label{ font-family:'IBM Plex Mono', monospace; font-size:11px; letter-spacing:1px; color:var(--text-dim); text-transform:uppercase; margin:20px 2px 8px 2px; padding-bottom:4px; border-bottom:1px dashed var(--line); }
+  .block-label.first{ margin-top:4px; }
+  .card{ background:var(--surface); border:1px solid var(--line); border-radius:16px; padding:16px; margin-bottom:12px; box-shadow:0 4px 12px rgba(0,0,0,0.04); transition:transform 0.2s; }
+  .card.superset{ border-left:4px solid var(--accent); }
+  .row-top{ display:flex; justify-content:space-between; align-items:flex-start; gap:10px; }
+  .ex-name{ font-size:16px; font-weight:600; line-height:1.4; color:var(--text); word-break: break-word; }
+  .meta{ display:flex; gap:16px; margin-top:8px; align-items:center; flex-wrap:wrap;}
+  .meta-item{ font-family:'IBM Plex Mono', monospace; font-size:12px; color:var(--text-dim); }
+  .meta-item b{ color:var(--accent); font-weight:700; }
+  .link-btn{ font-size:11px; color:var(--text-dim); text-decoration:none; border:1px solid var(--line); border-radius:20px; padding:5px 12px; white-space:nowrap; font-family:'Inter'; font-weight:600; background:var(--surface-2); cursor:pointer; transition:0.2s; }
+  .link-btn:hover { border-color:var(--accent); color:var(--accent); background:var(--accent-dim); }
+  
+  .stepper{ display:flex; align-items:center; justify-content:space-between; margin-top:16px; background:var(--surface-2); border:1px solid var(--line); border-radius:12px; padding:4px; }
+  .stepper button{ width:48px; height:44px; border:none; border-radius:8px; background:var(--surface); border:1px solid var(--line); color:var(--text); font-size:22px; font-weight:600; cursor:pointer; user-select:none; transition:0.1s; box-shadow:0 1px 2px rgba(0,0,0,0.02);}
+  .stepper button:active{ background:var(--accent); color:var(--btn-text); border-color:var(--accent);}
+  .stepper button.minus:active{ background:var(--warn); color:#fff; border-color:var(--warn);}
+  
+  .weight-display{ flex:1; text-align:center; display:flex; justify-content:center; align-items:center; }
+  .wnum-input { font-family:'IBM Plex Mono', monospace; font-size:22px; font-weight:600; width:64px; text-align:center; border:none; background:transparent; color:var(--accent); padding:0; margin:0; outline:none; -moz-appearance:textfield; letter-spacing:0.5px; }
+  .wnum-input::-webkit-outer-spin-button, .wnum-input::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
+  .wnum-input:focus { border-bottom:2px solid var(--accent); border-radius:0; }
+  .weight-unit{ font-size:13px; color:var(--text-dim); margin-left:4px; font-weight:500;}
+
+  .sets-row{ display:flex; align-items:center; gap:8px; margin-top:12px; }
+  .set-btn{ flex:1; display:flex; align-items:center; justify-content:center; gap:8px; height:46px; border-radius:12px; border:1px solid var(--line); background:var(--surface-2); color:var(--text); font-family:'Inter'; font-weight:600; font-size:14px; cursor:pointer; user-select:none; transition:0.2s;}
+  .set-btn .dots{ display:flex; gap:6px; }
+  .set-dot{ width:10px; height:10px; border-radius:50%; background:var(--surface); border:1px solid var(--line); transition:background 0.2s ease, box-shadow 0.2s ease; }
+  .set-dot.filled{ background:var(--accent); border-color:var(--accent); box-shadow:0 0 6px rgba(13, 148, 136, 0.3);}
+  .set-btn.complete{ border-color:var(--accent); background:var(--accent-dim); color:var(--accent); }
+  .set-reset{ width:46px; height:46px; border-radius:12px; border:1px solid var(--line); background:var(--surface-2); color:var(--text-dim); font-size:16px; font-weight:bold; cursor:pointer; transition:0.2s;}
+  .set-reset:hover { color:var(--text); background:var(--line);}
+  
+  .timer-row{ display:flex; align-items:center; gap:8px; margin-top:4px; background:var(--surface-2); border:1px solid var(--line); border-radius:12px; padding:6px 8px; }
+  .timer-display{ font-family:'IBM Plex Mono', monospace; font-size:20px; font-weight:600; width:70px; text-align:center; letter-spacing:0.5px; color:var(--text);}
+  .timer-display.running{ color:var(--accent); text-shadow:0 0 8px rgba(13, 148, 136, 0.25);}
+  .timer-display.done{ color:var(--warn); }
+  .timer-btn{ flex:1; height:40px; border:none; border-radius:8px; background:var(--surface); border:1px solid var(--line); color:var(--text); font-family:'Inter'; font-weight:600; font-size:13px; cursor:pointer; transition:0.2s;}
+  .timer-btn.start{ background:var(--accent); color:var(--btn-text); border-color:var(--accent);}
+  .timer-btn.pause{ background:var(--surface-2); border-color:var(--line); color:var(--text);}
+  .timer-btn.reset{ width:40px; flex:none; color:var(--text-dim); background:transparent; border:none;}
+  .timer-btn.reset:hover { color:var(--text);}
+  
+  .save-btn{ display:block; width:100%; margin-top:24px; padding:16px; background:var(--surface-2); color:var(--text-dim); border:1px solid var(--line); border-radius:16px; font-family:'Barlow Condensed', sans-serif; font-weight:700; font-size:16px; letter-spacing:1px; text-transform:uppercase; cursor:pointer; transition:0.2s;}
+  .save-btn:active { transform:scale(0.98); }
+  .save-btn:disabled { opacity:0.6; cursor:not-allowed; }
+  
+  .save-toast{ text-align:center; color:var(--accent); font-size:13px; font-weight:600; margin-top:10px; height:18px; }
+
+  /* GEÇMİŞ KARTLARI */
+  .hist-empty{ text-align:center; color:var(--text-dim); font-size:14px; margin-top:40px; padding:0 20px; }
+  .hist-card{ background:var(--surface); border:1px solid var(--line); border-radius:16px; padding:16px; margin-bottom:16px; box-shadow:0 4px 12px rgba(0,0,0,0.04); }
+  .hist-head{ display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:12px; border-bottom:1px solid var(--surface-2); padding-bottom:10px;}
+  .hist-day{ font-family:'Barlow Condensed', sans-serif; font-weight:700; font-size:18px; color:var(--accent); text-transform:uppercase; letter-spacing:0.5px;}
+  .hist-datetime{ font-size:11.5px; color:var(--text-dim); font-family:'IBM Plex Mono', monospace; margin-top:4px; }
+  .hist-duration{ font-size:12px; color:var(--accent); font-weight:700; font-family:'IBM Plex Mono', monospace;}
+  .hist-del{ border:1px solid var(--line); background:var(--surface-2); color:var(--warn); border-radius:8px; font-size:12px; font-weight:600; cursor:pointer; padding:6px 10px; transition:0.2s;}
+  .hist-del:hover { background:var(--warn); color:#fff; border-color:var(--warn);}
+  .hist-ex-row{ display:flex; justify-content:space-between; align-items:center; font-size:13.5px; padding:8px 0; border-top:1px dashed var(--line); }
+  .hist-ex-row:first-of-type { border-top:none; }
+  .hist-ex-name{ color:var(--text); font-weight:500;}
+  .hist-ex-stats{ font-family:'IBM Plex Mono', monospace; color:var(--accent); font-weight:600; font-size:13px; white-space:nowrap; margin-left:10px; }
+  
+  /* TOPLULUK KARTLARI */
+  .comm-card { background:var(--surface); border:1px solid var(--line); border-radius:16px; padding:16px; margin-bottom:16px; box-shadow:0 4px 12px rgba(0,0,0,0.04); }
+  .comm-header-row { display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;}
+  .comm-author { font-size:13px; color:var(--text-dim); font-weight:500;}
+  .comm-author b { color:var(--accent); font-weight:700;}
+  .comm-date { font-size:11px; font-family:'IBM Plex Mono', monospace; color:var(--text-dim); background:var(--surface-2); padding:4px 8px; border-radius:12px; border:1px solid var(--line);}
+  .comm-title { font-family:'Barlow Condensed', sans-serif; font-weight:700; font-size:22px; text-transform:uppercase; margin-bottom:12px; color:var(--text); letter-spacing:0.5px;}
+  .comm-actions { display:flex; gap:10px; margin-top:16px; }
+  .comm-btn { flex:1; padding:12px; border-radius:10px; font-weight:600; font-size:13px; cursor:pointer; font-family:'Inter'; text-align:center; transition:0.2s; text-transform:uppercase; letter-spacing:0.5px;}
+  .comm-btn.view { background:var(--surface-2); color:var(--text); border:1px solid var(--line); }
+  .comm-btn.view:hover { background:var(--line); }
+  .comm-btn.add { background:var(--accent); color:var(--btn-text); border:none; box-shadow:0 2px 8px rgba(13, 148, 136, 0.2); }
+  .comm-btn.delete { background:var(--surface); color:var(--warn); border:1px solid var(--warn); flex:0.4;}
+  .comm-btn.delete:hover { background:var(--warn); color:#fff; }
+
+  /* --- OLUŞTURMA & EDİTÖR --- */
+  .count-row{ display:flex; align-items:center; justify-content:space-between; background:var(--surface); border:1px solid var(--line); border-radius:16px; padding:16px; margin-bottom:20px; box-shadow:0 4px 12px rgba(0,0,0,0.04); }
+  .count-label{ font-size:14px; font-weight:600; color:var(--accent);}
+  .count-stepper{ display:flex; align-items:center; gap:4px; background:var(--surface-2); border:1px solid var(--line); border-radius:12px; padding:4px; }
+  .count-stepper button{ width:40px; height:40px; border:none; border-radius:8px; background:var(--surface); border:1px solid var(--line); color:var(--text); font-size:20px; font-weight:700; cursor:pointer; transition:0.2s;}
+  .count-stepper button:active{ background:var(--accent); color:var(--btn-text); border-color:var(--accent);}
+  .count-num{ font-family:'IBM Plex Mono', monospace; font-weight:700; font-size:16px; width:32px; text-align:center; color:var(--text); }
+  
+  .day-name-input{ font-family:'Barlow Condensed', sans-serif; font-weight:700; font-size:22px; color:var(--accent); border:none; background:transparent; width:100%; text-transform:uppercase; letter-spacing:0.5px; padding:6px 0; outline:none; transition:0.2s;}
+  .day-name-input::placeholder { color:var(--line); }
+  .day-card{ margin-bottom:20px;}
+  .day-card-head { display:flex; justify-content:space-between; align-items:center; border-bottom:2px solid var(--accent); margin-bottom:16px; padding-bottom:4px;}
+  .added-ex-row{ border:1px solid var(--line); border-radius:14px; padding:14px; margin-bottom:12px; background:var(--surface); display:flex; flex-direction:column; gap:10px; box-shadow:0 2px 6px rgba(0,0,0,0.02);}
+  .added-ex-top{ display:flex; justify-content:space-between; align-items:flex-start; gap:8px; }
+  .added-ex-name{ font-size:15px; font-weight:700; line-height:1.3; color:var(--text);}
+  .added-ex-muscle{ font-size:11px; color:var(--text-dim); font-family:'IBM Plex Mono',monospace; text-transform:uppercase; margin-top:4px;}
+  .added-ex-controls{ display:flex; align-items:center; gap:12px; flex-wrap:wrap; background:var(--surface-2); border:1px solid var(--line); padding:10px; border-radius:10px;}
+  .muscle-sets-mini{ font-size:11.5px; color:var(--text-dim); display:flex; align-items:center; gap:6px; font-weight:600;}
+  .mini-input{ font-family:'IBM Plex Mono', monospace; font-size:14px; font-weight:600; border:1px solid var(--line); border-radius:8px; padding:8px 6px; width:52px; text-align:center; background:var(--surface); color:var(--text); outline:none;}
+  .mini-input:focus { border-color:var(--accent); }
+  .reps-input{ width:66px; }
+  
+  .added-ex-actions { display:flex; gap:6px; align-items:center; }
+  .move-btn { background:var(--surface-2); border:1px solid var(--line); color:var(--text-dim); border-radius:8px; font-size:16px; font-weight:bold; cursor:pointer; width:34px; height:32px; display:flex; align-items:center; justify-content:center; transition:0.2s; }
+  .move-btn:hover { background:var(--line); color:var(--text); border-color:var(--text-dim); }
+  .ex-remove { width:34px; height:32px; padding:0; display:flex; align-items:center; justify-content:center; border:1px solid var(--warn); background:transparent; color:var(--warn); border-radius:8px; font-size:14px; font-weight:600; cursor:pointer; transition:0.2s;}
+  .ex-remove:hover { background:var(--warn); color:#fff; }
+
+  .add-ex-btn{ display:block; width:100%; margin-top:16px; padding:16px; background:transparent; border:2px dashed var(--line); border-radius:14px; color:var(--text-dim); font-weight:700; font-size:14px; cursor:pointer; transition:0.2s; text-transform:uppercase; letter-spacing:0.5px;}
+  .add-ex-btn:hover { border-color:var(--accent); color:var(--accent); background:var(--surface);}
+
+  /* HAREKET SEÇİCİ */
+  .picker{ margin-top:12px; border:1px solid var(--line); border-radius:14px; overflow:hidden; background:var(--surface); box-shadow:0 6px 16px rgba(0,0,0,0.06);}
+  .picker-group-head{ padding:14px 16px; font-weight:700; font-size:14px; cursor:pointer; display:flex; justify-content:space-between; align-items:center; background:var(--surface-2); border-top:1px solid var(--line); transition:0.2s;}
+  .picker-group-head:hover { background:var(--line); }
+  .picker-group-head:first-child{ border-top:none; }
+  .picker-group-count{ font-size:11.5px; color:var(--accent); font-family:'IBM Plex Mono', monospace; font-weight:600; background:var(--accent-dim); padding:2px 8px; border-radius:10px;}
+  .picker-ex-list{ display:none; max-height:400px; overflow-y:auto; }
+  .picker-ex-list.open{ display:block; }
+  .picker-ex-item{ padding:14px 16px; font-size:13.5px; font-weight:500; border-top:1px dashed var(--line); display:flex; justify-content:space-between; align-items:center; cursor:pointer; background:var(--surface); transition:0.2s;}
+  .picker-ex-item:hover{ background:var(--surface-2); }
+  .picker-ex-reps{ color:var(--text-dim); font-family:'IBM Plex Mono', monospace; font-size:11.5px; white-space:nowrap; margin-left:8px; }
+  .picker-ex-preview{ display:inline-block; font-size:11px; color:var(--text); border:1px solid var(--line); border-radius:8px; padding:4px 8px; margin-left:8px; cursor:pointer; background:var(--surface-2); font-family: 'Inter', sans-serif; font-weight: 600; transition:0.2s;}
+  .picker-ex-preview:hover { border-color:var(--accent); color:var(--accent); background:var(--surface);}
+  .picker-close{ display:block; width:100%; text-align:center; padding:16px; font-size:13px; font-weight:700; color:var(--text); background:var(--surface-2); border:none; border-top:1px solid var(--line); cursor:pointer; text-transform:uppercase; letter-spacing:0.5px;}
+
+  /* DİKEY BUTONLAR */
+  .save-name-row{ display:flex; flex-direction:column; gap:12px; margin-top:28px; padding-top:24px; border-top:2px solid var(--line);}
+  .save-name-input{ width:100%; padding:14px; border:1px solid var(--line); border-radius:14px; font-family:'Inter'; font-size:15px; font-weight:500; background:var(--surface); color:var(--text); outline:none;}
+  .save-name-input:focus { border-color:var(--accent); box-shadow:0 0 0 3px rgba(13, 148, 136, 0.15);}
+  
+  .editor-btn-container { display:flex; flex-direction:column; gap:10px; width:100%; } 
+  
+  .save-name-btn{ width:100%; background:var(--accent); color:var(--btn-text); border:none; border-radius:14px; padding:14px 16px; font-weight:700; font-family:'Barlow Condensed', sans-serif; font-size:17px; letter-spacing:0.5px; text-transform:uppercase; cursor:pointer; text-align:center; transition:0.2s; box-shadow:0 4px 12px rgba(13, 148, 136, 0.2);}
+  .save-name-btn:active { transform:scale(0.96); }
+  .save-name-btn:disabled { opacity:0.6; cursor:not-allowed; }
+  
+  .clear-draft-btn { width:100%; background:var(--surface-2); color:var(--text-dim); border:1px solid var(--line); border-radius:14px; padding:14px 16px; font-weight:700; font-family:'Barlow Condensed', sans-serif; font-size:16px; text-transform:uppercase; cursor:pointer; transition:0.2s; text-align:center;}
+  .clear-draft-btn:hover { background:var(--line); color:var(--text); }
+
+  /* GÖRSEL ANALİZ */
+  .analysis-section{ margin-top:28px; margin-bottom:24px;}
+  .analysis-title{ font-family:'Barlow Condensed', sans-serif; font-size:22px; font-weight:700; color:var(--text); text-transform:uppercase; margin-bottom:16px; letter-spacing:0.5px;}
+  .svg-container { display: flex; flex-wrap: wrap; justify-content: center; gap: 16px; margin-bottom: 16px;}
+  .svg-box { flex: 1 1 300px; max-width: 360px; background: var(--surface); border: 1px solid var(--line); border-radius: 16px; padding: 20px 12px; box-shadow:0 4px 12px rgba(0,0,0,0.04); display:flex; flex-direction:column; align-items:center; justify-content:flex-start; }
+  .anatomy-label-title { text-align: center; font-family: 'Barlow Condensed', sans-serif; font-size: 18px; font-weight: 700; color: var(--accent); margin-bottom: 16px; letter-spacing: 1px;}
+  .human-shape { stroke: #ffffff; stroke-width: 2.5; transition: fill 0.3s ease; }
+  .svg-text { font-family: 'Inter', sans-serif; font-size: 11px; font-weight: 700; }
+  .svg-subtext { font-size: 10px; font-weight: 500; }
+  .svg-line { stroke-width: 1.5; stroke-dasharray: 3 3; stroke: var(--line); }
+  
+  footer{ text-align:center; color:var(--text-dim); font-size:12px; margin-top:32px; padding:0 20px 20px 20px; font-weight:500;}
+
+  /* --- ODAKLI ANTRENMAN MODU --- */
+  #workout-mode-screen {
+      position: fixed; top:0; left:0; width:100%; height:100%;
+      background: var(--bg); z-index: 9999; display:flex; flex-direction:column;
+      overflow: hidden; touch-action: none;
+  }
+  .wm-top {
+      display:flex; justify-content:space-between; align-items:center;
+      padding: 16px 20px; background: var(--surface); border-bottom:1px solid var(--line);
+      box-shadow: 0 4px 12px rgba(0,0,0,0.05); z-index:10;
+  }
+  .wm-global-timer-container { display:flex; align-items:center; gap:8px;}
+  .wm-global-timer { font-family: 'IBM Plex Mono', monospace; font-size: 24px; font-weight:700; color:var(--accent); letter-spacing:1px;}
+  .wm-global-label { font-size:11px; color:var(--text-dim); text-transform:uppercase; font-weight:600;}
+  .wm-end-btn { background: var(--warn); color:#fff; border:none; border-radius:10px; padding:12px 18px; font-weight:700; font-size:14px; cursor:pointer; text-transform:uppercase; letter-spacing:0.5px; transition:0.2s;}
+  .wm-end-btn:active { transform:scale(0.95);}
+  .wm-end-btn:disabled { opacity:0.6; cursor:not-allowed;}
+
+  /* --- BATARYA VE PERFORMANS İÇİN OPTİMİZE ŞERİT MANTIĞI --- */
+  .wm-carousel { 
+      flex: 1; 
+      position: relative; 
+      overflow: hidden; 
+      width: 100%;
+  }
+  .wm-track {
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 50px; 
+      /* Sadece GPU ile çalışan translate3d animasyonu */
+      transition: transform 0.45s cubic-bezier(0.25, 1, 0.5, 1);
+      will-change: transform;
+      transform: translate3d(0, 0, 0); 
+      padding: 50vh 0; 
+  }
+  
+  .wm-card {
+      position: relative; 
+      width: 92%; max-width: 450px;
+      background: var(--surface); border-radius:20px; padding:24px;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.05); 
+      transition: transform 0.45s cubic-bezier(0.25, 1, 0.5, 1), opacity 0.45s ease; 
+      border: 1px solid var(--line); border-left:6px solid var(--accent);
+      flex-shrink: 0;
+  }
+  
+  .wm-card.active { transform: scale(1); pointer-events:auto; opacity: 1; z-index: 3;}
+  .wm-card.prev { transform: scale(0.9); pointer-events:none; opacity: 0.35; z-index: 1;}
+  .wm-card.next { transform: scale(0.9); pointer-events:none; opacity: 0.35; z-index: 1;}
+
+  /* YIRTILMAYI ÖNLEYEN MUTLAK KONUMLU BUTON */
+  .wm-prev-btn { 
+      position: absolute;
+      top: -38px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 80%; 
+      height: 32px;
+      background: var(--text); color: var(--surface); 
+      border: none; border-radius: 16px; 
+      font-family:'Inter'; font-weight:600; font-size:12px; cursor:pointer; 
+      letter-spacing:0.5px; text-transform:uppercase; 
+      display: flex; align-items: center; justify-content: center;
+      opacity: 0; pointer-events: none; z-index: 0;
+      transition: opacity 0.3s ease;
+  }
+  .wm-prev-btn.show { opacity: 1; pointer-events: auto; z-index: 5;}
+
+  .wm-skip-btn { display:flex; align-items:center; justify-content:center; width:100%; margin-top:20px; padding:12px; background:var(--surface-2); color:var(--text-dim); border:1px dashed var(--line); border-radius:12px; font-family:'Inter'; font-weight:600; font-size:13px; cursor:pointer; transition:0.2s; letter-spacing:0.5px; text-transform:uppercase; }
+  .wm-skip-btn:hover { border-color:var(--accent); color:var(--text); background:var(--line);}
+
+  .wm-progress-container { padding: 24px 20px; background: var(--surface); border-top:1px solid var(--line); z-index:10;}
+  .wm-progress-bar-bg { width:100%; height:12px; background:var(--surface-2); border-radius:6px; overflow:hidden; border:1px solid var(--line);}
+  .wm-progress-bar-fill { height:100%; background:var(--accent); width:0%; transition:width 0.5s cubic-bezier(0.4, 0, 0.2, 1); }
+  .wm-progress-text { text-align:center; font-size:14px; font-weight:700; color:var(--text); margin-top:10px; transition:0.2s;}
+
+  /* --- UYGULAMA İÇİ GÖRSEL ARAMA PENCERESİ VE KURTARMA MODAL'I --- */
+  .ex-modal { position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(15,23,42,0.85); backdrop-filter:blur(6px); z-index:100000; display:none; align-items:center; justify-content:center; padding:20px; }
+  .ex-modal.active { display:flex; animation: fadeIn 0.3s ease; }
+  .ex-modal-content { width:100%; max-width:500px; height:85%; background:var(--bg); border-radius:20px; display:flex; flex-direction:column; overflow:hidden; box-shadow:0 10px 40px rgba(0,0,0,0.3); border:1px solid var(--line);}
+  .ex-modal-header { padding:16px 20px; background:var(--surface); display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid var(--line); }
+  .ex-modal-close { background:var(--surface-2); border:1px solid var(--line); color:var(--text); width:32px; height:32px; border-radius:8px; font-weight:bold; cursor:pointer; transition:0.2s; display:flex; align-items:center; justify-content:center;}
+  .ex-modal-close:hover { background:var(--warn); color:#fff; border-color:var(--warn);}
+  .ex-modal-body { flex:1; background:var(--surface-2); position:relative; }
+  .ex-modal-body iframe { width:100%; height:100%; border:none; background:#fff;}
+  .ex-modal-footer { padding:12px; background:var(--surface); text-align:center; border-top:1px solid var(--line);}
+  .ex-modal-btn { background:var(--surface-2); color:var(--text); border:1px solid var(--line); padding:10px 20px; border-radius:10px; font-size:13px; font-weight:600; cursor:pointer; font-family:'Inter'; transition:0.2s;}
+  .ex-modal-btn:hover { border-color:var(--accent); color:var(--accent); background:var(--accent-dim);}
+  @keyframes fadeIn { from{opacity:0; transform:scale(0.95);} to{opacity:1; transform:scale(1);} }
+</style>
+</head>
+<body>
+
+<div id="auth-screen">
+  <div class="auth-header">
+    <div class="auth-title">Trak Fitness</div>
+    <div class="auth-sub">Premium Bulut Altyapısı</div>
+  </div>
+  
+  <div class="auth-tabs-container">
+    <div id="tab-login" class="auth-tab active" onclick="switchAuth('login')">Giriş Yap</div>
+    <div id="tab-signup" class="auth-tab" onclick="switchAuth('signup')">Kayıt Ol</div>
+  </div>
+
+  <div class="auth-body">
+    <div id="login-form">
+      <input type="email" id="login-email" class="auth-input" placeholder="E-posta Adresiniz" />
+      <input type="password" id="login-password" class="auth-input" placeholder="Şifreniz" />
+      
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:14px; font-size:13px; color:var(--text-dim); padding: 0 4px;">
+          <label style="display:flex; align-items:center; gap:6px; cursor:pointer;">
+              <input type="checkbox" id="remember-me" style="margin:0; width:16px; height:16px; accent-color:var(--accent);" /> Beni Hatırla
+          </label>
+          <span style="color:var(--accent); cursor:pointer; font-weight:600; text-decoration:underline;" onclick="resetPassword()">Şifremi Unuttum</span>
       </div>
 
-      <div class="svg-box">
-        <div class="anatomy-label-title">ARKA ANATOMİ</div>
-        <svg viewBox="0 0 400 380" width="100%" style="display:block; height:auto;">
-          <circle cx="200" cy="40" r="22" fill="var(--surface-2)"/>
-          <rect x="193" y="60" width="14" height="20" fill="var(--surface-2)"/>
-          <polygon points="165,80 235,80 220,170 180,170" fill="${getColor(totals.sirt)}" class="human-shape"/>
-          <circle cx="150" cy="90" r="16" fill="${getColor(totals.omuz)}" class="human-shape"/>
-          <circle cx="250" cy="90" r="16" fill="${getColor(totals.omuz)}" class="human-shape"/>
-          <rect x="130" y="110" width="18" height="45" rx="9" fill="${getColor(totals.triceps)}" class="human-shape"/>
-          <rect x="252" y="110" width="18" height="45" rx="9" fill="${getColor(totals.triceps)}" class="human-shape"/>
-          <rect x="160" y="175" width="38" height="40" rx="15" fill="${getColor(totals.kalca)}" class="human-shape"/>
-          <rect x="202" y="175" width="38" height="40" rx="15" fill="${getColor(totals.kalca)}" class="human-shape"/>
-          <rect x="165" y="220" width="30" height="75" rx="12" fill="${getColor(totals.hamstring)}" class="human-shape"/>
-          <rect x="205" y="220" width="30" height="75" rx="12" fill="${getColor(totals.hamstring)}" class="human-shape"/>
-          <rect x="168" y="300" width="24" height="50" rx="10" fill="${getColor(totals.baldir)}" class="human-shape"/>
-          <rect x="208" y="300" width="24" height="50" rx="10" fill="${getColor(totals.baldir)}" class="human-shape"/>
-
-          <path d="M 175 120 L 95 100" stroke="${getTextColor(totals.sirt)}" class="svg-line"/>
-          ${makeLabel(90, 95, 'left', 'sirt', totals.sirt)}
-          <path d="M 160 195 L 95 195" stroke="${getTextColor(totals.kalca)}" class="svg-line"/>
-          ${makeLabel(90, 190, 'left', 'kalca', totals.kalca)}
-          <path d="M 165 250 L 95 250" stroke="${getTextColor(totals.hamstring)}" class="svg-line"/>
-          ${makeLabel(90, 245, 'left', 'hamstring', totals.hamstring)}
-          <path d="M 250 90 L 305 80" stroke="${getTextColor(totals.omuz)}" class="svg-line"/>
-          ${makeLabel(310, 75, 'right', 'omuz', totals.omuz)}
-          <path d="M 270 130 L 305 130" stroke="${getTextColor(totals.triceps)}" class="svg-line"/>
-          ${makeLabel(310, 125, 'right', 'triceps', totals.triceps)}
-          <path d="M 232 320 L 305 320" stroke="${getTextColor(totals.baldir)}" class="svg-line"/>
-          ${makeLabel(310, 315, 'right', 'baldir', totals.baldir)}
-        </svg>
-      </div>
+      <button class="auth-btn-primary" onclick="signIn()">Giriş Yap</button>
     </div>
-  `;
+
+    <div id="signup-form" style="display:none;">
+      <input type="text" id="signup-username" class="auth-input" placeholder="Kullanıcı Adı" />
+      <input type="email" id="signup-email" class="auth-input" placeholder="E-posta Adresiniz" />
+      <input type="password" id="signup-password" class="auth-input" placeholder="Şifre (En az 6 karakter)" />
+      <input type="password" id="signup-password-confirm" class="auth-input" placeholder="Şifre (Tekrar)" />
+      <button class="auth-btn-primary" onclick="signUp()">Hesap Oluştur</button>
+    </div>
+
+    <!-- ŞİFRE SIFIRLAMA FORMU -->
+    <div id="update-password-form" style="display:none;">
+      <div style="font-size:14px; margin-bottom:12px; font-weight:600; text-align:center; color:var(--accent);">Lütfen yeni şifrenizi belirleyin.</div>
+      <input type="password" id="new-password" class="auth-input" placeholder="Yeni Şifre (En az 6 karakter)" />
+      <input type="password" id="new-password-confirm" class="auth-input" placeholder="Yeni Şifre (Tekrar)" />
+      <button class="auth-btn-primary" onclick="updatePassword()">Şifreyi Güncelle</button>
+    </div>
+
+    <div id="auth-msg"></div>
+    <button id="back-to-login-btn" class="auth-btn-primary" style="display:none; margin-top:14px; background:var(--text);" onclick="resetAuthUI()">← Giriş Ekranına Dön</button>
+  </div>
+</div>
+
+<div id="app-screen" style="display: none;">
+  <header>
+    <div class="header-top">
+      <h1>Trak Fitness</h1>
+      <button class="logout-btn" onclick="signOut()">Çıkış Yap</button>
+    </div>
+    <div class="sub" id="user-greeting">Hoş geldin</div>
+    <div class="tabs" id="tabs"></div>
+  </header>
+  <main id="main"></main>
+  <footer>Tüm antrenman verileriniz şifrelenmiş %100 bulut altyapısında saklanır.</footer>
+</div>
+
+<div id="workout-mode-screen" style="display: none;">
+    <div class="wm-top">
+        <div class="wm-global-timer-container">
+            <div class="wm-global-label">Toplam Süre</div>
+            <div class="wm-global-timer" id="wm-global-timer">00:00</div>
+        </div>
+        <button class="wm-end-btn" id="wm-end-btn" onclick="finishWorkoutMode()">Bitir & Kaydet</button>
+    </div>
+    <div class="wm-carousel" id="wm-carousel-container">
+        <div class="wm-track" id="wm-track"></div>
+    </div>
+    <div class="wm-progress-container">
+        <div class="wm-progress-bar-bg"><div class="wm-progress-bar-fill" id="wm-progress-fill"></div></div>
+        <div class="wm-progress-text" id="wm-progress-text">Antrenman İlerlemesi: %0</div>
+    </div>
+</div>
+
+<div id="ex-modal" class="ex-modal">
+    <div class="ex-modal-content">
+        <div class="ex-modal-header">
+            <h3 id="ex-modal-title" style="margin:0; font-family:'Barlow Condensed'; font-size:20px; color:var(--accent);">Görsel Arama</h3>
+            <button class="ex-modal-close" onclick="closeImageModal()">✕</button>
+        </div>
+        <div class="ex-modal-body">
+            <iframe id="ex-modal-iframe" src="" frameborder="0"></iframe>
+        </div>
+        <div class="ex-modal-footer">
+            <button class="ex-modal-btn" onclick="openExternalImg()">Eğer Yüklenmezse Tarayıcıda Aç</button>
+        </div>
+    </div>
+</div>
+
+<!-- YENİ: YARIM KALAN ANTRENMAN KURTARMA PENCERESİ -->
+<div id="recovery-modal" class="ex-modal">
+    <div class="ex-modal-content" style="height:auto; max-width:340px; text-align:center; padding:24px; background:var(--surface);">
+        <h3 style="margin:0 0 16px 0; color:var(--accent); font-family:'Barlow Condensed'; font-size:24px; text-transform:uppercase;">Yarım Kalan Antrenman</h3>
+        <p style="font-size:14px; color:var(--text); margin-bottom:24px; line-height:1.5;">Devam etmekte olan bir antrenmanınız algılandı. Kaldığınız yerden devam etmek ister misiniz?</p>
+        <div style="display:flex; gap:12px;">
+            <button class="ex-modal-btn" style="flex:1;" onclick="discardActiveWorkout()">İptal Et</button>
+            <button class="ex-modal-btn" style="flex:1; background:var(--accent); color:#fff; border:none;" onclick="resumeActiveWorkout()">Devam Et</button>
+        </div>
+    </div>
+</div>
+
+<script>
+const SUPABASE_URL = 'https://luhjxfpnhszoptusadwl.supabase.co';
+const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imx1aGp4ZnBuaHN6b3B0dXNhZHdsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODU4MTA1NDksImV4cCI6MjEwMTM4NjU0OX0.bbZky4piJuYWDORymhZi-t7C4aDBbqDHbOCMLq7TAag';
+
+const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+let currentUser = null;
+let currentUsername = "";
+let cloudData = { weights: {}, custom_program: null, saved_programs: [], session_state: {} };
+
+const authScreen = document.getElementById('auth-screen');
+const appScreen = document.getElementById('app-screen');
+const authMsg = document.getElementById('auth-msg');
+
+function showMsg(text, isError = false) {
+  authMsg.textContent = text; authMsg.className = isError ? 'msg-error' : 'msg-success';
 }
-</script>
-</body>
-</html>
+
+function switchAuth(mode) {
+  authMsg.textContent = '';
+  document.getElementById('back-to-login-btn').style.display = 'none';
+  if(mode === 'login') {
+    document.getElementById('tab-login').classList.add('active');
+    document.getElementById('tab-signup').classList.remove('active');
+    document.getElementById('login-form').style.display = 'block';
+    document.getElementById('signup-form').style.display = 'none';
+  } else {
+    document.getElementById('tab-signup').classList.add('active');
+    document.getElementById('tab-login').classList.remove('active');
+    document.getElementById('signup-form').style.display = 'block';
+    document.getElementById('login-form').style.display = 'none';
+  }
+}
+
+function resetAuthUI() {
+    document.getElementById('back-to-login-btn').style.display = 'none';
+    switchAuth('login');
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+    const savedEmail = localStorage.getItem('rememberedEmail');
+    if(savedEmail) {
+        document.getElementById('login-email').value = savedEmail;
+        document.getElementById('remember-me').checked = true;
+    }
+});
+
+async function signUp() {
+  const username = document.getElementById('signup-username').value.trim();
+  const email = document.getElementById('signup-email').value.trim();
+  const password = document.getElementById('signup-password').value;
+  const confirmPassword = document.getElementById('signup-password-confirm').value;
+  
+  if (!username || !email || password.length < 6) return showMsg('Lütfen tüm alanları eksiksiz doldurun.', true);
+  if (password !== confirmPassword) return showMsg('Şifreler eşleşmiyor, lütfen kontrol edin.', true);
+  
+  authMsg.textContent = 'Kayıt yapılıyor, lütfen bekleyin...';
+  const { data, error } = await supabaseClient.auth.signUp({ email, password });
+  
+  if (error) { 
+    showMsg('Kayıt Hatası: ' + error.message, true); 
+  } else {
+    showMsg('Kayıt başarılı! Otomatik giriş yapılıyor...', false);
+    if(data.user) {
+      await supabaseClient.from('profiles').upsert([{ id: data.user.id, username: username, email: email }]);
+      await supabaseClient.auth.signInWithPassword({ email: email, password: password });
+    }
+  }
+}
+
+async function signIn() {
+  const email = document.getElementById('login-email').value.trim();
+  const password = document.getElementById('login-password').value;
+  const remember = document.getElementById('remember-me').checked;
+  
+  if (!email || !password) return showMsg('Lütfen e-posta ve şifrenizi girin.', true);
+
+  if (remember) {
+      localStorage.setItem('rememberedEmail', email);
+  } else {
+      localStorage.removeItem('rememberedEmail');
+  }
+
+  authMsg.textContent = 'Giriş yapılıyor...';
+  const { error } = await supabaseClient.auth.signInWithPassword({ email, password });
+  if (error) showMsg('Hatalı e-posta veya şifre.', true);
+}
+
+async function resetPassword() {
+    const email = document.getElementById('login-email').value.trim();
+    if (!email) {
+        return showMsg('Lütfen şifresini unuttuğunuz e-posta adresini yukarıya yazın.', true);
+    }
+    authMsg.textContent = 'Sıfırlama bağlantısı gönderiliyor...';
+    const { error } = await supabaseClient.auth.resetPasswordForEmail(email, { redirectTo: window.location.href });
+
+    if (error) {
+        showMsg('Hata: ' + error.message, true);
+    } else {
+        showMsg('Şifre sıfırlama bağlantısı gönderildi! Lütfen e-postanızı kontrol edin.', false);
+        document.getElementById('login-form').style.display = 'none';
+        document.getElementById('back-to-login-btn').style.display = 'block'; 
+    }
+}
+
+async function updatePassword() {
+  const newPassword = document.getElementById('new-password').value;
+  const newPasswordConfirm = document.getElementById('new-password-confirm').value;
+  
+  if (!newPassword || newPassword.length < 6) return showMsg('Şifre en az 6 karakter olmalıdır.', true);
+  if (newPassword !== newPasswordConfirm) return showMsg('Şifreler eşleşmiyor, lütfen kontrol edin.', true);
+  
+  authMsg.textContent = 'Şifreniz güncelleniyor...';
+  const { error } = await supabaseClient.auth.updateUser({ password: newPassword });
+  
+  if (error) {
+    showMsg('Hata: ' + error.message, true);
+  } else {
+    showMsg('Şifreniz başarıyla güncellendi! Sayfa yenileniyor...', false);
+    setTimeout(() => { window.location.href = window.location.pathname; }, 1500);
+  }
+}
+
+async function signOut() { 
+  await supabaseClient.auth.signOut(); 
+  document.getElementById('login-password').value = '';
+  if (!document.getElementById('remember-me').checked) { document.getElementById('login-email').value = ''; }
+  document.getElementById('signup-username').value = ''; document.getElementById('signup-email').value = '';
+  document.getElementById('signup-password').value = ''; document.getElementById('signup-password-confirm').value = '';
+  authMsg.textContent = ''; 
+  document.getElementById('back-to-login-btn').style.display = 'none';
+}
+
+let hasInitialized = false;
+let isRecoveryMode = window.location.hash.includes('type=recovery') || window.location.search.includes('type=recovery');
+
+supabaseClient.auth.onAuthStateChange(async (event, session) => {
+  if (event === 'PASSWORD_RECOVERY' || isRecoveryMode) {
+      isRecoveryMode = true; 
+      authScreen.style.display = 'block'; appScreen.style.display = 'none';
+      document.querySelector('.auth-tabs-container').style.display = 'none';
+      document.getElementById('login-form').style.display = 'none'; document.getElementById('signup-form').style.display = 'none';
+      document.getElementById('back-to-login-btn').style.display = 'none'; document.getElementById('update-password-form').style.display = 'block';
+      showMsg('Lütfen yeni şifrenizi belirleyip kaydedin.', false);
+      return;
+  }
+
+  if (session && session.user && !isRecoveryMode) {
+    currentUser = session.user;
+    if (hasInitialized) return;
+    hasInitialized = true;
+
+    const { data: profileArray } = await supabaseClient.from('profiles').select('username').eq('id', currentUser.id);
+    if(profileArray && profileArray.length > 0) currentUsername = profileArray[0].username;
+
+    const { data: uDataArray } = await supabaseClient.from('user_data').select('*').eq('user_id', currentUser.id);
+    
+    if(uDataArray && uDataArray.length > 0) {
+      const uData = uDataArray[0];
+      cloudData = { weights: uData.weights || {}, custom_program: uData.custom_program || null, saved_programs: uData.saved_programs || [], session_state: uData.session_state || {} };
+    } else {
+      cloudData = { weights: {}, custom_program: null, saved_programs: [], session_state: {} };
+    }
+
+    authScreen.style.display = 'none'; appScreen.style.display = 'block';
+    
+    const displayUser = currentUsername || currentUser.email.split('@')[0];
+    document.getElementById('user-greeting').innerHTML = `Hoş geldin, <b style="color:var(--accent); font-family:'IBM Plex Mono'; font-size:14px;">@${displayUser}</b>`;
+    
+    let savedTab = parseInt(sessionStorage.getItem('currentTab'));
+    if (isNaN(savedTab)) {
+        if (!cloudData.saved_programs || cloudData.saved_programs.length === 0) currentDay = 1; else currentDay = 0; 
+    } else {
+        currentDay = Math.min(savedTab, getTabLabels().length - 1);
+    }
+    
+    checkActiveWorkout(); // YENİ: Başlarken yarım kalan antrenman var mı kontrol et
+  } else if (!isRecoveryMode) {
+    currentUser = null; hasInitialized = false; authScreen.style.display = 'block'; appScreen.style.display = 'none';
+  }
+});
+
+let currentSubDay = 0; 
+let communityListCache = []; 
+let viewingCommunityProgram = null; 
+
+let wmActiveIndex = 0;
+let wmState = [];
+let wmGlobalTimerInterval = null;
+let wmGlobalStartTime = 0;
+let wmCurrentDayObj = null;
+let currentImgQuery = '';
+
+let resizeTimeout;
+window.addEventListener('resize', () => {
+    if(document.getElementById('workout-mode-screen').style.display === 'flex') {
+        clearTimeout(resizeTimeout);
+        resizeTimeout = setTimeout(alignWMTrack, 100);
+    }
+});
+
+let cloudSaveTimeout = null;
+function requestCloudSave() {
+    if(cloudSaveTimeout) clearTimeout(cloudSaveTimeout);
+    cloudSaveTimeout = setTimeout(() => {
+        saveCloudData();
+    }, 2500); 
+}
+
+// YENİ: YEREL HAFIZA KURTARMA (CRASH RECOVERY) FONKSİYONLARI
+function saveActiveWorkoutState() {
+    if (document.getElementById('workout-mode-screen').style.display === 'flex' && currentUser) {
+        const data = {
+            dayObj: wmCurrentDayObj,
+            activeIndex: wmActiveIndex,
+            // Interval id'lerini temizle ki hata vermesin
+            state: wmState.map(s => ({...s, timerInterval: null})), 
+            startTime: wmGlobalStartTime
+        };
+        localStorage.setItem('activeWorkout_' + currentUser.id, JSON.stringify(data));
+    }
+}
+
+function checkActiveWorkout() {
+    const saved = localStorage.getItem('activeWorkout_' + currentUser.id);
+    if (saved) {
+        document.getElementById('recovery-modal').classList.add('active');
+    } else {
+        initApp();
+    }
+}
+
+function resumeActiveWorkout() {
+    document.getElementById('recovery-modal').classList.remove('active');
+    const saved = JSON.parse(localStorage.getItem('activeWorkout_' + currentUser.id));
+    if(!saved) { initApp(); return; }
+    
+    wmCurrentDayObj = saved.dayObj;
+    wmActiveIndex = saved.activeIndex;
+    wmGlobalStartTime = saved.startTime;
+    wmState = saved.state;
+    
+    // Güvenlik: Aktif dinlenme sayaçlarını durdur, kullanıcı kendisi devam ettirsin.
+    wmState.forEach(ex => {
+       ex.timerRunning = false;
+       ex.timeLeft = ex.restSeconds;
+    });
+    
+    document.getElementById('app-screen').style.display = 'none';
+    document.getElementById('workout-mode-screen').style.display = 'flex';
+    
+    if(wmGlobalTimerInterval) clearInterval(wmGlobalTimerInterval);
+    wmGlobalTimerInterval = setInterval(() => {
+        const s = Math.floor((Date.now() - wmGlobalStartTime) / 1000);
+        document.getElementById('wm-global-timer').textContent = fmtTime(s);
+    }, 1000);
+
+    buildWMCarousel();
+    updateWMProgress();
+}
+
+async function discardActiveWorkout() {
+    document.getElementById('recovery-modal').classList.remove('active');
+    const saved = JSON.parse(localStorage.getItem('activeWorkout_' + currentUser.id));
+    if(saved && saved.dayObj) {
+        // İptal ediliyorsa buluttaki yarım kalan setleri de sıfırla
+        for(let ex of saved.state){ setSetsDone(saved.dayObj.id, ex.originalIdx, 0); }
+    }
+    localStorage.removeItem('activeWorkout_' + currentUser.id);
+    initApp();
+}
+
+function initApp() { renderTabs(); renderView(); }
+function getProgramList(){ return cloudData.saved_programs || []; }
+function getCustomProgram(){
+  if(cloudData.custom_program && cloudData.custom_program.days) return cloudData.custom_program;
+  cloudData.custom_program = { name: "", editing_id: null, days: [ { id: cpUid(), name:"Gün 1", exercises: [] } ] };
+  if(currentUser) saveCloudData();
+  return cloudData.custom_program;
+}
+
+async function saveCloudData() {
+  try {
+    const payload = { weights: cloudData.weights, custom_program: cloudData.custom_program, saved_programs: cloudData.saved_programs, session_state: cloudData.session_state };
+    await supabaseClient.from('user_data').upsert([{ user_id: currentUser.id, ...payload }]);
+  } catch (err) { console.error('Cloud güncelleme hatası:', err); }
+}
+
+async function saveCustomProgram(prog) {
+  cloudData.custom_program = prog;
+  await saveCloudData(); 
+}
+
+function getTabLabels(){
+  const programs = getProgramList();
+  return [...programs.map(p => p.name), 'Geçmiş', 'Oluştur', 'Topluluk'];
+}
+
+function renderTabs(){
+  const labels = getTabLabels();
+  if(currentDay >= labels.length) currentDay = Math.max(0, labels.length - 1);
+  sessionStorage.setItem('currentTab', currentDay);
+
+  const tabsEl = document.getElementById('tabs'); tabsEl.innerHTML = '';
+  labels.forEach((label, i) => {
+    const t = document.createElement('div'); t.className = 'tab' + (i === currentDay ? ' active' : '');
+    t.textContent = label;
+    t.onclick = () => { currentDay = i; currentSubDay = 0; viewingCommunityProgram = null; renderTabs(); renderView(); };
+    tabsEl.appendChild(t);
+  });
+}
+
+function renderView(){
+  const programs = getProgramList();
+  const main = document.getElementById('main'); main.innerHTML = '';
+
+  if(currentDay < programs.length){ renderProgramView(programs[currentDay]); }
+  else if(currentDay === programs.length){ renderHistory(); }
+  else if(currentDay === programs.length + 1){ renderBuilder(); }
+  else { renderCommunity(); }
+}
+
+function parseSetsTotal(sr){ 
+    if(!sr) return 3; if(typeof sr ===

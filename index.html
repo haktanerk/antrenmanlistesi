@@ -242,10 +242,11 @@
   .svg-box { flex: 1 1 300px; max-width: 400px; background: var(--surface); border: 1px solid var(--line); border-radius: 16px; padding: 24px 0px; box-shadow:0 4px 12px rgba(0,0,0,0.04); display:flex; flex-direction:column; align-items:center; justify-content:flex-start; overflow: hidden; }
   .anatomy-label-title { text-align: center; font-family: 'Barlow Condensed', sans-serif; font-size: 18px; font-weight: 800; color: var(--text-dim); margin-bottom: 16px; letter-spacing: 1px;}
   
-  .human-shape { stroke: var(--surface); stroke-width: 2.5px; transition: fill 0.4s ease; stroke-linejoin: round; }
+  .human-shape { stroke: var(--surface); stroke-width: 2.5px; transition: fill 0.4s ease; stroke-linecap: round; stroke-linejoin: round; }
+  .human-base { fill: #cbd5e1; stroke: var(--surface); stroke-width: 2.5px; stroke-linecap: round; stroke-linejoin: round; }
   .svg-text-title { font-family: 'Barlow Condensed', sans-serif; font-size: 18px; font-weight: 800; letter-spacing: 0.5px; text-transform: uppercase; }
   .svg-text-body { font-family: 'Inter', sans-serif; font-size: 13px; font-weight: 600; }
-  .svg-line { stroke-width: 1.5; stroke-dasharray: 2 4; stroke: var(--line); }
+  .svg-line { stroke-width: 1.5; stroke-dasharray: 4 4; stroke: var(--line); fill: none; }
   
   footer{ text-align:center; color:var(--text-dim); font-size:12px; margin-top:32px; padding:0 20px 20px 20px; font-weight:500;}
 
@@ -296,7 +297,6 @@
   .ex-modal-footer { padding:12px; background:var(--surface); text-align:center; border-top:1px solid var(--line);}
   .ex-modal-btn { background:var(--surface-2); color:var(--text); border:1px solid var(--line); padding:10px 20px; border-radius:10px; font-size:13px; font-weight:600; cursor:pointer; font-family:'Inter'; transition:0.2s;}
   .ex-modal-btn:hover { border-color:var(--accent); color:var(--accent); background:var(--accent-dim);}
-  @keyframes fadeIn { from{opacity:0; transform:scale(0.95);} to{opacity:1; transform:scale(1);} }
 </style>
 </head>
 <body>
@@ -335,6 +335,7 @@
       <button class="auth-btn-primary" onclick="signUp()">Hesap Oluştur</button>
     </div>
 
+    <!-- ŞİFRE SIFIRLAMA FORMU -->
     <div id="update-password-form" style="display:none;">
       <div style="font-size:14px; margin-bottom:12px; font-weight:600; text-align:center; color:var(--accent);">Lütfen yeni şifrenizi belirleyin.</div>
       <input type="password" id="new-password" class="auth-input" placeholder="Yeni Şifre (En az 6 karakter)" />
@@ -392,6 +393,7 @@
     </div>
 </div>
 
+<!-- YARIM KALAN ANTRENMAN KURTARMA PENCERESİ -->
 <div id="recovery-modal" class="ex-modal">
     <div class="ex-modal-content" style="height:auto; max-width:340px; text-align:center; padding:24px; background:var(--surface);">
         <h3 style="margin:0 0 16px 0; color:var(--accent); font-family:'Barlow Condensed'; font-size:24px; text-transform:uppercase;">Yarım Kalan Antrenman</h3>
@@ -1330,15 +1332,15 @@ const EXERCISE_DB = {
       {name:"Good Morning", reps:"8-12", type:"compound", secondaryMuscles: ["hamstring", "kalca"]}
   ],
   omuz: [
-      {name:"Overhead Press (Barbell)", reps:"6-10", type:"compound", secondaryMuscles: ["triceps", "omuz"]}, 
-      {name:"Seated Barbell Press", reps:"6-10", type:"compound", secondaryMuscles: ["triceps", "omuz"]}, 
-      {name:"Dumbbell Shoulder Press", reps:"8-12", type:"compound", secondaryMuscles: ["triceps", "omuz"]}, 
-      {name:"Arnold Press", reps:"8-12", type:"compound", secondaryMuscles: ["triceps", "omuz"]}, 
-      {name:"Smith Machine Shoulder Press", reps:"8-12", type:"compound", secondaryMuscles: ["triceps", "omuz"]}, 
-      {name:"Machine Shoulder Press", reps:"8-12", type:"compound", secondaryMuscles: ["triceps", "omuz"]}, 
+      {name:"Overhead Press (Barbell)", reps:"6-10", type:"compound", secondaryMuscles: ["triceps"]}, 
+      {name:"Seated Barbell Press", reps:"6-10", type:"compound", secondaryMuscles: ["triceps"]}, 
+      {name:"Dumbbell Shoulder Press", reps:"8-12", type:"compound", secondaryMuscles: ["triceps"]}, 
+      {name:"Arnold Press", reps:"8-12", type:"compound", secondaryMuscles: ["triceps"]}, 
+      {name:"Smith Machine Shoulder Press", reps:"8-12", type:"compound", secondaryMuscles: ["triceps"]}, 
+      {name:"Machine Shoulder Press", reps:"8-12", type:"compound", secondaryMuscles: ["triceps"]}, 
       {name:"Push Press", reps:"5-8", type:"compound", secondaryMuscles: ["triceps", "quad"]}, 
-      {name:"Bradford Press", reps:"8-12", type:"compound", secondaryMuscles: ["triceps", "omuz"]}, 
-      {name:"Landmine Shoulder Press", reps:"8-12", type:"compound", secondaryMuscles: ["triceps", "omuz"]}, 
+      {name:"Bradford Press", reps:"8-12", type:"compound", secondaryMuscles: ["triceps"]}, 
+      {name:"Landmine Shoulder Press", reps:"8-12", type:"compound", secondaryMuscles: ["triceps"]}, 
       {name:"Lateral Raise (Dumbbell)", reps:"12-15", type:"izolasyon"}, 
       {name:"Lateral Raise (Cable)", reps:"12-15", type:"izolasyon"}, 
       {name:"Machine Lateral Raise", reps:"12-15", type:"izolasyon"}, 
@@ -1352,10 +1354,10 @@ const EXERCISE_DB = {
       {name:"Rear Delt Cable Pull", reps:"12-15", type:"izolasyon"}, 
       {name:"Reverse Pec Deck (Machine)", reps:"12-15", type:"izolasyon"}, 
       {name:"Face Pull (Cable)", reps:"12-15", type:"izolasyon"}, 
-      {name:"Upright Row (Barbell)", reps:"10-12", type:"compound", secondaryMuscles: ["biceps", "omuz"]}, 
-      {name:"Upright Row (Dumbbell)", reps:"10-12", type:"compound", secondaryMuscles: ["biceps", "omuz"]}, 
-      {name:"Upright Row (Cable)", reps:"10-12", type:"compound", secondaryMuscles: ["biceps", "omuz"]}, 
-      {name:"Cuban Press", reps:"10-12", type:"compound", secondaryMuscles: ["biceps", "omuz"]}, 
+      {name:"Upright Row (Barbell)", reps:"10-12", type:"compound", secondaryMuscles: ["biceps"]}, 
+      {name:"Upright Row (Dumbbell)", reps:"10-12", type:"compound", secondaryMuscles: ["biceps"]}, 
+      {name:"Upright Row (Cable)", reps:"10-12", type:"compound", secondaryMuscles: ["biceps"]}, 
+      {name:"Cuban Press", reps:"10-12", type:"compound", secondaryMuscles: ["biceps"]}, 
       {name:"Y-Raise", reps:"12-15", type:"izolasyon"}, 
       {name:"Pike Push-up", reps:"8-15", type:"compound", secondaryMuscles: ["triceps"]}, 
       {name:"Handstand Push-up", reps:"5-10", type:"compound", secondaryMuscles: ["triceps"]}
@@ -1703,132 +1705,117 @@ function renderAnalysis(prog, container){
     <div class="svg-container">
       <div class="svg-box">
         <div class="anatomy-label-title">ÖN ANATOMİ</div>
-        <svg viewBox="-100 0 600 400" width="100%" style="display:block; height:auto;">
+        <svg viewBox="-50 0 500 400" width="100%" height="auto">
           
-          <!-- Kafa ve Boyun -->
-          <circle cx="200" cy="30" r="22" fill="var(--surface-2)" class="human-shape"/>
-          <path d="M190,45 L210,45 L215,65 L185,65 Z" fill="var(--surface-2)" class="human-shape"/>
+          <circle cx="200" cy="25" r="20" class="human-base"/>
+          <path d="M 190 40 L 210 40 Q 215 50 215 60 L 185 60 Q 185 50 190 40 Z" class="human-base"/>
           
-          <!-- Göğüs (Pecs) -->
-          <path d="M198,65 Q170,60 150,75 Q150,95 165,105 Q185,110 198,105 Z" fill="${getColor('gogus')}" class="human-shape"/>
-          <path d="M202,65 Q230,60 250,75 Q250,95 235,105 Q215,110 202,105 Z" fill="${getColor('gogus')}" class="human-shape"/>
+          <path d="M 198 60 L 165 60 Q 145 75 165 105 Q 185 110 198 105 Z" fill="${getColor('gogus')}" class="human-shape"/>
+          <path d="M 202 60 L 235 60 Q 255 75 235 105 Q 215 110 202 105 Z" fill="${getColor('gogus')}" class="human-shape"/>
           
-          <!-- Karın (Abs) - 6 Pack Blokları -->
-          <rect x="175" y="110" width="22" height="18" rx="4" fill="${getColor('karin')}" class="human-shape"/>
-          <rect x="203" y="110" width="22" height="18" rx="4" fill="${getColor('karin')}" class="human-shape"/>
-          <rect x="175" y="132" width="22" height="18" rx="4" fill="${getColor('karin')}" class="human-shape"/>
-          <rect x="203" y="132" width="22" height="18" rx="4" fill="${getColor('karin')}" class="human-shape"/>
-          <rect x="175" y="154" width="22" height="18" rx="4" fill="${getColor('karin')}" class="human-shape"/>
-          <rect x="203" y="154" width="22" height="18" rx="4" fill="${getColor('karin')}" class="human-shape"/>
+          <rect x="174" y="112" width="24" height="18" rx="5" fill="${getColor('karin')}" class="human-shape"/>
+          <rect x="202" y="112" width="24" height="18" rx="5" fill="${getColor('karin')}" class="human-shape"/>
+          <rect x="174" y="133" width="24" height="18" rx="5" fill="${getColor('karin')}" class="human-shape"/>
+          <rect x="202" y="133" width="24" height="18" rx="5" fill="${getColor('karin')}" class="human-shape"/>
+          <rect x="174" y="154" width="24" height="18" rx="5" fill="${getColor('karin')}" class="human-shape"/>
+          <rect x="202" y="154" width="24" height="18" rx="5" fill="${getColor('karin')}" class="human-shape"/>
           
-          <!-- Omuzlar (Delts) -->
-          <path d="M148,65 Q130,65 125,95 Q135,115 145,100 Z" fill="${getColor('omuz')}" class="human-shape"/>
-          <path d="M252,65 Q270,65 275,95 Q265,115 255,100 Z" fill="${getColor('omuz')}" class="human-shape"/>
+          <path d="M 171 112 L 155 120 Q 145 145 171 172 Z" fill="${getColor('karin')}" class="human-shape"/>
+          <path d="M 229 112 L 245 120 Q 255 145 229 172 Z" fill="${getColor('karin')}" class="human-shape"/>
           
-          <!-- Kollar (Biceps) -->
-          <path d="M 142 102 Q 115 110 122 145 L 132 145 Q 148 125 142 102 Z" fill="${getColor('biceps')}" class="human-shape"/>
-          <path d="M 258 102 Q 285 110 278 145 L 268 145 Q 252 125 258 102 Z" fill="${getColor('biceps')}" class="human-shape"/>
+          <path d="M 160 60 Q 130 65 130 100 Q 145 120 145 110 Z" fill="${getColor('omuz')}" class="human-shape"/>
+          <path d="M 240 60 Q 270 65 270 100 Q 255 120 255 110 Z" fill="${getColor('omuz')}" class="human-shape"/>
           
-          <!-- Ön Kol (Forearms) -->
-          <path d="M 125 145 Q 105 170 115 195 Q 120 198 123 195 Q 132 170 128 145 Z" fill="${getColor('onkol')}" class="human-shape"/>
-          <path d="M 275 145 Q 295 170 285 195 Q 280 198 277 195 Q 268 170 272 145 Z" fill="${getColor('onkol')}" class="human-shape"/>
+          <path d="M 145 115 Q 120 120 125 155 Q 140 155 140 120 Z" fill="${getColor('biceps')}" class="human-shape"/>
+          <path d="M 255 115 Q 280 120 275 155 Q 260 155 260 120 Z" fill="${getColor('biceps')}" class="human-shape"/>
           
-          <!-- Ön Bacaklar (Quads) -->
-          <path d="M195,185 L165,185 Q150,230 160,285 Q175,290 185,285 Q195,240 195,185 Z" fill="${getColor('quad')}" class="human-shape"/>
-          <path d="M205,185 L235,185 Q250,230 240,285 Q225,290 215,285 Q205,240 205,185 Z" fill="${getColor('quad')}" class="human-shape"/>
+          <path d="M 135 160 Q 105 180 115 210 Q 130 205 125 165 Z" fill="${getColor('onkol')}" class="human-shape"/>
+          <path d="M 265 160 Q 295 180 285 210 Q 270 205 275 165 Z" fill="${getColor('onkol')}" class="human-shape"/>
           
-          <!-- Alt Bacak (Kaval/Shin) -->
-          <path d="M 188 300 L 165 300 Q 150 325 168 365 L 180 365 Q 195 325 188 300 Z" fill="var(--surface-2)" class="human-shape"/>
-          <path d="M 212 300 L 235 300 Q 250 325 232 365 L 220 365 Q 205 325 212 300 Z" fill="var(--surface-2)" class="human-shape"/>
+          <path d="M 198 175 L 174 175 Q 160 185 198 185 Z" fill="${getColor('quad')}" class="human-shape"/>
+          <path d="M 202 175 L 226 175 Q 240 185 202 185 Z" fill="${getColor('quad')}" class="human-shape"/>
+          
+          <path d="M 165 188 Q 140 230 155 280 Q 165 285 170 230 Z" fill="${getColor('quad')}" class="human-shape"/>
+          <path d="M 175 188 Q 170 230 172 280 Q 190 285 198 225 L 198 188 Z" fill="${getColor('quad')}" class="human-shape"/>
+          <path d="M 235 188 Q 260 230 245 280 Q 235 285 230 230 Z" fill="${getColor('quad')}" class="human-shape"/>
+          <path d="M 225 188 Q 230 230 228 280 Q 210 285 202 225 L 202 188 Z" fill="${getColor('quad')}" class="human-shape"/>
+          
+          <path d="M 172 285 Q 150 330 160 375 L 182 375 Q 190 330 185 288 Z" class="human-base"/>
+          <path d="M 228 285 Q 250 330 240 375 L 218 375 Q 210 330 215 288 Z" class="human-base"/>
 
-          <!-- SOL ETİKET ÇİZGİLERİ VE YAZILAR -->
-          <path d="M 165 95 L 70 80" stroke="${getTextColor('gogus')}" class="svg-line"/>
-          ${makeLabel(60, 75, 'left', 'gogus')}
-          
-          <path d="M 170 150 L 70 130" stroke="${getTextColor('karin')}" class="svg-line"/>
-          ${makeLabel(60, 125, 'left', 'karin')}
-          
-          <path d="M 132 180 L 70 180" stroke="${getTextColor('onkol')}" class="svg-line"/>
-          ${makeLabel(60, 175, 'left', 'onkol')}
-          
-          <path d="M 165 240 L 70 240" stroke="${getTextColor('quad')}" class="svg-line"/>
-          ${makeLabel(60, 235, 'left', 'quad')}
-          
-          <!-- SAĞ ETİKET ÇİZGİLERİ VE YAZILAR -->
-          <path d="M 246 95 L 330 80" stroke="${getTextColor('omuz')}" class="svg-line"/>
-          ${makeLabel(340, 75, 'right', 'omuz')}
-          
-          <path d="M 258 135 L 330 130" stroke="${getTextColor('biceps')}" class="svg-line"/>
-          ${makeLabel(340, 125, 'right', 'biceps')}
+          <path d="M 175 80 L 85 80" class="svg-line"/>
+          ${makeLabel(75, 75, 'left', 'gogus')}
+
+          <path d="M 175 140 L 85 140" class="svg-line"/>
+          ${makeLabel(75, 135, 'left', 'karin')}
+
+          <path d="M 120 185 L 85 185" class="svg-line"/>
+          ${makeLabel(75, 180, 'left', 'onkol')}
+
+          <path d="M 165 250 L 85 250" class="svg-line"/>
+          ${makeLabel(75, 245, 'left', 'quad')}
+
+          <path d="M 255 80 L 315 80" class="svg-line"/>
+          ${makeLabel(325, 75, 'right', 'omuz')}
+
+          <path d="M 265 140 L 315 140" class="svg-line"/>
+          ${makeLabel(325, 135, 'right', 'biceps')}
         </svg>
       </div>
 
       <div class="svg-box">
         <div class="anatomy-label-title">ARKA ANATOMİ</div>
-        <svg viewBox="-100 0 600 400" width="100%" style="display:block; height:auto;">
+        <svg viewBox="-50 0 500 400" width="100%" height="auto">
           
-          <!-- Kafa ve Boyun -->
-          <circle cx="200" cy="30" r="22" fill="var(--surface-2)" class="human-shape"/>
-          <path d="M190,45 L210,45 L215,65 L185,65 Z" fill="var(--surface-2)" class="human-shape"/>
+          <circle cx="200" cy="25" r="20" class="human-base"/>
+          <path d="M 190 40 L 210 40 Q 215 50 215 60 L 185 60 Q 185 50 190 40 Z" class="human-base"/>
           
-          <!-- Trapez (Sırt Üst) -->
-          <path d="M 198 45 L 175 60 Q 185 85 198 105 Z" fill="${getColor('sirt')}" class="human-shape"/>
-          <path d="M 202 45 L 225 60 Q 215 85 202 105 Z" fill="${getColor('sirt')}" class="human-shape"/>
+          <path d="M 198 45 L 175 60 Q 185 85 198 110 Z" fill="${getColor('sirt')}" class="human-shape"/>
+          <path d="M 202 45 L 225 60 Q 215 85 202 110 Z" fill="${getColor('sirt')}" class="human-shape"/>
           
-          <!-- Kanatlar (Lats) -->
-          <path d="M 170 65 Q 140 100 155 160 Q 175 165 198 150 L 198 110 Q 185 95 170 65 Z" fill="${getColor('sirt')}" class="human-shape"/>
-          <path d="M 230 65 Q 260 100 245 160 Q 225 165 202 150 L 202 110 Q 215 95 230 65 Z" fill="${getColor('sirt')}" class="human-shape"/>
+          <path d="M 198 115 L 170 65 Q 130 85 140 125 Q 155 165 178 185 L 198 150 Z" fill="${getColor('sirt')}" class="human-shape"/>
+          <path d="M 202 115 L 230 65 Q 270 85 260 125 Q 245 165 222 185 L 202 150 Z" fill="${getColor('sirt')}" class="human-shape"/>
           
-          <!-- Alt Sırt (Erektörler) -->
-          <path d="M 198 115 L 160 165 Q 180 175 198 175 Z" fill="${getColor('sirt')}" class="human-shape"/>
-          <path d="M 202 115 L 240 165 Q 220 175 202 175 Z" fill="${getColor('sirt')}" class="human-shape"/>
+          <path d="M 198 155 L 165 175 Q 180 185 198 185 Z" fill="${getColor('sirt')}" class="human-shape"/>
+          <path d="M 202 155 L 235 175 Q 220 185 202 185 Z" fill="${getColor('sirt')}" class="human-shape"/>
           
-          <!-- Omuzlar (Arka Delts) -->
-          <path d="M148,65 Q130,65 125,95 Q135,115 145,100 Z" fill="${getColor('omuz')}" class="human-shape"/>
-          <path d="M252,65 Q270,65 275,95 Q265,115 255,100 Z" fill="${getColor('omuz')}" class="human-shape"/>
+          <path d="M 160 60 Q 115 50 125 105 Q 135 120 145 110 Q 155 85 162 60 Z" fill="${getColor('omuz')}" class="human-shape"/>
+          <path d="M 240 60 Q 285 50 275 105 Q 265 120 255 110 Q 245 85 238 60 Z" fill="${getColor('omuz')}" class="human-shape"/>
           
-          <!-- Kollar (Triceps) -->
-          <path d="M 142 102 Q 115 110 122 145 L 132 145 Q 148 125 142 102 Z" fill="${getColor('triceps')}" class="human-shape"/>
-          <path d="M 258 102 Q 285 110 278 145 L 268 145 Q 252 125 258 102 Z" fill="${getColor('triceps')}" class="human-shape"/>
+          <path d="M 142 112 Q 115 115 120 160 Q 135 165 145 155 Q 150 135 145 112 Z" fill="${getColor('triceps')}" class="human-shape"/>
+          <path d="M 258 112 Q 285 115 280 160 Q 265 165 255 155 Q 250 135 255 112 Z" fill="${getColor('triceps')}" class="human-shape"/>
           
-          <!-- Arka Ön Kol -->
-          <path d="M 125 145 Q 105 170 115 195 Q 120 198 123 195 Q 132 170 128 145 Z" fill="${getColor('onkol')}" class="human-shape"/>
-          <path d="M 275 145 Q 295 170 285 195 Q 280 198 277 195 Q 268 170 272 145 Z" fill="${getColor('onkol')}" class="human-shape"/>
+          <path d="M 142 165 Q 105 175 115 220 Q 130 220 138 200 Q 145 180 142 165 Z" fill="${getColor('onkol')}" class="human-shape"/>
+          <path d="M 258 165 Q 295 175 285 220 Q 270 220 262 200 Q 255 180 258 165 Z" fill="${getColor('onkol')}" class="human-shape"/>
           
-          <!-- Kalça (Glutes) -->
-          <path d="M 198 178 L 158 172 Q 140 210 165 225 Q 185 230 198 220 Z" fill="${getColor('kalca')}" class="human-shape"/>
-          <path d="M 202 178 L 242 172 Q 260 210 235 225 Q 215 230 202 220 Z" fill="${getColor('kalca')}" class="human-shape"/>
+          <path d="M 198 180 L 170 180 Q 140 190 155 230 Q 175 240 198 230 Z" fill="${getColor('kalca')}" class="human-shape"/>
+          <path d="M 202 180 L 230 180 Q 260 190 245 230 Q 225 240 202 230 Z" fill="${getColor('kalca')}" class="human-shape"/>
           
-          <!-- Arka Bacak (Hamstrings) -->
-          <path d="M 195 225 L 165 230 Q 155 265 165 300 Q 180 305 190 300 Q 198 265 195 225 Z" fill="${getColor('hamstring')}" class="human-shape"/>
-          <path d="M 205 225 L 235 230 Q 245 265 235 300 Q 220 305 210 300 Q 202 265 205 225 Z" fill="${getColor('hamstring')}" class="human-shape"/>
+          <path d="M 165 235 Q 145 260 155 305 Q 165 300 172 265 Z" fill="${getColor('hamstring')}" class="human-shape"/>
+          <path d="M 175 232 Q 170 265 160 305 Q 175 310 185 305 Q 198 260 195 225 Z" fill="${getColor('hamstring')}" class="human-shape"/>
+          <path d="M 225 232 Q 230 265 240 305 Q 225 310 215 305 Q 202 260 205 225 Z" fill="${getColor('hamstring')}" class="human-shape"/>
+          <path d="M 235 235 Q 255 260 245 305 Q 235 300 228 265 Z" fill="${getColor('hamstring')}" class="human-shape"/>
           
-          <!-- Baldırlar (Calves) -->
-          <path d="M 188 305 L 165 305 Q 150 335 168 370 L 180 370 Q 195 335 188 305 Z" fill="${getColor('baldir')}" class="human-shape"/>
-          <path d="M 212 305 L 235 305 Q 250 335 232 370 L 220 370 Q 205 335 212 305 Z" fill="${getColor('baldir')}" class="human-shape"/>
+          <path d="M 160 310 Q 145 335 162 375 L 180 375 Q 192 340 185 310 Z" fill="${getColor('baldir')}" class="human-shape"/>
+          <path d="M 240 310 Q 255 335 238 375 L 220 375 Q 208 340 215 310 Z" fill="${getColor('baldir')}" class="human-shape"/>
 
-          <!-- SOL ETİKET ÇİZGİLERİ VE YAZILAR -->
-          <path d="M 170 100 L 70 100" stroke="${getTextColor('sirt')}" class="svg-line"/>
-          ${makeLabel(60, 95, 'left', 'sirt')}
-          
-          <path d="M 165 190 L 70 190" stroke="${getTextColor('kalca')}" class="svg-line"/>
-          ${makeLabel(60, 185, 'left', 'kalca')}
-          
-          <path d="M 160 250 L 70 250" stroke="${getTextColor('hamstring')}" class="svg-line"/>
-          ${makeLabel(60, 245, 'left', 'hamstring')}
-          
-          <!-- SAĞ ETİKET ÇİZGİLERİ VE YAZILAR -->
-          <path d="M 245 85 L 330 85" stroke="${getTextColor('omuz')}" class="svg-line"/>
-          ${makeLabel(340, 80, 'right', 'omuz')}
-          
-          <path d="M 265 135 L 330 135" stroke="${getTextColor('triceps')}" class="svg-line"/>
-          ${makeLabel(340, 130, 'right', 'triceps')}
-          
-          <path d="M 275 190 L 330 190" stroke="${getTextColor('onkol')}" class="svg-line"/>
-          ${makeLabel(340, 185, 'right', 'onkol')}
-          
-          <path d="M 220 310 L 330 310" stroke="${getTextColor('baldir')}" class="svg-line"/>
-          ${makeLabel(340, 305, 'right', 'baldir')}
+          <path d="M 160 100 L 85 100" class="svg-line"/>
+          ${makeLabel(75, 95, 'left', 'sirt')}
+
+          <path d="M 165 210 L 85 210" class="svg-line"/>
+          ${makeLabel(75, 205, 'left', 'kalca')}
+
+          <path d="M 165 270 L 85 270" class="svg-line"/>
+          ${makeLabel(75, 265, 'left', 'hamstring')}
+
+          <path d="M 255 80 L 315 80" class="svg-line"/>
+          ${makeLabel(325, 75, 'right', 'omuz')}
+
+          <path d="M 265 140 L 315 140" class="svg-line"/>
+          ${makeLabel(325, 135, 'right', 'triceps')}
+
+          <path d="M 225 340 L 315 340" class="svg-line"/>
+          ${makeLabel(325, 335, 'right', 'baldir')}
         </svg>
       </div>
     </div>

@@ -242,9 +242,9 @@
   .svg-box { flex: 1 1 300px; max-width: 360px; background: var(--surface); border: 1px solid var(--line); border-radius: 16px; padding: 20px 12px; box-shadow:0 4px 12px rgba(0,0,0,0.04); display:flex; flex-direction:column; align-items:center; justify-content:flex-start; }
   .anatomy-label-title { text-align: center; font-family: 'Barlow Condensed', sans-serif; font-size: 18px; font-weight: 700; color: var(--accent); margin-bottom: 16px; letter-spacing: 1px;}
   
-  .human-shape { stroke: var(--surface); stroke-width: 3; transition: fill 0.4s ease; stroke-linejoin: round; }
-  .svg-text { font-family: 'Inter', sans-serif; font-size: 10px; font-weight: 700; }
-  .svg-subtext { font-size: 9.5px; font-weight: 500; }
+  .human-shape { stroke: var(--surface); stroke-width: 2; transition: fill 0.4s ease; stroke-linejoin: round; }
+  .svg-text { font-family: 'Inter', sans-serif; font-size: 11px; font-weight: 700; }
+  .svg-subtext { font-size: 10px; font-weight: 500; }
   .svg-line { stroke-width: 1.5; stroke-dasharray: 3 3; stroke: var(--line); }
   
   footer{ text-align:center; color:var(--text-dim); font-size:12px; margin-top:32px; padding:0 20px 20px 20px; font-weight:500;}
@@ -1700,7 +1700,7 @@ async function renderBuilder(){
   main.appendChild(saveRow); main.appendChild(saveToast2);
 }
 
-// YENİ: Profesyonel Hacim Hesaplama ve Anatomi Çizimi Fonksiyonu
+// PROFESYONEL HACIM VE MODERN ANATOMI
 function renderAnalysis(prog, container){
   container.className = 'analysis-section'; 
   const ana_totals = {}; const yard_totals = {}; 
@@ -1714,7 +1714,6 @@ function renderAnalysis(prog, container){
           let mk = ex.muscleKey; if(!mk) { for(let k in EXERCISE_DB) { if(EXERCISE_DB[k].find(dbEx => dbEx.name === ex.name)) { mk = k; break; } } }
           if(mk && ana_totals[mk] !== undefined) ana_totals[mk] += sets;
           
-          // Kısmi Hacim Ekleme (Yeni ve Eski Programlar İçin Güvenli Kontrol)
           if(ex.secondaryMuscles && ex.secondaryMuscles.length > 0){
               ex.secondaryMuscles.forEach(smk => { if(yard_totals[smk] !== undefined) yard_totals[smk] += (sets * 0.5); });
           } else if(mk) {
@@ -1750,98 +1749,75 @@ function renderAnalysis(prog, container){
     <div class="svg-container">
       <div class="svg-box">
         <div class="anatomy-label-title">ÖN ANATOMİ</div>
-        <svg viewBox="-30 0 460 400" width="100%" style="display:block; height:auto;">
+        <svg viewBox="-150 0 700 400" width="100%" style="display:block; height:auto;">
           
-          <rect x="182" y="20" width="36" height="46" rx="18" fill="var(--surface-2)"/>
-          <rect x="190" y="60" width="20" height="20" rx="4" fill="var(--surface-2)"/>
-          
-          <rect x="140" y="75" width="28" height="40" rx="14" transform="rotate(15, 154, 95)" fill="${getColor('omuz')}" class="human-shape"/>
-          <rect x="232" y="75" width="28" height="40" rx="14" transform="rotate(-15, 246, 95)" fill="${getColor('omuz')}" class="human-shape"/>
-          
-          <path d="M198 75 L165 75 A12 12 0 0 0 153 87 L158 105 A12 12 0 0 0 170 115 L198 112 Z" fill="${getColor('gogus')}" class="human-shape"/>
-          <path d="M202 75 L235 75 A12 12 0 0 1 247 87 L242 105 A12 12 0 0 1 230 115 L202 112 Z" fill="${getColor('gogus')}" class="human-shape"/>
-          
-          <rect x="130" y="115" width="24" height="45" rx="12" transform="rotate(10, 142, 137)" fill="${getColor('biceps')}" class="human-shape"/>
-          <rect x="246" y="115" width="24" height="45" rx="12" transform="rotate(-10, 258, 137)" fill="${getColor('biceps')}" class="human-shape"/>
-          
-          <rect x="122" y="165" width="20" height="50" rx="10" transform="rotate(5, 132, 190)" fill="${getColor('onkol')}" class="human-shape"/>
-          <rect x="258" y="165" width="20" height="50" rx="10" transform="rotate(-5, 268, 190)" fill="${getColor('onkol')}" class="human-shape"/>
-          
-          <rect x="168" y="120" width="64" height="65" rx="10" fill="${getColor('karin')}" class="human-shape"/>
-          
-          <rect x="162" y="190" width="36" height="100" rx="18" fill="${getColor('quad')}" class="human-shape"/>
-          <rect x="202" y="190" width="36" height="100" rx="18" fill="${getColor('quad')}" class="human-shape"/>
-          
-          <rect x="166" y="295" width="26" height="65" rx="13" fill="var(--surface-2)" class="human-shape"/>
-          <rect x="208" y="295" width="26" height="65" rx="13" fill="var(--surface-2)" class="human-shape"/>
+          <polygon points="185,15 215,15 210,45 190,45" fill="var(--surface-2)" class="human-shape"/>
+          <polygon points="192,45 208,45 205,65 195,65" fill="var(--surface-2)" class="human-shape"/>
+          <polygon points="155,65 135,75 130,100 145,110" fill="${getColor('omuz')}" class="human-shape"/>
+          <polygon points="245,65 265,75 270,100 255,110" fill="${getColor('omuz')}" class="human-shape"/>
+          <polygon points="160,75 198,75 198,110 150,100" fill="${getColor('gogus')}" class="human-shape"/>
+          <polygon points="240,75 202,75 202,110 250,100" fill="${getColor('gogus')}" class="human-shape"/>
+          <polygon points="155,115 245,115 230,185 170,185" fill="${getColor('karin')}" class="human-shape"/>
+          <polygon points="142,115 125,120 120,155 138,150" fill="${getColor('biceps')}" class="human-shape"/>
+          <polygon points="258,115 275,120 280,155 262,150" fill="${getColor('biceps')}" class="human-shape"/>
+          <polygon points="135,160 118,165 110,210 125,215" fill="${getColor('onkol')}" class="human-shape"/>
+          <polygon points="265,160 282,165 290,210 275,215" fill="${getColor('onkol')}" class="human-shape"/>
+          <polygon points="165,195 198,195 192,280 155,270" fill="${getColor('quad')}" class="human-shape"/>
+          <polygon points="235,195 202,195 208,280 245,270" fill="${getColor('quad')}" class="human-shape"/>
+          <polygon points="160,290 188,295 180,360 165,360" fill="var(--surface-2)" class="human-shape"/>
+          <polygon points="240,290 212,295 220,360 235,360" fill="var(--surface-2)" class="human-shape"/>
 
-          <path d="M 165 95 L 90 80" stroke="${getTextColor('gogus')}" class="svg-line"/>
-          ${makeLabel(85, 75, 'left', 'gogus')}
+          <path d="M 160 85 L 10 85" stroke="${getTextColor('gogus')}" class="svg-line"/>
+          ${makeLabel(0, 80, 'left', 'gogus')}
+          <path d="M 160 140 L 10 140" stroke="${getTextColor('karin')}" class="svg-line"/>
+          ${makeLabel(0, 135, 'left', 'karin')}
+          <path d="M 125 190 L 10 190" stroke="${getTextColor('onkol')}" class="svg-line"/>
+          ${makeLabel(0, 185, 'left', 'onkol')}
+          <path d="M 160 240 L 10 240" stroke="${getTextColor('quad')}" class="svg-line"/>
+          ${makeLabel(0, 235, 'left', 'quad')}
           
-          <path d="M 170 150 L 90 130" stroke="${getTextColor('karin')}" class="svg-line"/>
-          ${makeLabel(85, 125, 'left', 'karin')}
-          
-          <path d="M 132 180 L 90 180" stroke="${getTextColor('onkol')}" class="svg-line"/>
-          ${makeLabel(85, 175, 'left', 'onkol')}
-          
-          <path d="M 165 240 L 90 240" stroke="${getTextColor('quad')}" class="svg-line"/>
-          ${makeLabel(85, 235, 'left', 'quad')}
-          
-          <path d="M 246 95 L 310 80" stroke="${getTextColor('omuz')}" class="svg-line"/>
-          ${makeLabel(315, 75, 'right', 'omuz')}
-          
-          <path d="M 258 135 L 310 130" stroke="${getTextColor('biceps')}" class="svg-line"/>
-          ${makeLabel(315, 125, 'right', 'biceps')}
+          <path d="M 245 85 L 390 85" stroke="${getTextColor('omuz')}" class="svg-line"/>
+          ${makeLabel(400, 80, 'right', 'omuz')}
+          <path d="M 265 135 L 390 135" stroke="${getTextColor('biceps')}" class="svg-line"/>
+          ${makeLabel(400, 130, 'right', 'biceps')}
         </svg>
       </div>
 
       <div class="svg-box">
         <div class="anatomy-label-title">ARKA ANATOMİ</div>
-        <svg viewBox="-30 0 460 400" width="100%" style="display:block; height:auto;">
+        <svg viewBox="-150 0 700 400" width="100%" style="display:block; height:auto;">
           
-          <rect x="182" y="20" width="36" height="46" rx="18" fill="var(--surface-2)"/>
-          <rect x="190" y="60" width="20" height="20" rx="4" fill="var(--surface-2)"/>
-          
-          <rect x="140" y="75" width="28" height="40" rx="14" transform="rotate(15, 154, 95)" fill="${getColor('omuz')}" class="human-shape"/>
-          <rect x="232" y="75" width="28" height="40" rx="14" transform="rotate(-15, 246, 95)" fill="${getColor('omuz')}" class="human-shape"/>
-          
-          <path d="M165 75 L235 75 L225 175 L175 175 Z" fill="${getColor('sirt')}" class="human-shape" stroke-linejoin="round"/>
-          
-          <rect x="130" y="115" width="24" height="45" rx="12" transform="rotate(10, 142, 137)" fill="${getColor('triceps')}" class="human-shape"/>
-          <rect x="246" y="115" width="24" height="45" rx="12" transform="rotate(-10, 258, 137)" fill="${getColor('triceps')}" class="human-shape"/>
-          
-          <rect x="122" y="165" width="20" height="50" rx="10" transform="rotate(5, 132, 190)" fill="${getColor('onkol')}" class="human-shape"/>
-          <rect x="258" y="165" width="20" height="50" rx="10" transform="rotate(-5, 268, 190)" fill="${getColor('onkol')}" class="human-shape"/>
-          
-          <rect x="160" y="175" width="40" height="45" rx="16" fill="${getColor('kalca')}" class="human-shape"/>
-          <rect x="200" y="175" width="40" height="45" rx="16" fill="${getColor('kalca')}" class="human-shape"/>
-          
-          <rect x="164" y="220" width="34" height="75" rx="17" fill="${getColor('hamstring')}" class="human-shape"/>
-          <rect x="202" y="220" width="34" height="75" rx="17" fill="${getColor('hamstring')}" class="human-shape"/>
-          
-          <rect x="166" y="300" width="28" height="60" rx="14" fill="${getColor('baldir')}" class="human-shape"/>
-          <rect x="206" y="300" width="28" height="60" rx="14" fill="${getColor('baldir')}" class="human-shape"/>
+          <polygon points="185,15 215,15 210,45 190,45" fill="var(--surface-2)" class="human-shape"/>
+          <polygon points="192,45 208,45 205,65 195,65" fill="var(--surface-2)" class="human-shape"/>
+          <polygon points="155,65 135,75 130,100 145,110" fill="${getColor('omuz')}" class="human-shape"/>
+          <polygon points="245,65 265,75 270,100 255,110" fill="${getColor('omuz')}" class="human-shape"/>
+          <polygon points="160,75 240,75 225,170 175,170" fill="${getColor('sirt')}" class="human-shape"/>
+          <polygon points="142,115 125,120 120,155 138,150" fill="${getColor('triceps')}" class="human-shape"/>
+          <polygon points="258,115 275,120 280,155 262,150" fill="${getColor('triceps')}" class="human-shape"/>
+          <polygon points="135,160 118,165 110,210 125,215" fill="${getColor('onkol')}" class="human-shape"/>
+          <polygon points="265,160 282,165 290,210 275,215" fill="${getColor('onkol')}" class="human-shape"/>
+          <polygon points="172,175 198,175 200,215 162,210" fill="${getColor('kalca')}" class="human-shape"/>
+          <polygon points="228,175 202,175 200,215 238,210" fill="${getColor('kalca')}" class="human-shape"/>
+          <polygon points="164,220 198,225 192,280 158,275" fill="${getColor('hamstring')}" class="human-shape"/>
+          <polygon points="236,220 202,225 208,280 242,275" fill="${getColor('hamstring')}" class="human-shape"/>
+          <polygon points="160,290 188,295 180,360 165,360" fill="${getColor('baldir')}" class="human-shape"/>
+          <polygon points="240,290 212,295 220,360 235,360" fill="${getColor('baldir')}" class="human-shape"/>
 
-          <path d="M 175 120 L 90 100" stroke="${getTextColor('sirt')}" class="svg-line"/>
-          ${makeLabel(85, 95, 'left', 'sirt')}
+          <path d="M 170 100 L 10 100" stroke="${getTextColor('sirt')}" class="svg-line"/>
+          ${makeLabel(0, 95, 'left', 'sirt')}
+          <path d="M 165 190 L 10 190" stroke="${getTextColor('kalca')}" class="svg-line"/>
+          ${makeLabel(0, 185, 'left', 'kalca')}
+          <path d="M 160 250 L 10 250" stroke="${getTextColor('hamstring')}" class="svg-line"/>
+          ${makeLabel(0, 245, 'left', 'hamstring')}
           
-          <path d="M 160 195 L 90 180" stroke="${getTextColor('kalca')}" class="svg-line"/>
-          ${makeLabel(85, 175, 'left', 'kalca')}
-          
-          <path d="M 165 250 L 90 240" stroke="${getTextColor('hamstring')}" class="svg-line"/>
-          ${makeLabel(85, 235, 'left', 'hamstring')}
-          
-          <path d="M 246 95 L 310 80" stroke="${getTextColor('omuz')}" class="svg-line"/>
-          ${makeLabel(315, 75, 'right', 'omuz')}
-          
-          <path d="M 258 135 L 310 130" stroke="${getTextColor('triceps')}" class="svg-line"/>
-          ${makeLabel(315, 125, 'right', 'triceps')}
-          
-          <path d="M 268 190 L 310 180" stroke="${getTextColor('onkol')}" class="svg-line"/>
-          ${makeLabel(315, 175, 'right', 'onkol')}
-          
-          <path d="M 220 320 L 310 320" stroke="${getTextColor('baldir')}" class="svg-line"/>
-          ${makeLabel(315, 315, 'right', 'baldir')}
+          <path d="M 245 85 L 390 85" stroke="${getTextColor('omuz')}" class="svg-line"/>
+          ${makeLabel(400, 80, 'right', 'omuz')}
+          <path d="M 265 135 L 390 135" stroke="${getTextColor('triceps')}" class="svg-line"/>
+          ${makeLabel(400, 130, 'right', 'triceps')}
+          <path d="M 275 190 L 390 190" stroke="${getTextColor('onkol')}" class="svg-line"/>
+          ${makeLabel(400, 185, 'right', 'onkol')}
+          <path d="M 220 310 L 390 310" stroke="${getTextColor('baldir')}" class="svg-line"/>
+          ${makeLabel(400, 305, 'right', 'baldir')}
         </svg>
       </div>
     </div>

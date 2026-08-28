@@ -235,18 +235,19 @@
   .clear-draft-btn { width:100%; background:var(--surface-2); color:var(--text-dim); border:1px solid var(--line); border-radius:14px; padding:14px 16px; font-weight:700; font-family:'Barlow Condensed', sans-serif; font-size:16px; text-transform:uppercase; cursor:pointer; transition:0.2s; text-align:center;}
   .clear-draft-btn:hover { background:var(--line); color:var(--text); }
 
-  /* GÖRSEL ANALİZ & PROFESYONEL ANATOMİ STİLLERİ */
+  /* GÖRSEL ANALİZ & YENİ MEDİKAL-TİP ANATOMİ STİLLERİ */
   .analysis-section{ margin-top:28px; margin-bottom:24px;}
   .analysis-title{ font-family:'Barlow Condensed', sans-serif; font-size:22px; font-weight:800; color:var(--text); text-transform:uppercase; margin-bottom:16px; letter-spacing:0.5px;}
   .svg-container { display: flex; flex-wrap: wrap; justify-content: center; gap: 16px; margin-bottom: 16px;}
-  .svg-box { flex: 1 1 300px; max-width: 400px; background: var(--surface); border: 1px solid var(--line); border-radius: 16px; padding: 24px 0px; box-shadow:0 4px 12px rgba(0,0,0,0.04); display:flex; flex-direction:column; align-items:center; justify-content:flex-start; overflow: hidden; }
+  .svg-box { flex: 1 1 300px; max-width: 450px; background: var(--surface); border: 1px solid var(--line); border-radius: 16px; padding: 24px 0px; box-shadow:0 4px 12px rgba(0,0,0,0.04); display:flex; flex-direction:column; align-items:center; justify-content:flex-start; }
   .anatomy-label-title { text-align: center; font-family: 'Barlow Condensed', sans-serif; font-size: 18px; font-weight: 800; color: var(--text-dim); margin-bottom: 16px; letter-spacing: 1px;}
   
   .human-shape { stroke: var(--surface); stroke-width: 2.5px; transition: fill 0.4s ease; stroke-linecap: round; stroke-linejoin: round; }
-  .human-base { fill: #cbd5e1; stroke: var(--surface); stroke-width: 2.5px; stroke-linecap: round; stroke-linejoin: round; }
-  .svg-text-title { font-family: 'Barlow Condensed', sans-serif; font-size: 18px; font-weight: 800; letter-spacing: 0.5px; text-transform: uppercase; }
-  .svg-text-body { font-family: 'Inter', sans-serif; font-size: 13px; font-weight: 600; }
-  .svg-line { stroke-width: 1.5; stroke-dasharray: 4 4; stroke: var(--line); fill: none; }
+  .human-base { fill: var(--surface-2); stroke: var(--surface); stroke-width: 2.5px; stroke-linecap: round; stroke-linejoin: round; }
+  
+  .svg-text-title { font-family: 'Barlow Condensed', sans-serif; font-size: 16px; font-weight: 800; letter-spacing: 0.5px; text-transform: uppercase; }
+  .svg-text-body { font-family: 'Inter', sans-serif; font-size: 11px; font-weight: 600; }
+  .svg-line { stroke-width: 1.5; stroke-dasharray: 2 4; stroke: var(--line); fill: none;}
   
   footer{ text-align:center; color:var(--text-dim); font-size:12px; margin-top:32px; padding:0 20px 20px 20px; font-weight:500;}
 
@@ -285,7 +286,7 @@
   .wm-progress-bar-fill { height:100%; background:var(--accent); width:0%; transition:width 0.5s cubic-bezier(0.4, 0, 0.2, 1); }
   .wm-progress-text { text-align:center; font-size:14px; font-weight:700; color:var(--text); margin-top:10px; transition:0.2s;}
 
-  /* --- UYGULAMA İÇİ GÖRSEL ARAMA PENCERESİ --- */
+  /* --- UYGULAMA İÇİ GÖRSEL ARAMA PENCERESİ VE KURTARMA MODAL'I --- */
   .ex-modal { position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(15,23,42,0.85); backdrop-filter:blur(6px); z-index:100000; display:none; align-items:center; justify-content:center; padding:20px; }
   .ex-modal.active { display:flex; animation: fadeIn 0.3s ease; }
   .ex-modal-content { width:100%; max-width:500px; height:85%; background:var(--bg); border-radius:20px; display:flex; flex-direction:column; overflow:hidden; box-shadow:0 10px 40px rgba(0,0,0,0.3); border:1px solid var(--line);}
@@ -297,6 +298,7 @@
   .ex-modal-footer { padding:12px; background:var(--surface); text-align:center; border-top:1px solid var(--line);}
   .ex-modal-btn { background:var(--surface-2); color:var(--text); border:1px solid var(--line); padding:10px 20px; border-radius:10px; font-size:13px; font-weight:600; cursor:pointer; font-family:'Inter'; transition:0.2s;}
   .ex-modal-btn:hover { border-color:var(--accent); color:var(--accent); background:var(--accent-dim);}
+  @keyframes fadeIn { from{opacity:0; transform:scale(0.95);} to{opacity:1; transform:scale(1);} }
 </style>
 </head>
 <body>
@@ -1656,7 +1658,6 @@ async function renderBuilder(){
   main.appendChild(saveRow); main.appendChild(saveToast2);
 }
 
-// PROFESYONEL HACIM VE DETAYLI TIP ANATOMİSİ ÇİZİMİ
 function renderAnalysis(prog, container){
   container.className = 'analysis-section'; 
   const ana_totals = {}; const yard_totals = {}; 
@@ -1707,8 +1708,8 @@ function renderAnalysis(prog, container){
         <div class="anatomy-label-title">ÖN ANATOMİ</div>
         <svg viewBox="-50 0 500 400" width="100%" height="auto">
           
-          <circle cx="200" cy="25" r="20" class="human-base"/>
-          <path d="M 190 40 L 210 40 Q 215 50 215 60 L 185 60 Q 185 50 190 40 Z" class="human-base"/>
+          <circle cx="200" cy="23" r="24" class="human-base"/>
+          <path d="M 188 40 L 212 40 Q 215 50 215 60 L 185 60 Q 185 50 188 40 Z" class="human-base"/>
           
           <path d="M 198 60 L 165 60 Q 145 75 165 105 Q 185 110 198 105 Z" fill="${getColor('gogus')}" class="human-shape"/>
           <path d="M 202 60 L 235 60 Q 255 75 235 105 Q 215 110 202 105 Z" fill="${getColor('gogus')}" class="human-shape"/>
@@ -1723,14 +1724,14 @@ function renderAnalysis(prog, container){
           <path d="M 171 112 L 155 120 Q 145 145 171 172 Z" fill="${getColor('karin')}" class="human-shape"/>
           <path d="M 229 112 L 245 120 Q 255 145 229 172 Z" fill="${getColor('karin')}" class="human-shape"/>
           
-          <path d="M 160 60 Q 130 65 130 100 Q 145 120 145 110 Z" fill="${getColor('omuz')}" class="human-shape"/>
-          <path d="M 240 60 Q 270 65 270 100 Q 255 120 255 110 Z" fill="${getColor('omuz')}" class="human-shape"/>
+          <path d="M 160 60 Q 115 50 125 105 Q 135 120 145 110 Q 155 85 162 60 Z" fill="${getColor('omuz')}" class="human-shape"/>
+          <path d="M 240 60 Q 285 50 275 105 Q 265 120 255 110 Q 245 85 238 60 Z" fill="${getColor('omuz')}" class="human-shape"/>
           
-          <path d="M 145 115 Q 120 120 125 155 Q 140 155 140 120 Z" fill="${getColor('biceps')}" class="human-shape"/>
-          <path d="M 255 115 Q 280 120 275 155 Q 260 155 260 120 Z" fill="${getColor('biceps')}" class="human-shape"/>
+          <path d="M 142 112 Q 115 115 120 160 Q 135 165 145 155 Q 150 135 145 112 Z" fill="${getColor('biceps')}" class="human-shape"/>
+          <path d="M 258 112 Q 285 115 280 160 Q 265 165 255 155 Q 250 135 255 112 Z" fill="${getColor('biceps')}" class="human-shape"/>
           
-          <path d="M 135 160 Q 105 180 115 210 Q 130 205 125 165 Z" fill="${getColor('onkol')}" class="human-shape"/>
-          <path d="M 265 160 Q 295 180 285 210 Q 270 205 275 165 Z" fill="${getColor('onkol')}" class="human-shape"/>
+          <path d="M 142 165 Q 105 175 115 220 Q 130 220 138 200 Q 145 180 142 165 Z" fill="${getColor('onkol')}" class="human-shape"/>
+          <path d="M 258 165 Q 295 175 285 220 Q 270 220 262 200 Q 255 180 258 165 Z" fill="${getColor('onkol')}" class="human-shape"/>
           
           <path d="M 198 175 L 174 175 Q 160 185 198 185 Z" fill="${getColor('quad')}" class="human-shape"/>
           <path d="M 202 175 L 226 175 Q 240 185 202 185 Z" fill="${getColor('quad')}" class="human-shape"/>
@@ -1767,8 +1768,8 @@ function renderAnalysis(prog, container){
         <div class="anatomy-label-title">ARKA ANATOMİ</div>
         <svg viewBox="-50 0 500 400" width="100%" height="auto">
           
-          <circle cx="200" cy="25" r="20" class="human-base"/>
-          <path d="M 190 40 L 210 40 Q 215 50 215 60 L 185 60 Q 185 50 190 40 Z" class="human-base"/>
+          <circle cx="200" cy="23" r="24" class="human-base"/>
+          <path d="M 188 40 L 212 40 Q 215 50 215 60 L 185 60 Q 185 50 188 40 Z" class="human-base"/>
           
           <path d="M 198 45 L 175 60 Q 185 85 198 110 Z" fill="${getColor('sirt')}" class="human-shape"/>
           <path d="M 202 45 L 225 60 Q 215 85 202 110 Z" fill="${getColor('sirt')}" class="human-shape"/>

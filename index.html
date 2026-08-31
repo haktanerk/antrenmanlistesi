@@ -239,14 +239,15 @@
   .analysis-section{ margin-top:28px; margin-bottom:24px;}
   .analysis-title{ font-family:'Barlow Condensed', sans-serif; font-size:22px; font-weight:800; color:var(--text); text-transform:uppercase; margin-bottom:16px; letter-spacing:0.5px;}
   .svg-container { display: flex; flex-wrap: wrap; justify-content: center; gap: 16px; margin-bottom: 16px;}
-  .svg-box { flex: 1 1 300px; max-width: 400px; background: var(--surface); border: 1px solid var(--line); border-radius: 16px; padding: 24px 0px; box-shadow:0 4px 12px rgba(0,0,0,0.04); display:flex; flex-direction:column; align-items:center; justify-content:flex-start; overflow: hidden; }
+  .svg-box { flex: 1 1 300px; max-width: 450px; background: var(--surface); border: 1px solid var(--line); border-radius: 16px; padding: 24px 0px; box-shadow:0 4px 12px rgba(0,0,0,0.04); display:flex; flex-direction:column; align-items:center; justify-content:flex-start; }
   .anatomy-label-title { text-align: center; font-family: 'Barlow Condensed', sans-serif; font-size: 18px; font-weight: 800; color: var(--text-dim); margin-bottom: 16px; letter-spacing: 1px;}
   
   .human-shape { stroke: var(--surface); stroke-width: 2.5px; transition: fill 0.4s ease; stroke-linecap: round; stroke-linejoin: round; }
   .human-base { fill: var(--surface-2); stroke: var(--surface); stroke-width: 2.5px; stroke-linecap: round; stroke-linejoin: round; }
-  .svg-text-title { font-family: 'Barlow Condensed', sans-serif; font-size: 18px; font-weight: 800; letter-spacing: 0.5px; text-transform: uppercase; }
-  .svg-text-body { font-family: 'Inter', sans-serif; font-size: 13px; font-weight: 600; }
-  .svg-line { stroke-width: 1.5; stroke-dasharray: 4 4; stroke: var(--line); fill: none;}
+  
+  .svg-text-title { font-family: 'Barlow Condensed', sans-serif; font-size: 16px; font-weight: 800; letter-spacing: 0.5px; text-transform: uppercase; }
+  .svg-text-body { font-family: 'Inter', sans-serif; font-size: 11px; font-weight: 600; }
+  .svg-line { stroke-width: 1.5; stroke-dasharray: 2 4; stroke: var(--line); fill: none;}
   
   footer{ text-align:center; color:var(--text-dim); font-size:12px; margin-top:32px; padding:0 20px 20px 20px; font-weight:500;}
 
@@ -336,6 +337,7 @@
       <button class="auth-btn-primary" onclick="signUp()">Hesap Oluştur</button>
     </div>
 
+    <!-- ŞİFRE SIFIRLAMA FORMU -->
     <div id="update-password-form" style="display:none;">
       <div style="font-size:14px; margin-bottom:12px; font-weight:600; text-align:center; color:var(--accent);">Lütfen yeni şifrenizi belirleyin.</div>
       <input type="password" id="new-password" class="auth-input" placeholder="Yeni Şifre (En az 6 karakter)" />
@@ -393,6 +395,7 @@
     </div>
 </div>
 
+<!-- YARIM KALAN ANTRENMAN KURTARMA PENCERESİ -->
 <div id="recovery-modal" class="ex-modal">
     <div class="ex-modal-content" style="height:auto; max-width:340px; text-align:center; padding:24px; background:var(--surface);">
         <h3 style="margin:0 0 16px 0; color:var(--accent); font-family:'Barlow Condensed'; font-size:24px; text-transform:uppercase;">Yarım Kalan Antrenman</h3>
@@ -1654,7 +1657,8 @@ async function renderBuilder(){
     const newProgram = {
       id: prog.editing_id || cpUid(), name: progName,
       days: prog.days.map(d => ({
-        id: cpUid(), shortLabel: d.name, title: d.name, note: '',
+        id: d.id || cpUid(), 
+        shortLabel: d.name, title: d.name, note: '',
         exercises: d.exercises.map(ex => ({ id: ex.id || cpUid(), blok: MUSCLE_LABELS[ex.muscleKey] || '', name: ex.name, sr: ex.reps ? `${ex.sets}x${ex.reps}` : `${ex.sets} Set`, sets: ex.sets, reps: ex.reps, muscleKey: ex.muscleKey, rest: ex.rest || '90 sn', start: 0, secondaryMuscles: ex.secondaryMuscles || [], }))
       })),
     };
@@ -1679,7 +1683,6 @@ async function renderBuilder(){
   main.appendChild(saveRow); main.appendChild(saveToast2);
 }
 
-// PROFESYONEL HACIM VE DETAYLI TIP ANATOMİSİ ÇİZİMİ
 function renderAnalysis(prog, container){
   container.className = 'analysis-section'; 
   const ana_totals = {}; const yard_totals = {}; 
